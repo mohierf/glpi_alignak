@@ -1,0 +1,78 @@
+sudo: false
+language: php
+php:
+  - 5.6
+  - 7.0
+  - 7.1
+  - 7.2
+  - nightly
+
+env:
+  global:
+    - DB=mysql
+  matrix:
+    - GLPI=9.1/bugfixes
+    - GLPI=9.2/bugfixes
+    - GLPI=9.3/bugfixes
+    - GLPI=master
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+addons:
+  apt:
+    packages:
+    - ant
+    - xsltproc
+
+before_install:
+ - cd ..
+ - git clone git://github.com/glpi-project/glpi.git glpi
+ - cd glpi
+ - if [[ $GLPI != 'master' ]]; then git checkout -b $GLPI origin/$GLPI; fi
+ - cd ..
+ # Configure MySQL credentials
+ - mysql -u root -e "SET PASSWORD FOR 'travis'@'localhost' = PASSWORD('travis')"
+ - mysql -u root -e "GRANT ALL PRIVILEGES ON glpi.* TO 'travis'@'localhost';"
+ - mysql -u root -e "FLUSH PRIVILEGES;"
+ # Configure Glpi DB access
+ - echo '<?php class DB extends DBmysql {var $dbhost = "localhost";var $dbuser = "travis";var $dbpassword= "travis";var $dbdefault = "glpi";}' > glpi/config/config_db.php
+ - mv -f fusioninventory-for-glpi glpi/plugins/fusioninventory
+ - composer self-update
+ - ant -Dclearsavepoint='true' -Dbasedir=. -f ./glpi/plugins/fusioninventory/phpunit/build.xml composer
+
+before_script:
+  - composer self-update
+  - git clone --depth=1 https://github.com/glpi-project/glpi -b $GLPI ../glpi && cd ../glpi
+  - composer install --no-dev
+  - mysql -u root -e 'create database glpitest;'
+  - php tools/cliinstall.php --db=glpi-test --user=travis --tests
+  - mv ../alignak plugins/alignak
+  - cd plugins/alignak
+  - composer install -o
+
+script:
+  - vendor/bin/robo --no-interaction code:cs
+  - mysql -u root -e 'select version();'
+  - ./vendor/bin/atoum --debug -bf tests/bootstrap.php -d tests/units/
+
+matrix:
+#  exclude:
+#    - php: 5.4
+#      env: GLPIVER=master
+  allow_failures:
+    - php: nightly
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+#notifications:
+#  irc:
+#    channels:
+#      - "irc.freenode.org#channel"
+#    on_success: change
+#    on_failure: always
+#    use_notice: true
+#    skip_join: true

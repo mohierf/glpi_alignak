@@ -1,0 +1,60 @@
+<root>
+      <name>Alignak</name>
+      <key>alignak</key>
+      <state>stable</state>
+      <logo>https://raw.githubusercontent.com/mohierf/glpi_alignak/develop/misc/logo.png</logo>
+      <description>
+         <short>
+            <en>GLPI Alignak monitoring plugin provides an interface between Glpi and Alignak</en>
+            <fr>Le plugin GLPI Alinak monitoring permet d'interfacer Glpi et Alignak</fr>
+         </short>
+         <long>
+            <en>
+The Alignak monitoring plugin allows to interface Glpi and Alignak
+
+Main features:
+
+* create Alignak/Nagios legacy configuration files from the Glpi CMDB
+* to be completed...
+            </en>
+            <fr>
+Le plugin Alignak monitoring...
+            </fr>
+         </long>
+      </description>
+      <homepage>https://github.com/mohierf/glpi_alignak</homepage>
+      <download>https://github.com/mohierf/glpi_alignak/releases</download>
+      <issues>https://github.com/mohierf/glpi_alignak/issues</issues>
+      <readme>https://github.com/mohierf/glpi_alignak/master/README.md</readme>
+      <authors>
+         <author>Frédéric Mohier</author>
+         <author>Alignak Team</author>
+      </authors>
+      <versions>
+         <version>
+            <num>0.1.1</num>
+            <compatibility>9.1</compatibility>
+         </version>
+      </versions>
+      <langs>
+         <lang>en_GB</lang>
+         <lang>fr_FR</lang>
+      </langs>
+      <license>AGPLv3</license>
+      <tags>
+         <fr>
+            <tag>Alignak</tag>
+         </fr>
+         <en>
+            <tag>Monitoring</tag>
+         </en>
+      </tags>
+      <!--
+      <screenshots>
+         <screenshot>https://raw.githubusercontent.com/pluginsGLPI/example/master/misc/screenshots/first.png</screenshot>
+         <screenshot>https://raw.githubusercontent.com/pluginsGLPI/example/master/misc/screenshots/second.png</screenshot>
+         <screenshot>https://raw.githubusercontent.com/pluginsGLPI/example/master/misc/screenshots/third.png</screenshot>
+         <screenshot>https://raw.githubusercontent.com/pluginsGLPI/example/master/misc/screenshots/fourth.png</screenshot>
+      </screenshots>
+      -->
+</root>
