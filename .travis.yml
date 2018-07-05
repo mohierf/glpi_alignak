@@ -26,21 +26,21 @@ addons:
     - ant
     - xsltproc
 
-before_install:
- - cd ..
- - git clone git://github.com/glpi-project/glpi.git glpi
- - cd glpi
- - if [[ $GLPI != 'master' ]]; then git checkout -b $GLPI origin/$GLPI; fi
- - cd ..
- # Configure MySQL credentials
- - mysql -u root -e "SET PASSWORD FOR 'travis'@'localhost' = PASSWORD('travis')"
- - mysql -u root -e "GRANT ALL PRIVILEGES ON glpi.* TO 'travis'@'localhost';"
- - mysql -u root -e "FLUSH PRIVILEGES;"
- # Configure Glpi DB access
- - echo '<?php class DB extends DBmysql {var $dbhost = "localhost";var $dbuser = "travis";var $dbpassword= "travis";var $dbdefault = "glpi";}' > glpi/config/config_db.php
- - mv -f fusioninventory-for-glpi glpi/plugins/fusioninventory
- - composer self-update
- - ant -Dclearsavepoint='true' -Dbasedir=. -f ./glpi/plugins/fusioninventory/phpunit/build.xml composer
+#before_install:
+# - cd ..
+# - git clone git://github.com/glpi-project/glpi.git glpi
+# - cd glpi
+# - if [[ $GLPI != 'master' ]]; then git checkout -b $GLPI origin/$GLPI; fi
+# - cd ..
+# # Configure MySQL credentials
+# - mysql -u root -e "SET PASSWORD FOR 'travis'@'localhost' = PASSWORD('travis')"
+# - mysql -u root -e "GRANT ALL PRIVILEGES ON glpi.* TO 'travis'@'localhost';"
+# - mysql -u root -e "FLUSH PRIVILEGES;"
+# # Configure Glpi DB access
+# - echo '<?php class DB extends DBmysql {var $dbhost = "localhost";var $dbuser = "travis";var $dbpassword= "travis";var $dbdefault = "glpi";}' > glpi/config/config_db.php
+# - mv -f fusioninventory-for-glpi glpi/plugins/fusioninventory
+# - composer self-update
+# - ant -Dclearsavepoint='true' -Dbasedir=. -f ./glpi/plugins/fusioninventory/phpunit/build.xml composer
 
 before_script:
   - composer self-update
