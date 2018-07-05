@@ -1,0 +1,17 @@
+{
+  "name": "glpi/glpi-plugin-alignak",
+  "description": "GLPI plugin Alignak",
+  "license": "AGPL",
+  "type": "project",
+  "homepage": "http://www.glpi-project.org/",
+  "support": {
+    "issues": "https://github.com/mohierf/glpi_alignak/issues",
+    "docs": "https://github.com/mohierf/glpi_alignak/doc"
+  },
+  "require": {
+    "twig/twig": ">2.0"
+  },
+  "require-dev": {
+    "glpi-project/coding-standard": "^0.7.1"
+  }
+}
