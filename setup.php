@@ -43,10 +43,48 @@
 // Purpose of file: Plugin setup and configuration
 // ----------------------------------------------------------------------
 
+/*
+ * Plugin global configuration variables
+ */
 define ('PLUGIN_ALIGNAK_VERSION', '9.3 + 0.1');
+define ('PLUGIN_ALIGNAK_PHP_MIN_VERSION', '5.6');
 define ('PLUGIN_ALIGNAK_GLPI_MIN_VERSION', '9.1');
 define ('PLUGIN_ALIGNAK_NAME', 'Alignak monitoring plugin');
 define ('PLUGIN_ALIGNAK_LOG', 'plugin-alignak');
+
+if (!defined("PLUGIN_ALIGNAK_DIR")) {
+   define("PLUGIN_ALIGNAK_DIR", GLPI_ROOT . "/plugins/alignak");
+}
+if (!defined("PLUGIN_ALIGNAK_DOC_DIR")) {
+   define("PLUGIN_ALIGNAK_DOC_DIR", GLPI_PLUGIN_DOC_DIR . "/alignak");
+}
+if (!file_exists(PLUGIN_ALIGNAK_DOC_DIR)) {
+   mkdir(PLUGIN_ALIGNAK_DOC_DIR);
+}
+
+if (!defined("PLUGIN_ALIGNAK_CLASS_PATH")) {
+   define("PLUGIN_ALIGNAK_CLASS_PATH", PLUGIN_ALIGNAK_DOC_DIR . "/inc");
+}
+if (!file_exists(PLUGIN_ALIGNAK_CLASS_PATH)) {
+   mkdir(PLUGIN_ALIGNAK_CLASS_PATH);
+}
+
+if (!defined("PLUGIN_ALIGNAK_FRONT_PATH")) {
+   define("PLUGIN_ALIGNAK_FRONT_PATH", PLUGIN_ALIGNAK_DOC_DIR."/front");
+}
+if (!file_exists(PLUGIN_ALIGNAK_FRONT_PATH)) {
+   mkdir(PLUGIN_ALIGNAK_FRONT_PATH);
+}
+
+if (!defined("PLUGIN_ALIGNAK_CLASSES")) {
+   $PLUGIN_ALIGNAK_CLASSES = [
+      'PluginAlignakAlignak',
+      'PluginAlignakEntity',
+      'PluginAlignakDropdown',
+      'PluginAlignakProfile',
+      'PluginAlignakMigration'
+   ];
+}
 
 /**
  * Init hooks of the plugin.
@@ -58,6 +96,15 @@ function plugin_init_alignak() {
    global $PLUGIN_HOOKS,$CFG_GLPI;
 
    Toolbox::logInFile("alignak", "test");
+
+   // manage autoload of plugin custom classes
+   include_once(PLUGIN_ALIGNAK_DIR . "/vendor/autoload.php");
+   include_once(PLUGIN_ALIGNAK_DIR . "/inc/autoload.php");
+   $pluginfields_autoloader = new PluginAlignakAutoloader([PLUGIN_ALIGNAK_CLASS_PATH]);
+   $pluginfields_autoloader->register();
+
+   // CSRF compliance : All actions must be done via POST and forms closed by Html::closeForm();
+   $PLUGIN_HOOKS['csrf_compliant']['alignak'] = true;
 
    // Params : plugin name - string type - ID - Array of attributes
    // No specific information passed so not needed
@@ -73,18 +120,15 @@ function plugin_init_alignak() {
 
    // Add forms tab on several classes
    $types = [
-      'Central',
-      'Computer',
-      'Preference',
-      'Profile'
+      'Central', 'Computer', 'Preference', 'Profile', 'Entity'
    ];
    Plugin::registerClass('PluginAlignakAlignak',
                          ['notificationtemplates_types' => true,
                           'addtabon' => $types,
                           'link_types' => true]);
 
-   Plugin::registerClass('PluginAlignakRuleTestCollection',
-                         ['rulecollections_types' => true]);
+   //   Plugin::registerClass('PluginAlignakRuleTestCollection',
+   //                         ['rulecollections_types' => true]);
 
    // Add tags for the plugin
    if (version_compare(GLPI_VERSION, 'PLUGIN_ALIGNAK_GLPI_MIN_VERSION', 'ge')) {
@@ -95,9 +139,9 @@ function plugin_init_alignak() {
 
    // Display a menu entry ?
    $_SESSION["glpi_plugin_alignak_profile"]['alignak'] = 'w';
-   if (isset($_SESSION["glpi_plugin_alignak_profile"])) { // Right set in change_profile hook
-      $PLUGIN_HOOKS['menu_toadd']['alignak'] = ['plugins' => 'PluginAlignakAlignak',
-                                                'tools'   => 'PluginAlignakAlignak'];
+   if (isset($_SESSION["glpi_plugin_alignak_profile"])) {
+      // Add an entry to the Tools menu
+      $PLUGIN_HOOKS['menu_toadd']['alignak'] = ['tools'   => 'PluginAlignakAlignak'];
 
       $PLUGIN_HOOKS["helpdesk_menu_entry"]['alignak'] = true;
    }
@@ -123,11 +167,9 @@ function plugin_init_alignak() {
    $PLUGIN_HOOKS['item_can']['alignak'] = ['Computer' => ['PluginAlignakComputer', 'item_can']];
    $PLUGIN_HOOKS['add_default_where']['alignak'] = ['Computer' => ['PluginAlignakComputer', 'add_default_where']];
 
-   // Alignak using a method in class
-   $PLUGIN_HOOKS['pre_item_add']['alignak'] = ['Computer' => ['PluginAlignakAlignak',
-                                                                 'pre_item_add_computer']];
-   $PLUGIN_HOOKS['post_prepareadd']['alignak'] = ['Computer' => ['PluginAlignakAlignak',
-                                                                 'post_prepareadd_computer']];
+   // Alignak using a method in class (eg. Computer)
+   $PLUGIN_HOOKS['pre_item_add']['alignak'] = ['Computer' => ['PluginAlignakAlignak', 'pre_item_add_computer']];
+   $PLUGIN_HOOKS['post_prepareadd']['alignak'] = ['Computer' => ['PluginAlignakAlignak', 'post_prepareadd_computer']];
    $PLUGIN_HOOKS['item_add']['alignak'] = ['Computer' => ['PluginAlignakAlignak', 'item_add_computer']];
 
    $PLUGIN_HOOKS['pre_item_delete']['alignak'] = ['Computer' => 'plugin_pre_item_delete_alignak'];
@@ -181,23 +223,20 @@ function plugin_init_alignak() {
    //$PLUGIN_HOOKS['retrieve_more_data_from_ldap']['alignak']="plugin_retrieve_more_data_from_ldap_alignak";
    */
 
-/*   // Reports
+   /*   // Reports
    $PLUGIN_HOOKS['reports']['alignak'] = [
       'report.php' => 'New Report',
       'report.php?other' => 'New Report 2'];
-*/
-/*
+   */
+   /*
    // Stats
    $PLUGIN_HOOKS['stats']['alignak'] = ['stat.php'       => 'New stat',
                                         'stat.php?other' => 'New stats 2',];
-*/
+   */
 
    $PLUGIN_HOOKS['post_init']['alignak'] = 'plugin_alignak_postinit';
 
    $PLUGIN_HOOKS['status']['alignak'] = 'plugin_alignak_status';
-
-   // CSRF compliance : All actions must be done via POST and forms closed by Html::closeForm();
-   $PLUGIN_HOOKS['csrf_compliant']['alignak'] = true;
 
    // To display on central home page
    $PLUGIN_HOOKS['display_central']['alignak'] = "plugin_alignak_display_central";
@@ -224,7 +263,6 @@ function plugin_init_alignak() {
    $PLUGIN_HOOKS['autoinventory_information']['exemple'] =  [
       'Computer' =>  ['PluginAlignakComputer', 'showInfo']];
    */
-
 }
 
 
@@ -237,12 +275,15 @@ function plugin_init_alignak() {
 function plugin_version_alignak() {
    // Use requirements (Glpi > 9.2)
    return [
-      'name'           => 'Alignak monitoring plugin',
+      'name'           => '<a href="http://alignak.net" target="_blank">Alignak</a > monitoring plugin',
       'version'        => PLUGIN_ALIGNAK_VERSION,
-      'author'         => 'Frédéric Mohier & Alignak Team',
-      'license'        => 'AGPLv3',
+      'author'         => 'Frédéric Mohier & <a href="http://alignak.net" target="_blank">Alignak Team</a >',
+      'license'        => '<a href="../plugins/alignak/LICENSE" target="_blank">AGPLv3</a>',
       'homepage'       => 'https://github.com/mohierf/alignak',
       'requirements'   => [
+         'php' => [
+            'min' => 'PLUGIN_ALIGNAK_PHP_MIN_VERSION'
+         ],
          'glpi' => [
             'min' => 'PLUGIN_ALIGNAK_GLPI_MIN_VERSION',
             'dev' => true
@@ -279,6 +320,32 @@ function plugin_alignak_check_prerequisites() {
    }
 
    return true;
+}
+
+/**
+ * Check all stored containers files (classes & front) are present, or create they if needed
+ *
+ * @return void
+ */
+function plugin_alignak_checkFiles($force = false) {
+   global $DB;
+
+   $plugin = new Plugin();
+
+   //   if ($force) {
+   //      // Clean all plugin files
+   //      array_map('unlink', glob(PLUGIN_ALIGNAK_DOC_DIR.'/*/*'));
+   //   }
+
+   //   if (isset($_SESSION['glpiactiveentities'])
+   //      && $plugin->isInstalled('alignak')
+   //      && $plugin->isActivated('alignak')
+   //      && Session::getLoginUserID()) {
+   //
+   //      /*
+   //       * Clean if necessary...
+   //       */
+   //   }
 }
 
 /**

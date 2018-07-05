@@ -63,7 +63,7 @@ class PluginAlignakConfig extends CommonDBTM {
    }
 
    function showConfigurationForm() {
-      global $CFG_GLPI, $PLUGIN_ALIGNAK_LOG;
+      global $PLUGIN_ALIGNAK_LOG;
 
       if (!Session::haveRight("config", UPDATE)) {
          return false;
@@ -74,11 +74,11 @@ class PluginAlignakConfig extends CommonDBTM {
       echo "<form name='form' action=\"".Toolbox::getItemTypeFormURL('Config')."\" method='post'>";
       echo "<div class='center' id='tabsbody'>";
       echo "<table class='tab_cadre_fixe'>";
-      echo "<tr><th colspan='4'>" . __('Example setup') . "</th></tr>";
+      echo "<tr><th colspan='4'>" . __('Alignak monitoring plugin setup') . "</th></tr>";
       echo "<td >" . __('My boolean choice :') . "</td>";
       echo "<td colspan='3'>";
       echo "<input type='hidden' name='config_class' value='".__CLASS__."'>";
-      echo "<input type='hidden' name='config_context' value='plugin:Example'>";
+      echo "<input type='hidden' name='config_context' value='plugin:Alignak'>";
       Dropdown::showYesNo("configuration", $my_config['configuration']);
       echo "</td></tr>";
 

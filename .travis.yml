@@ -11,7 +11,7 @@ env:
   global:
     - DB=mysql
   matrix:
-    - GLPI=9.1/bugfixes
+#    - GLPI=9.1/bugfixes
     - GLPI=9.2/bugfixes
     - GLPI=9.3/bugfixes
     - GLPI=master
@@ -43,18 +43,30 @@ addons:
 # - ant -Dclearsavepoint='true' -Dbasedir=. -f ./glpi/plugins/fusioninventory/phpunit/build.xml composer
 
 before_script:
+  # Update composer
   - composer self-update
-  - git clone --depth=1 https://github.com/glpi-project/glpi -b $GLPI ../glpi && cd ../glpi
+  # Dump Mysql version
+  - mysql -u root -e 'select version();'
+  # Get and prepare Glpi application
+  - cd ..
+  - git clone --depth=1 https://github.com/glpi-project/glpi -b $GLPI
+  - cd glpi
   - composer install --no-dev
-  - mysql -u root -e 'create database glpitest;'
-  - php tools/cliinstall.php --db=glpi-test --user=travis --tests
-  - mv ../alignak plugins/alignak
+  - mysql -u root -e 'create database glpi_test;'
+  # Prepare test database
+  - pwd
+  - ls -al scripts
+  - php ./scripts/cliinstall.php --db=glpitest --user=root --tests
+  - php ./scripts/cliupdate.php --config-dir=../tests |grep -q "No migration needed." || (echo "scripts/cliupdate.php FAILED" && exit 1)
+  # Install alignak plugin in Glpi
+  - mv ../glpi_alignak plugins/alignak
   - cd plugins/alignak
   - composer install -o
 
 script:
-  - vendor/bin/robo --no-interaction code:cs
-  - mysql -u root -e 'select version();'
+  # PHP coding standards
+  - ./vendor/bin/robo --no-interaction code:cs
+  # Plugin unit tests
   - ./vendor/bin/atoum --debug -bf tests/bootstrap.php -d tests/units/
 
 matrix:

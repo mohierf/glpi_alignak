@@ -38,47 +38,28 @@
    ------------------------------------------------------------------------
  */
 
-// ----------------------------------------------------------------------
-// Original Author of file: Frederic Mohier
-// Purpose of file: some utility functions
-// ----------------------------------------------------------------------
+require_once ('../../../inc/includes.php');
 
-if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+// Check if current user have config right
+Session::checkRight("entity", UPDATE);
+
+// Check if plugin is activated...
+$plugin = new Plugin();
+if (!$plugin->isActivated('alignak')) {
+   Html::displayNotFoundError();
 }
-global $PLUGIN_ALIGNAK_LOG;
 
-/**
- * Toolbox of various utility methods
- **/
-class PluginAlignakToolbox {
+if (PluginFormcreatorForm::canView()) {
+   Html::header(
+      __('Form Creator', 'formcreator'),
+      $_SERVER['PHP_SELF'],
+      'admin',
+      'PluginFormcreatorForm'
+   );
 
-   /**
-    * Log when extra-debug is activated
-    */
-   static function log($message) {
-      global $PLUGIN_ALIGNAK_LOG;
-      echo ("Log: $PLUGIN_ALIGNAK_LOG - $message");
-      /*
-       * Call the Glpi base file logging function:
-       * - base filename
-       * - log message
-       * - force file logging - not set ti use the default Glpi configuration (use_log_in_files)
-       */
-      Toolbox::logInFile($PLUGIN_ALIGNAK_LOG, $message);
-   }
+   Search::show('PluginFormcreatorForm');
 
-   /**
-    * Log when extra-debug is activated
-    */
-   static function logIfExtradebug($file, $message) {
-      $config = new PluginAlignakConfig();
-      if ($config->getValue('extradebug')) {
-         if (is_array($message)) {
-            $message = print_r($message, true);
-         }
-         PluginAlignakToolbox::log($message);
-      }
-   }
-
+   Html::footer();
+} else {
+   Html::displayRightError();
 }

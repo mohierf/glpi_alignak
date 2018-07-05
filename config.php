@@ -71,10 +71,10 @@ require_once 'vendor/autoload.php';
 
 try {
    $loader = new Twig_Loader_Filesystem('templates');
-   $twig = new Twig_Environment($loader, array('cache' => GLPI_PLUGIN_DOC_DIR . '/templates_cache'));
+   $twig = new Twig_Environment($loader, ['cache' => GLPI_PLUGIN_DOC_DIR . '/templates_cache']);
 
    $template = $twig->load('host.cfg');
-   $result = $template->render(array('name' => 'localhost', 'address' => '127.0.0.1'));
+   $result = $template->render(['name' => 'localhost', 'address' => '127.0.0.1']);
    echo nl2br("\nTemplate result is: \n", true);
    echo nl2br($result, true);
 } catch (Twig_Error_Loader $e) {

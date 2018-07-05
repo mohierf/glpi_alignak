@@ -375,7 +375,7 @@ function plugin_item_update_alignak($item) {
 // Hook done on get empty item case
 function plugin_item_empty_alignak($item) {
    if (empty($_SESSION['Already displayed "Empty Computer Hook"'])) {
-//      Session::addMessageAfterRedirect(__("Empty Computer Hook", 'alignak'), true);
+      // Session::addMessageAfterRedirect(__("Empty Computer Hook", 'alignak'), true);
       $_SESSION['Already displayed "Empty Computer Hook"'] = true;
    }
    return true;
@@ -414,13 +414,6 @@ function plugin_item_purge_alignak($object) {
 function plugin_pre_item_restore_alignak($item) {
    // Manipulate data if needed
    Session::addMessageAfterRedirect(__("Pre Restore Computer Hook", 'alignak'));
-}
-
-
-// Hook done on before restore item case
-function plugin_pre_item_restore_alignak2($item) {
-   // Manipulate data if needed
-   Session::addMessageAfterRedirect(__("Pre Restore Phone Hook", 'alignak'));
 }
 
 
@@ -482,61 +475,59 @@ function plugin_alignak_addParamFordynamicReport($itemtype) {
  * @return boolean
  */
 function plugin_alignak_install() {
-   global $DB;
+   global $DB, $PLUGIN_ALIGNAK_CLASSES;
 
+   /*
    $config = new Config();
    $config->setConfigurationValues('plugin:Alignak', ['configuration' => false]);
+   */
+   set_time_limit(900);
+   ini_set('memory_limit', '2048M');
+
+   $plugin_alignak = new Plugin;
+   $plugin_alignak->getFromDBbyDir('alignak');
+   $version = $plugin_alignak->fields['version'];
 
    ProfileRight::addProfileRights(['alignak:read']);
 
-   if (!$DB->tableExists("glpi_plugin_alignak_alignaks")) {
-      $query = "CREATE TABLE `glpi_plugin_alignak_alignaks` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `name` varchar(255) collate utf8_unicode_ci default NULL,
-                  `entities_id` int(11) NOT NULL DEFAULT '0',
-                  `is_recursive` tinyint(1) NOT NULL DEFAULT '0',
-                  `comment` text DEFAULT NULL COLLATE utf8_unicode_ci,
-                  `serial` varchar(255) collate utf8_unicode_ci NOT NULL,
-                  `plugin_alignak_dropdowns_id` int(11) NOT NULL default '0',
-                  `is_deleted` tinyint(1) NOT NULL default '0',
-                  `is_template` tinyint(1) NOT NULL default '0',
-                  `template_name` varchar(255) collate utf8_unicode_ci default NULL,
-                PRIMARY KEY (`id`)
-               ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+   $migration = new Migration($version);
+   echo "<div>";
+   echo "<table class='tab_cadre_fixe'>";
+   echo "<tr><th>".__("Database tables installation", "alignak")."<th></tr>";
 
-      $DB->query($query) or die("error creating glpi_plugin_alignak_alignaks ". $DB->error());
+   echo "<tr class='tab_bg_1'>";
+   echo "<td align='center'>";
 
-      /* Populate data in the rable
-      $query = "INSERT INTO `glpi_plugin_alignak_alignaks`
-                       (`id`, `name`, `serial`, `plugin_alignak_dropdowns_id`, `is_deleted`,
-                        `is_template`, `template_name`)
-                VALUES (1, 'alignak 1', 'serial 1', 1, 0, 0, NULL),
-                       (2, 'alignak 2', 'serial 2', 2, 0, 0, NULL),
-                       (3, 'alignak 3', 'serial 3', 1, 0, 0, NULL)";
-      $DB->query($query) or die("error populate glpi_plugin_alignak ". $DB->error());
-      */
+   // Load classes
+   foreach ($PLUGIN_ALIGNAK_CLASSES as $class) {
+      if ($plug = isPluginItemType($class)) {
+         $dir  = PLUGIN_ALIGNAK_DIR . "/inc/";
+         $item = strtolower($plug['class']);
+         if (file_exists("$dir$item.class.php")) {
+            include_once ("$dir$item.class.php");
+         }
+      }
    }
 
-   if (!$DB->tableExists("glpi_plugin_alignak_dropdowns")) {
-      $query = "CREATE TABLE `glpi_plugin_alignak_dropdowns` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `name` varchar(255) collate utf8_unicode_ci default NULL,
-                  `comment` text collate utf8_unicode_ci,
-                PRIMARY KEY  (`id`),
-                KEY `name` (`name`)
-               ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-
-      $DB->query($query) or die("error creating glpi_plugin_alignak_dropdowns". $DB->error());
-
-      /* Populate data
-      $query = "INSERT INTO `glpi_plugin_alignak_dropdowns`
-                       (`id`, `name`, `comment`)
-                VALUES (1, 'dp 1', 'comment 1'),
-                       (2, 'dp2', 'comment 2')";
-
-      $DB->query($query) or die("error populate glpi_plugin_alignak_dropdowns". $DB->error());
-      */
+   // Call installation method
+   foreach ($PLUGIN_ALIGNAK_CLASSES as $class) {
+      if ($plug = isPluginItemType($class)) {
+         $dir  = PLUGIN_ALIGNAK_DIR . "/inc/";
+         $item =strtolower($plug['class']);
+         if (file_exists("$dir$item.class.php")) {
+            if (! call_user_func([$class,'install'], $migration, $version)) {
+               return false;
+            }
+         }
+      }
    }
+
+   echo "</td>";
+   echo "</tr>";
+   echo "</table></div>";
+
+   // Check class and front files for existing containers and dropdown fields
+   plugin_alignak_checkFiles();
 
    /*
     * Migrate tables to InnoDB engine if Glpi > 9.3
@@ -555,7 +546,7 @@ function plugin_alignak_install() {
 
    // To be called for each task the plugin manage
    // task in class
-   CronTask::Register('PluginAlignakAlignak', 'Sample', DAY_TIMESTAMP, ['param' => 50]);
+   CronTask::Register('PluginAlignakAlignak', 'AlignakBuild', DAY_TIMESTAMP, ['param' => 50]);
    return true;
 }
 
@@ -566,31 +557,58 @@ function plugin_alignak_install() {
  * @return boolean
  */
 function plugin_alignak_uninstall() {
-   global $DB;
+   global $DB, $PLUGIN_ALIGNAK_CLASSES;
 
+   /*
    $config = new Config();
    $config->deleteConfigurationValues('plugin:Alignak', ['configuration' => false]);
+   */
 
    ProfileRight::deleteProfileRights(['alignak:read']);
 
-   // Old version tables
-   if ($DB->tableExists("glpi_dropdown_plugin_alignak")) {
-      $query = "DROP TABLE `glpi_dropdown_plugin_alignak`";
-      $DB->query($query) or die("error deleting glpi_dropdown_plugin_alignak");
+   if (!class_exists('PluginAlignakProfile')) {
+      Session::addMessageAfterRedirect(
+         __("The plugin can't be uninstalled when the plugin is disabled", 'fields'),
+            true, WARNING, true);
+      return false;
    }
-   if ($DB->tableExists("glpi_plugin_alignak")) {
-      $query = "DROP TABLE `glpi_plugin_alignak`";
-      $DB->query($query) or die("error deleting glpi_plugin_alignak");
+
+   $_SESSION['uninstall_fields'] = true;
+
+   echo "<center>";
+   echo "<table class='tab_cadre_fixe'>";
+   echo "<tr><th>".__("MySQL tables uninstallation", "fields")."<th></tr>";
+
+   echo "<tr class='tab_bg_1'>";
+   echo "<td align='center'>";
+
+   foreach ($PLUGIN_ALIGNAK_CLASSES as $class) {
+      if ($plug = isPluginItemType($class)) {
+
+         $dir  = GLPI_ROOT . "/plugins/fields/inc/";
+         $item = strtolower($plug['class']);
+
+         if (file_exists($dir . $item . ".class.php")) {
+            include_once ($dir . $item . ".class.php");
+            if (! call_user_func([$class, 'uninstall'])) {
+               return false;
+            }
+         }
+      }
    }
-   // Current version tables
-   if ($DB->tableExists("glpi_plugin_alignak_alignak")) {
-      $query = "DROP TABLE `glpi_plugin_alignak_alignak`";
-      $DB->query($query) or die("error deleting glpi_plugin_alignak_alignak");
-   }
-   if ($DB->tableExists("glpi_plugin_alignak_dropdowns")) {
-      $query = "DROP TABLE `glpi_plugin_alignak_dropdowns`;";
-      $DB->query($query) or die("error deleting glpi_plugin_alignak_dropdowns");
-   }
+
+   echo "</td>";
+   echo "</tr>";
+   echo "</table></center>";
+
+   unset($_SESSION['uninstall_fields']);
+
+   // clean display preferences
+   $pref = new DisplayPreference;
+   $pref->deleteByCriteria([
+      'itemtype' => ['LIKE' , 'PluginAlignak%']
+   ]);
+
    return true;
 }
 

@@ -48,9 +48,48 @@ class PluginAlignakAlignak extends CommonDBTM {
 
    static $tags = '[ALIGNAK_ID]';
 
+   static function install(Migration $migration) {
+      global $DB;
+
+      $table = self::getTable();
+
+      if (!$DB->tableExists("glpi_plugin_alignak_dropdowns")) {
+         $migration->displayMessage(sprintf(__("Installing %s"), $table));
+
+         $query = "CREATE TABLE `glpi_plugin_alignak_dropdowns` (
+                  `id` int(11) NOT NULL auto_increment,
+                  `name` varchar(255) collate utf8_unicode_ci default NULL,
+                  `comment` text collate utf8_unicode_ci,
+                PRIMARY KEY  (`id`),
+                KEY `name` (`name`)
+               ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+
+         $DB->query($query) or die("error creating glpi_plugin_alignak_dropdowns". $DB->error());
+
+         /* Populate data
+         $query = "INSERT INTO `glpi_plugin_alignak_dropdowns`
+                          (`id`, `name`, `comment`)
+                   VALUES (1, 'dp 1', 'comment 1'),
+                          (2, 'dp2', 'comment 2')";
+
+         $DB->query($query) or die("error populate glpi_plugin_alignak_dropdowns". $DB->error());
+         */
+      }
+
+      return true;
+   }
+
+   static function uninstall() {
+      global $DB;
+
+      $DB->query("DROP TABLE IF EXISTS `".self::getTable()."`");
+
+      return true;
+   }
+
    // Should return the localized name of the type
    static function getTypeName($nb = 0) {
-      return 'Alignak Type';
+      return 'Alignak';
    }
 
 
@@ -77,7 +116,7 @@ class PluginAlignakAlignak extends CommonDBTM {
     * @see CommonGLPI::getMenuName()
    **/
    static function getMenuName() {
-      return __('Example plugin');
+      return __('Alignak monitoring plugin');
    }
 
 
@@ -88,9 +127,9 @@ class PluginAlignakAlignak extends CommonDBTM {
       global $CFG_GLPI;
       $links = [];
 
-      $links['config'] = '/plugins/alignak/index.php';
-      $links["<img  src='".$CFG_GLPI["root_doc"]."/pics/menu_showall.png' title='".__s('Show all')."' alt='".__s('Show all')."'>"] = '/plugins/alignak/index.php';
-      $links[__s('Test link', 'alignak')] = '/plugins/alignak/index.php';
+      $links['config'] = PLUGIN_ALIGNAK_DIR . '/index.php';
+      $links["<img  src='".$CFG_GLPI["root_doc"]."/pics/menu_showall.png' title='".__s('Show all')."' alt='".__s('Show all')."'>"] = PLUGIN_ALIGNAK_DIR . '/index.php';
+      $links[__s('Test link', 'alignak')] = PLUGIN_ALIGNAK_DIR . '/index.php';
 
       return $links;
    }
@@ -177,7 +216,7 @@ class PluginAlignakAlignak extends CommonDBTM {
    static function cronInfo($name) {
 
       switch ($name) {
-         case 'Sample' :
+         case 'AlignakBuild' :
             return ['description' => __('Cron description for alignak', 'alignak'),
                     'parameter'   => __('Cron parameter for alignak', 'alignak')];
       }
@@ -195,7 +234,7 @@ class PluginAlignakAlignak extends CommonDBTM {
     *    <0 : to be run again (not finished)
     *     0 : nothing to do
     */
-   static function cronSample($task) {
+   static function cronAlignakBuild($task) {
 
       $task->log("Example log message from class");
       $r = mt_rand(0, $task->fields['param']);
@@ -236,16 +275,9 @@ class PluginAlignakAlignak extends CommonDBTM {
          switch ($item->getType()) {
             case 'Profile' :
                if ($item->getField('central')) {
-                  return __('Example', 'alignak');
+                  return __('Alignak', 'alignak');
                }
                break;
-
-            case 'Phone' :
-               if ($_SESSION['glpishow_count_on_tabs']) {
-                  return self::createTabEntry(__('Example', 'alignak'),
-                                              countElementsInTable($this->getTable()));
-               }
-               return __('Example', 'alignak');
 
             case 'ComputerDisk' :
             case 'Supplier' :
@@ -253,11 +285,17 @@ class PluginAlignakAlignak extends CommonDBTM {
                        2 => __("Test Plugin 2", 'alignak')];
 
             case 'Computer' :
+               return [1 => __("Test Plugin", 'alignak'),
+                  2 => __("Test Plugin 2", 'alignak')];
+
             case 'Central' :
+               if ($_SESSION['glpishow_count_on_tabs']) {
+                  return self::createTabEntry(__('Alignak', 'alignak'),
+                     countElementsInTable($this->getTable()));
+               }
             case 'Preference':
             case 'Notification':
-               return [1 => __("Test Plugin", 'alignak')];
-
+               return [1 => __("Alignak monitoring", 'alignak')];
          }
       }
       return '';
@@ -267,10 +305,6 @@ class PluginAlignakAlignak extends CommonDBTM {
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
 
       switch ($item->getType()) {
-         case 'Phone' :
-            echo __("Plugin Example on Phone", 'alignak');
-            break;
-
          case 'Central' :
             echo __("Plugin central action", 'alignak');
             break;
@@ -327,6 +361,7 @@ class PluginAlignakAlignak extends CommonDBTM {
       return '';
    }
 
+   /*
    // Parm contains begin, end and who
    // Create data to be displayed in the planning of $parm["who"] or $parm["who_group"] between $parm["begin"] and $parm["end"]
    static function populatePlanning($parm) {
@@ -345,6 +380,7 @@ class PluginAlignakAlignak extends CommonDBTM {
       $output[$key][getForeignKeyFieldForItemType('PluginAlignakAlignak')] = 1;
       return $output;
    }
+   */
 
    /**
     * Display a Planning Item
@@ -356,6 +392,7 @@ class PluginAlignakAlignak extends CommonDBTM {
     *
     * @return Nothing (display function)
     **/
+   /*
    static function displayPlanningItem(array $val, $who, $type = "", $complete = 0) {
 
       // $parm["type"] say begin end in or from type
@@ -384,6 +421,7 @@ class PluginAlignakAlignak extends CommonDBTM {
       echo "<br>";
       echo Html::resume_text($val["name"], 80);
    }
+   */
 
    /**
     * Get an history entry message

@@ -1,11 +1,14 @@
 <?php
 /*
- * @version $Id$
  -------------------------------------------------------------------------
  GLPI - Gestionnaire Libre de Parc Informatique
- Copyright (C) 2003-2011 by the INDEPNET Development Team.
+ Copyright (C) 2015-2016 Teclib'.
 
- http://indepnet.net/   http://glpi-project.org
+ http://glpi-project.org
+
+ based on GLPI - Gestionnaire Libre de Parc Informatique
+ Copyright (C) 2003-2014 by the INDEPNET Development Team.
+
  -------------------------------------------------------------------------
 
  LICENSE
@@ -27,22 +30,30 @@
  --------------------------------------------------------------------------
  */
 
-// ----------------------------------------------------------------------
-// Original Author of file: Frederic Mohier
-// Purpose of file:
-// ----------------------------------------------------------------------
+// Generic test classe, to be extended for CommonDBTM Object
 
-// Class of the defined type
+class AlignakDbTestCase extends \DbTestCase {
 
-if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
-}
+   public function setUp() {
+      if (!file_exists(PLUGINFIELDS_DOC_DIR)) {
+         //create data dir
+         mkdir(PLUGINFIELDS_DOC_DIR);
+      } else {
+         //cleanup data dir
+         $files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator(
+               PLUGINFIELDS_DOC_DIR,
+               RecursiveDirectoryIterator::SKIP_DOTS
+            ),
+            RecursiveIteratorIterator::CHILD_FIRST
+         );
 
-/// Class DeviceCamera
-class PluginAlignakDeviceCamera extends CommonDevice {
+         foreach ($files as $fileinfo) {
+            $todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
+            $todo($fileinfo->getRealPath());
+         }
+      }
 
-   static function getTypeName($nb = 0) {
-      return _n('Camera', 'Cameras', $nb);
+      parent::setUp();
    }
-
 }
