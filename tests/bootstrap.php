@@ -5,7 +5,7 @@ global $CFG_GLPI;
 //define plugin paths
 define("PLUGINALIGNAK_DOC_DIR", __DIR__ . "/generated_test_data");
 
-if (getenv(TRAVIS) !== false) {
+if (getenv("TRAVIS") !== false) {
    echo("Running Travis tests...\n");
    define('GLPI_ROOT', dirname(dirname(dirname(__DIR__))));
 } else {
