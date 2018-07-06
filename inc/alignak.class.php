@@ -48,15 +48,16 @@ class PluginAlignakAlignak extends CommonDBTM {
 
    static $tags = '[ALIGNAK_ID]';
 
+
    static function install(Migration $migration) {
       global $DB;
 
       $table = self::getTable();
 
-      if (!$DB->tableExists("glpi_plugin_alignak_dropdowns")) {
+      if (!$DB->tableExists($table)) {
          $migration->displayMessage(sprintf(__("Installing %s"), $table));
 
-         $query = "CREATE TABLE `glpi_plugin_alignak_dropdowns` (
+         $query = "CREATE TABLE `glpi_plugin_alignak_alignak` (
                   `id` int(11) NOT NULL auto_increment,
                   `name` varchar(255) collate utf8_unicode_ci default NULL,
                   `comment` text collate utf8_unicode_ci,
@@ -64,10 +65,10 @@ class PluginAlignakAlignak extends CommonDBTM {
                 KEY `name` (`name`)
                ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
 
-         $DB->query($query) or die("error creating glpi_plugin_alignak_dropdowns". $DB->error());
+         $DB->query($query) or die("error creating $table". $DB->error());
 
          /* Populate data
-         $query = "INSERT INTO `glpi_plugin_alignak_dropdowns`
+         $query = "INSERT INTO `glpi_plugin_alignak_alignak`
                           (`id`, `name`, `comment`)
                    VALUES (1, 'dp 1', 'comment 1'),
                           (2, 'dp2', 'comment 2')";
@@ -79,6 +80,7 @@ class PluginAlignakAlignak extends CommonDBTM {
       return true;
    }
 
+
    static function uninstall() {
       global $DB;
 
@@ -86,6 +88,7 @@ class PluginAlignakAlignak extends CommonDBTM {
 
       return true;
    }
+
 
    // Should return the localized name of the type
    static function getTypeName($nb = 0) {

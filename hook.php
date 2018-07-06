@@ -495,26 +495,30 @@ function plugin_alignak_install() {
    echo "<table class='tab_cadre_fixe'>";
    echo "<tr><th>".__("Database tables installation", "alignak")."<th></tr>";
 
-   echo "<tr class='tab_bg_1'>";
-   echo "<td align='center'>";
-
+   $classes = [
+      'PluginAlignakAlignak',
+      'PluginAlignakEntity',
+      'PluginAlignakDropdown',
+      'PluginAlignakProfile',
+      'PluginAlignakMigration'
+   ];
    // Load classes
-   foreach ($PLUGIN_ALIGNAK_CLASSES as $class) {
+   foreach ($classes as $class) {
       if ($plug = isPluginItemType($class)) {
          $dir  = PLUGIN_ALIGNAK_DIR . "/inc/";
          $item = strtolower($plug['class']);
-         if (file_exists("$dir$item.class.php")) {
-            include_once ("$dir$item.class.php");
+         if (file_exists($dir . $item . ".class.php")) {
+            include_once ($dir . $item . ".class.php");
          }
       }
    }
 
    // Call installation method
-   foreach ($PLUGIN_ALIGNAK_CLASSES as $class) {
+   foreach ($classes as $class) {
       if ($plug = isPluginItemType($class)) {
          $dir  = PLUGIN_ALIGNAK_DIR . "/inc/";
          $item =strtolower($plug['class']);
-         if (file_exists("$dir$item.class.php")) {
+         if (file_exists($dir . $item . ".class.php")) {
             if (! call_user_func([$class,'install'], $migration, $version)) {
                return false;
             }
@@ -524,7 +528,8 @@ function plugin_alignak_install() {
 
    echo "</td>";
    echo "</tr>";
-   echo "</table></div>";
+   echo "</table>";
+   echo "</div>";
 
    // Check class and front files for existing containers and dropdown fields
    plugin_alignak_checkFiles();
@@ -575,17 +580,24 @@ function plugin_alignak_uninstall() {
 
    $_SESSION['uninstall_fields'] = true;
 
-   echo "<center>";
+   echo "<div>";
    echo "<table class='tab_cadre_fixe'>";
    echo "<tr><th>".__("MySQL tables uninstallation", "fields")."<th></tr>";
 
    echo "<tr class='tab_bg_1'>";
    echo "<td align='center'>";
 
-   foreach ($PLUGIN_ALIGNAK_CLASSES as $class) {
+   $classes = [
+      'PluginAlignakAlignak',
+      'PluginAlignakEntity',
+      'PluginAlignakDropdown',
+      'PluginAlignakProfile',
+      'PluginAlignakMigration'
+   ];
+   foreach ($classes as $class) {
       if ($plug = isPluginItemType($class)) {
 
-         $dir  = GLPI_ROOT . "/plugins/fields/inc/";
+         $dir  = PLUGIN_ALIGNAK_DIR . "/inc/";
          $item = strtolower($plug['class']);
 
          if (file_exists($dir . $item . ".class.php")) {
@@ -599,7 +611,8 @@ function plugin_alignak_uninstall() {
 
    echo "</td>";
    echo "</tr>";
-   echo "</table></center>";
+   echo "</table>";
+   echo "</div>";
 
    unset($_SESSION['uninstall_fields']);
 

@@ -50,17 +50,51 @@ if (!defined('GLPI_ROOT')) {
 class PluginAlignakEntity extends CommonDBTM {
 
 
+   static function install(Migration $migration) {
+      global $DB;
 
-   /**
-   * Get name of this type
-   *
-   *@return text name of this type by language of the user connected
-   *
-   **/
-   static function getTypeName($nb = 0) {
-      return "entity";
+      $table = self::getTable();
+
+      if (!$DB->tableExists($table)) {
+         $migration->displayMessage(sprintf(__("Installing %s"), $table));
+
+         $query = "CREATE TABLE `glpi_plugin_alignak_entity` (
+                  `id` int(11) NOT NULL auto_increment,
+                  `name` varchar(255) collate utf8_unicode_ci default NULL,
+                  `comment` text collate utf8_unicode_ci,
+                PRIMARY KEY  (`id`),
+                KEY `name` (`name`)
+               ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+
+         $DB->query($query) or die("error creating $table". $DB->error());
+
+         /* Populate data
+         $query = "INSERT INTO `glpi_plugin_alignak_dropdowns`
+                          (`id`, `name`, `comment`)
+                   VALUES (1, 'dp 1', 'comment 1'),
+                          (2, 'dp2', 'comment 2')";
+
+         $DB->query($query) or die("error populate glpi_plugin_alignak_dropdowns". $DB->error());
+         */
+      }
+
+      return true;
    }
 
+
+   static function uninstall() {
+      global $DB;
+
+      $DB->query("DROP TABLE IF EXISTS `".self::getTable()."`");
+
+      return true;
+   }
+
+
+   // Should return the localized name of the type
+   static function getTypeName($nb = 0) {
+      return 'Entity';
+   }
 
 
    static function canCreate() {
