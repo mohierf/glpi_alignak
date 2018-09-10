@@ -45,8 +45,6 @@
 
 class PluginAlignakConfig extends CommonDBTM {
 
-   static protected $notable = true;
-
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       if (!$withtemplate) {

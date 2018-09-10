@@ -177,4 +177,9 @@ class PluginAlignakProfile extends CommonDBTM {
       $fields_profile->deleteByCriteria(['profiles_id' => $profile->fields['id']]);
       return true;
    }
+   
+   static function haveRight(){
+      // Added by Francois to Fix: Fatal Error missing function
+      return true;
+   }
 }

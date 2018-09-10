@@ -57,7 +57,7 @@ class PluginAlignakAlignak extends CommonDBTM {
       if (!$DB->tableExists($table)) {
          $migration->displayMessage(sprintf(__("Installing %s"), $table));
 
-         $query = "CREATE TABLE `glpi_plugin_alignak_alignak` (
+         $query = "CREATE TABLE `$table` (
                   `id` int(11) NOT NULL auto_increment,
                   `name` varchar(255) collate utf8_unicode_ci default NULL,
                   `comment` text collate utf8_unicode_ci,
@@ -175,7 +175,7 @@ class PluginAlignakAlignak extends CommonDBTM {
 
       $tab[] = [
          'id'                 => '1',
-         'table'              => 'glpi_plugin_alignak_alignaks',
+         'table'              => 'glpi_plugin_alignak_alignak',
          'field'              => 'name',
          'name'               => __('Name'),
       ];
@@ -189,7 +189,7 @@ class PluginAlignakAlignak extends CommonDBTM {
 
       $tab[] = [
          'id'                 => '3',
-         'table'              => 'glpi_plugin_alignak_alignaks',
+         'table'              => 'glpi_plugin_alignak_alignak',
          'field'              => 'serial',
          'name'               => __('Serial number'),
          'usehaving'          => true,
@@ -198,7 +198,7 @@ class PluginAlignakAlignak extends CommonDBTM {
 
       $tab[] = [
          'id'                 => '30',
-         'table'              => 'glpi_plugin_alignak_alignaks',
+         'table'              => 'glpi_plugin_alignak_alignak',
          'field'              => 'id',
          'name'               => __('ID'),
          'usehaving'          => true,
@@ -289,7 +289,8 @@ class PluginAlignakAlignak extends CommonDBTM {
 
             case 'Computer' :
                return [1 => __("Test Plugin", 'alignak'),
-                  2 => __("Test Plugin 2", 'alignak')];
+                  2 => __("Test Plugin 2", 'alignak'),
+                  3 => __("Counters", 'alignak')];
 
             case 'Central' :
                if ($_SESSION['glpishow_count_on_tabs']) {
@@ -343,7 +344,44 @@ class PluginAlignakAlignak extends CommonDBTM {
                echo __('Second tab of Plugin alignak', 'alignak');
             }
             break;
+            
+         case 'Computer' :
+            echo "DISPLAY COMPUTER COUNTERS:".$tabnum;
 
+            $templates = new PluginAlignakCounterTemplate();
+            $templateList = $templates->find();
+            
+            $template = new PluginAlignakComputerCounterTemplate();
+            $template->getFromDBByQuery("WHERE computer_id = ".$item->getID());
+            $templateId = $template->fields["template_id"];
+
+            ?>
+           <form action="../plugins/alignak/front/computer_counter.form.php" method="post">
+               <? echo Html::hidden('computer_id', array('value' => $item->getID())); ?>
+               <? echo Html::hidden('_glpi_csrf_token', array('value' => Session::getNewCSRFToken())); ?>
+               <div class="spaced" id="tabsbody">
+                   <table class="tab_cadre_fixe">
+                       <tr class="tab_bg_1">
+                           <td> <?
+                              echo __('Select a counter template: ', 'alignak'); 
+                              echo '<select name="template" >'; 
+                              foreach($templateList as $tpl) {
+                                 echo '<option value="'.$tpl["id"].'"';
+                                 if( $templateId == $tpl["id"]) echo "selected"; 
+                                 echo ">".$tpl["name"]."</option>";
+                              }
+                              ?>
+                           </select>
+                           <input type="submit" class="submit" value="<? echo __('Associate', 'alignak'); ?>" name="link"/>
+                           </td>
+                       </tr>
+                   </table>
+               </div>
+           </form>
+        <?
+            
+            break;
+            
          default :
             //TRANS: %1$s is a class name, %2$d is an item ID
             printf(__('Plugin alignak CLASS=%1$s id=%2$d', 'alignak'), $item->getType(), $item->getField('id'));
@@ -551,5 +589,5 @@ class PluginAlignakAlignak extends CommonDBTM {
 
       return parent::generateLinkContents($link, $item);
    }
-
+   
 }

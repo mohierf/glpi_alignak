@@ -82,7 +82,10 @@ if (!defined("PLUGIN_ALIGNAK_CLASSES")) {
       'PluginAlignakEntity',
       'PluginAlignakDropdown',
       'PluginAlignakProfile',
-      'PluginAlignakMigration'
+      'PluginAlignakMigration',
+      'PluginAlignakCounter',
+      'PluginAlignakCounterTemplate',
+      'PluginAlignakComputerCounterTemplate'
    ];
 }
 
@@ -148,7 +151,8 @@ function plugin_init_alignak() {
 
    // Configuration page
    if (Session::haveRight('config', UPDATE)) {
-      $PLUGIN_HOOKS['config_page']['alignak'] = 'config.php';
+     // $PLUGIN_HOOKS['config_page']['alignak'] = 'config.php';
+      $PLUGIN_HOOKS['config_page']['alignak'] = 'front/config.form.php';
    }
 
    // Init session
@@ -275,9 +279,9 @@ function plugin_init_alignak() {
 function plugin_version_alignak() {
    // Use requirements (Glpi > 9.2)
    return [
-      'name'           => '<a href="http://alignak.net" target="_blank">Alignak</a > monitoring plugin',
+      'name'           => 'alignak monitoring plugin', 
       'version'        => PLUGIN_ALIGNAK_VERSION,
-      'author'         => 'Frédéric Mohier & <a href="http://alignak.net" target="_blank">Alignak Team</a >',
+      'author'         => 'dsfsdfsdFrédéric Mohier & <a href="http://alignak.net" target="_blank">Alignak Team</a >',
       'license'        => '<a href="../plugins/alignak/LICENSE" target="_blank">AGPLv3</a>',
       'homepage'       => 'https://github.com/mohierf/alignak',
       'requirements'   => [

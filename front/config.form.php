@@ -1,5 +1,4 @@
 <?php
-
 /*
    ------------------------------------------------------------------------
    Glpi-Alignak
@@ -38,53 +37,52 @@
    ------------------------------------------------------------------------
  */
 
-// ----------------------------------------------------------------------
-// Original Author of file: Frederic Mohier
-// Purpose of file:
-// ----------------------------------------------------------------------
 
-// Class of the defined type
 
-if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+include ('../../../inc/includes.php');
+
+if (!isset($_GET["id"])) {
+   $_GET["id"] = 0;
+}
+if (!isset($_GET["preconfig"])) {
+   $_GET["preconfig"] = -1;
 }
 
-class PluginAlignakComputer extends CommonDBTM {
+$config = new PluginAlignakConfig();
+$model  = new PluginManufacturersimportsModel();
 
-   static function showInfo() {
+if (isset($_POST["add"])) {
+   Session::checkRight("plugin_alignak", CREATE);
+   $config->add($_POST);
+   Html::back();
 
-      echo '<table class="tab_glpi" width="100%">';
-      echo '<tr>';
-      echo '<th>'.__('More information').'</th>';
-      echo '</tr>';
-      echo '<tr class="tab_bg_1">';
-      echo '<td>';
-      echo __('Test successful');
-      echo '</td>';
-      echo '</tr>';
-      echo '</table>';
-   }
+} else if (isset($_POST["update"])) {
 
+   Session::checkRight("plugin_alignak", UPDATE);
+   $config->update($_POST);
+   Html::back();
 
-   static function item_can($item) {
+} else if (isset($_POST["delete"])) {
 
-      if (($item->getType() == 'Computer')
-          && ($item->right == READ)
-          && ($item->fields['groups_id'] > 0)
-          && !in_array($item->fields['groups_id'], $_SESSION["glpigroups"])) {
-         $item->right = 0; // unknown, so denied.
-      }
-   }
+   Session::checkRight("plugin_alignak", PURGE);
+   $config->delete($_POST, true);
+   Html::redirect("./config.form.php");
 
+} else if (isset($_POST["update_model"])) {
+   Session::checkRight("plugin_alignak", UPDATE);
+   $model->addModel($_POST);
+   Html::back();
 
-   static function add_default_where($in) {
+} else if (isset($_POST["delete_model"])) {
+   Session::checkRight("plugin_alignak", UPDATE);
+   $model->delete($_POST);
+   Html::back();
 
-      list($itemtype, $condition) = $in;
-      if ($itemtype == 'Computer') {
-         $table = getTableForItemType($itemtype);
-         $condition .= " (".$table.".groups_id NOT IN (".implode(',', $_SESSION["glpigroups"])."))";
-      }
-      return [$itemtype, $condition];
-   }
+} else {
+
+   Html::header(__('Setup'), '', "tools", "pluginalignakmenu", "config");
+
+   $config->checkGlobal(READ);
+   $config->display($_GET);
+   Html::footer();
 }
-

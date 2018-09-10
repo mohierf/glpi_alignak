@@ -56,4 +56,5 @@ if ($_SESSION["glpiactiveprofile"]["interface"] == "central") {
 
 Search::show('PluginAlignakAlignak');
 
+_e('<a href="computer_template.php">Manage templates</a>');
 Html::footer();
