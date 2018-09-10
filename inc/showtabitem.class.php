@@ -79,7 +79,7 @@ class PluginAlignakShowtabitem {
    /**
     * Summary of post_show_tab
     * @param array $params is identical to pre_show_tab parameter
-    * Note: you may get datas from pre_show_tab in $param['options'] array (see example below)
+    * Note: you may get data from pre_show_tab in $param['options'] array (see example below)
     */
    static function post_show_tab($params) {
       switch ($params['item']->getType()) {
@@ -144,7 +144,7 @@ class PluginAlignakShowtabitem {
       if (!is_array($params['item'])) {
          switch ($params['item']->getType()) {
             case 'Ticket':
-               //echo 'test' ;
+               echo 'test !!!!!' ;
                break;
             case 'TicketTask' :
                //echo 'test' ;

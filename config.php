@@ -68,23 +68,64 @@ echo ("<br>");
  * See: https://twig.symfony.com/doc/2.x/api.html for the templating implementation
  */
 require_once 'vendor/autoload.php';
+/*
+   The following options are available:
+   debug boolean
+      When set to true, the generated templates have a __toString() method that you can use to display
+      the generated nodes (default to false).
+   charset string (defaults to utf-8)
+      The charset used by the templates.
+   base_template_class string (defaults to Twig_Template)
+      The base template class to use for generated templates.
+   cache string or false
+      An absolute path where to store the compiled templates, or false to disable caching (which is the default).
+   auto_reload boolean
+      When developing with Twig, it's useful to recompile the template whenever the source code changes.
+      If you don't provide a value for the auto_reload option, it will be determined automatically based on the
+      debug value.
+   strict_variables boolean
+      If set to false, Twig will silently ignore invalid variables (variables and or attributes/methods that
+      do not exist) and replace them with a null value. When set to true, Twig throws an exception instead
+      (default to false).
+   autoescape string
+      Sets the default auto-escaping strategy (name, html, js, css, url, html_attr, or a PHP callback that takes
+      the template "filename" and returns the escaping strategy to use -- the callback cannot be a function name
+      to avoid collision with built-in escaping strategies); set it to false to disable auto-escaping. The name
+      escaping strategy determines the escaping strategy to use for a template based on the template filename
+      extension (this strategy does not incur any overhead at runtime as auto-escaping is done at compilation time.)
+   optimizations integer
+      A flag that indicates which optimizations to apply (default to -1 -- all optimizations are enabled;
+      set it to 0 to disable).
+ */
+define("PLUGIN_ALIGNAK_TPL_AUTO_RELOAD", true);
+define("PLUGIN_ALIGNAK_TPL_CACHE", PLUGIN_ALIGNAK_DOC_DIR . '/templates_cache');
+define("PLUGIN_ALIGNAK_TPL_RAISE_ERRORS", true);
 
+$filename = 'host.cfg';
 try {
    $loader = new Twig_Loader_Filesystem('templates');
-   $twig = new Twig_Environment($loader, ['cache' => GLPI_PLUGIN_DOC_DIR . '/templates_cache']);
+   $twig = new Twig_Environment($loader, [
+      'debug' => false,
+      'auto_reload' => PLUGIN_ALIGNAK_TPL_AUTO_RELOAD,
+      'cache' => PLUGIN_ALIGNAK_TPL_CACHE,
+      'strict_variables' => PLUGIN_ALIGNAK_TPL_RAISE_ERRORS
+   ]);
 
-   $template = $twig->load('host.cfg');
+   PluginAlignakToolbox::logIfDebug("Loading template: " . $filename);
+   $template = $twig->load($filename);
    $result = $template->render(['name' => 'localhost', 'address' => '127.0.0.1']);
    echo nl2br("\nTemplate result is: \n", true);
+   echo nl2br("\n-----\n", true);
    echo nl2br($result, true);
 } catch (Twig_Error_Loader $e) {
    // Could not get the templates, raise an error !
    Session::addMessageAfterRedirect(__("Alignak monitoring plugin templates are not available:", 'alignak'), true, ERROR);
    Session::addMessageAfterRedirect($e->getMessage(), true, ERROR);
-} catch (RuntimeException $e) {
+} catch (Twig_Error_Runtime $e) {
    // Could not parse the templates, raise an error !
    Session::addMessageAfterRedirect(__("Alignak monitoring plugin templates runtime exception:", 'alignak'), true, ERROR);
    Session::addMessageAfterRedirect($e->getMessage(), true, ERROR);
+   echo nl2br(__("Alignak monitoring plugin templates runtime exception: \n", 'alignak') . $e->getMessage());
 }
 
 

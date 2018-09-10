@@ -475,7 +475,7 @@ function plugin_alignak_addParamFordynamicReport($itemtype) {
  * @return boolean
  */
 function plugin_alignak_install() {
-   global $DB, $PLUGIN_ALIGNAK_CLASSES;
+   global $DB;
 
    /*
    $config = new Config();
@@ -496,11 +496,11 @@ function plugin_alignak_install() {
    echo "<tr><th>".__("Database tables installation", "alignak")."<th></tr>";
 
    $classes = [
+      'PluginAlignakConfig',
       'PluginAlignakAlignak',
       'PluginAlignakEntity',
-      'PluginAlignakDropdown',
-      'PluginAlignakProfile',
-      'PluginAlignakMigration'
+      'PluginAlignakComputer',
+      'PluginAlignakDropdown'
    ];
    // Load classes
    foreach ($classes as $class) {
@@ -519,7 +519,7 @@ function plugin_alignak_install() {
          $dir  = PLUGIN_ALIGNAK_DIR . "/inc/";
          $item =strtolower($plug['class']);
          if (file_exists($dir . $item . ".class.php")) {
-            if (! call_user_func([$class,'install'], $migration, $version)) {
+            if (! call_user_func([$class, 'install'], $migration, $version)) {
                return false;
             }
          }
@@ -562,7 +562,7 @@ function plugin_alignak_install() {
  * @return boolean
  */
 function plugin_alignak_uninstall() {
-   global $DB, $PLUGIN_ALIGNAK_CLASSES;
+   global $DB;
 
    /*
    $config = new Config();
@@ -578,7 +578,7 @@ function plugin_alignak_uninstall() {
       return false;
    }
 
-   $_SESSION['uninstall_fields'] = true;
+   $_SESSION['uninstall_alignak'] = true;
 
    echo "<div>";
    echo "<table class='tab_cadre_fixe'>";
@@ -588,11 +588,11 @@ function plugin_alignak_uninstall() {
    echo "<td align='center'>";
 
    $classes = [
+      'PluginAlignakConfig',
       'PluginAlignakAlignak',
       'PluginAlignakEntity',
-      'PluginAlignakDropdown',
-      'PluginAlignakProfile',
-      'PluginAlignakMigration'
+      'PluginAlignakComputer',
+      'PluginAlignakDropdown'
    ];
    foreach ($classes as $class) {
       if ($plug = isPluginItemType($class)) {
@@ -614,7 +614,7 @@ function plugin_alignak_uninstall() {
    echo "</table>";
    echo "</div>";
 
-   unset($_SESSION['uninstall_fields']);
+   unset($_SESSION['uninstall_alignak']);
 
    // clean display preferences
    $pref = new DisplayPreference;

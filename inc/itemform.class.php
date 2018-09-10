@@ -77,7 +77,7 @@ class PluginAlignakItemForm {
    }
 
    /**
-    * Display contents at the begining of item forms.
+    * Display contents at the beginning of item forms.
     *
     * @param array $params Array with "item" and "options" keys
     *

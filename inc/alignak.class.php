@@ -54,10 +54,10 @@ class PluginAlignakAlignak extends CommonDBTM {
 
       $table = self::getTable();
 
-      if (!$DB->tableExists($table)) {
+      if (! $DB->tableExists($table)) {
          $migration->displayMessage(sprintf(__("Installing %s"), $table));
 
-         $query = "CREATE TABLE `glpi_plugin_alignak_alignak` (
+         $query = "CREATE TABLE `$table` (
                   `id` int(11) NOT NULL auto_increment,
                   `name` varchar(255) collate utf8_unicode_ci default NULL,
                   `comment` text collate utf8_unicode_ci,
@@ -276,20 +276,15 @@ class PluginAlignakAlignak extends CommonDBTM {
 
       if (!$withtemplate) {
          switch ($item->getType()) {
-            case 'Profile' :
-               if ($item->getField('central')) {
-                  return __('Alignak', 'alignak');
-               }
-               break;
-
             case 'ComputerDisk' :
             case 'Supplier' :
                return [1 => __("Test Plugin", 'alignak'),
                        2 => __("Test Plugin 2", 'alignak')];
 
             case 'Computer' :
-               return [1 => __("Test Plugin", 'alignak'),
-                  2 => __("Test Plugin 2", 'alignak')];
+               $pmHost = new PluginAlignakComputer();
+               $pmHost->getTabNameForItem($item, $withtemplate);
+               break;
 
             case 'Central' :
                if ($_SESSION['glpishow_count_on_tabs']) {
@@ -344,9 +339,17 @@ class PluginAlignakAlignak extends CommonDBTM {
             }
             break;
 
+         case 'Computer' :
+            $pmHost = new PluginAlignakComputer();
+            $pmHost->displayTabContentForItem($item, $tabnum, $withtemplate);
+            break;
+
          default :
             //TRANS: %1$s is a class name, %2$d is an item ID
-            printf(__('Plugin alignak CLASS=%1$s id=%2$d', 'alignak'), $item->getType(), $item->getField('id'));
+            printf(__('Plugin Alignak object type=%1$s id=%2$d, tab: %3$d', 'alignak'),
+               $item->getType(), $item->getField('id'), $tabnum);
+
+//            $item->displayTabContentForItem($item, $tabnum, $withtemplate);
             break;
       }
       return true;

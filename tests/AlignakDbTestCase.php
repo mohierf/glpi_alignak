@@ -30,19 +30,19 @@
  --------------------------------------------------------------------------
  */
 
-// Generic test classe, to be extended for CommonDBTM Object
+// Generic test class, to be extended for any other object
 
 class AlignakDbTestCase extends \DbTestCase {
 
    public function setUp() {
-      if (!file_exists(PLUGINFIELDS_DOC_DIR)) {
+      if (!file_exists(PLUGIN_ALIGNAK_DOC_DIR)) {
          //create data dir
-         mkdir(PLUGINFIELDS_DOC_DIR);
+         mkdir(PLUGIN_ALIGNAK_DOC_DIR);
       } else {
          //cleanup data dir
          $files = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator(
-               PLUGINFIELDS_DOC_DIR,
+               PLUGIN_ALIGNAK_DOC_DIR,
                RecursiveDirectoryIterator::SKIP_DOTS
             ),
             RecursiveIteratorIterator::CHILD_FIRST

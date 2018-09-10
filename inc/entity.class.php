@@ -58,7 +58,7 @@ class PluginAlignakEntity extends CommonDBTM {
       if (!$DB->tableExists($table)) {
          $migration->displayMessage(sprintf(__("Installing %s"), $table));
 
-         $query = "CREATE TABLE `glpi_plugin_alignak_entity` (
+         $query = "CREATE TABLE `$table` (
                   `id` int(11) NOT NULL auto_increment,
                   `name` varchar(255) collate utf8_unicode_ci default NULL,
                   `comment` text collate utf8_unicode_ci,
@@ -67,6 +67,23 @@ class PluginAlignakEntity extends CommonDBTM {
                ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
 
          $DB->query($query) or die("error creating $table". $DB->error());
+
+         /*
+         $thelist = "";
+         if ($handle = opendir('default')) {
+            while (false !== ($file = readdir($handle)))
+            {
+               if ($file != "." && $file != ".." && strtolower(substr($file, strrpos($file, '.') + 1)) == 'xml')
+               {
+                  $thelist .= '<li><a href="'.$file.'">'.$file.'</a></li>';
+               }
+            }
+            closedir($handle);
+         }
+
+         // Could not get the templates, raise an error !
+         Session::addMessageAfterRedirect($thelist, true, ERROR);
+         */
 
          /* Populate data
          $query = "INSERT INTO `glpi_plugin_alignak_dropdowns`
@@ -97,23 +114,23 @@ class PluginAlignakEntity extends CommonDBTM {
    }
 
 
+/*
    static function canCreate() {
-      return PluginAlignakProfile::haveRight("config", 'w');
+      return Session::haveRight('plugin_alignak_entity', CREATE));
    }
-
 
 
    static function canView() {
       return PluginAlignakProfile::haveRight("config", 'r');
    }
-
+*/
 
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       $array_ret = [];
       if ($item->getID() > -1) {
-         if (PluginAlignakProfile::haveRight("config", 'r')) {
+         if (Session::haveRight('config', READ)) {
             $array_ret[0] = self::createTabEntry(__('Monitoring', 'monitoring'));
          }
       }
@@ -126,9 +143,6 @@ class PluginAlignakEntity extends CommonDBTM {
 
       if ($item->getID() > -1) {
          $pmEntity = new PluginAlignakEntity();
-         $pmHostconfig = new PluginAlignakHostconfig();
-
-         $pmHostconfig->showForm($item->getID(), "Entity");
          $pmEntity->showForm($item->fields['id']);
       }
       return true;
@@ -166,7 +180,7 @@ class PluginAlignakEntity extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
       echo "<th colspan='2'>";
-      echo __('Set tag to link entity with a specific Shinken server', 'monitoring');
+      echo __('Set tag to link entity with a specific Alignak server', 'monitoring');
       echo "</th>";
       echo "</tr>";
 
@@ -192,7 +206,6 @@ class PluginAlignakEntity extends CommonDBTM {
    }
 
 
-
    function getEntitiesByTag($tag = '') {
       global $DB;
 
@@ -209,7 +222,6 @@ class PluginAlignakEntity extends CommonDBTM {
          return $output;
       }
    }
-
 
 
    static function getTagByEntities($entities_id) {

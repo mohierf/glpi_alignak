@@ -45,7 +45,131 @@
 
 class PluginAlignakConfig extends CommonDBTM {
 
-   static protected $notable = true;
+   /**
+    * @param Migration $migration
+    * @return bool
+    */
+   static function install(Migration $migration) {
+      global $DB;
+
+      $table = self::getTable();
+      if (!$DB->tableExists($table)) {
+         $migration->displayMessage(sprintf(__("Installing %s"), $table));
+
+         $query = "CREATE TABLE `$table` (
+                  `id` int(11) NOT NULL auto_increment,
+                  `extra_debug` int(1) NOT NULL DEFAULT 0,
+                  `log_retention` int(2) NOT NULL DEFAULT 30,
+                PRIMARY KEY  (`id`)
+               ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+
+         $DB->query($query) or die("error creating $table". $DB->error());
+      }
+
+      // Initialize the table
+      $pmConfig = new PluginAlignakConfig();
+      $pmConfig->fields['extra_debug'] = '0';
+      $pmConfig->fields['log_retention'] = 30;
+      $pmConfig->addToDB();
+
+      return true;
+   }
+
+
+   static function uninstall() {
+      global $DB;
+
+      $DB->query("DROP TABLE IF EXISTS `".self::getTable()."`");
+
+      return true;
+   }
+
+
+   /**
+    * Get name of this type
+    *
+    *@return string, text name of this type by language of the user connected
+    *
+    **/
+   static function getTypeName($nb=0) {
+      return __('Configuration', 'alignak');
+   }
+
+
+   /**
+    * Load the plugin configuration in a global variable $PA_CONFIG
+    *
+    * Test if the table exists before loading cache
+    * The only case where table does not exists is when you click on
+    * uninstall the plugin and it's already uninstalled
+    *
+    * @global object $DB
+    * @global array $PA_CONFIG
+    */
+   static function loadConfiguration() {
+      global $DB, $PA_CONFIG;
+
+      $table = self::getTable();
+      if ($DB->tableExists($table)) {
+         $PA_CONFIG = [];
+         foreach ($DB->request($table) as $data) {
+            $PA_CONFIG[$data['type']] = $data['value'];
+         }
+         PluginAlignakToolbox::log("Configuration parameter: " . $data['type'] . "=" . $data['value']);
+      }
+   }
+
+
+   /**
+    * Get a configuration value
+    *
+    * @global array $PA_CONFIG
+    * @param string $name name in configuration
+    * @return null|string|integer
+    */
+   function getValue($name) {
+      global $PA_CONFIG;
+
+      if (isset($PA_CONFIG[$name])) {
+         return $PA_CONFIG[$name];
+      }
+
+      $config = current($this->find("`type`='".$name."'"));
+      if (isset($config['value'])) {
+         return $config['value'];
+      }
+      return null;
+   }
+
+
+   /**
+    * Update a configuration value
+    *
+    * @param string $name name of configuration
+    * @param string $value
+    * @return boolean
+    */
+   function updateValue($name, $value) {
+      global $PF_CONFIG;
+
+      // retrieve current config
+      $config = current($this->find("`type`='".$name."'"));
+
+      // set in db
+      if (isset($config['id'])) {
+         $result = $this->update(['id'=> $config['id'], 'value'=>$value]);
+      } else {
+         $result = $this->add(['type' => $name, 'value' => $value]);
+      }
+
+      // set cache
+      if ($result) {
+         $PF_CONFIG[$name] = $value;
+      }
+
+      return $result;
+   }
+
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 

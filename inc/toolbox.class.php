@@ -57,21 +57,19 @@ class PluginAlignakToolbox {
     * Log when extra-debug is activated
     */
    static function log($message) {
-      global $PLUGIN_ALIGNAK_LOG;
-      echo ("Log: $PLUGIN_ALIGNAK_LOG - $message");
       /*
        * Call the Glpi base file logging function:
        * - base filename
        * - log message
        * - force file logging - not set ti use the default Glpi configuration (use_log_in_files)
        */
-      Toolbox::logInFile($PLUGIN_ALIGNAK_LOG, $message);
+      Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, $message . "\n");
    }
 
    /**
     * Log when extra-debug is activated
     */
-   static function logIfExtradebug($file, $message) {
+   static function logIfDebug($message) {
       $config = new PluginAlignakConfig();
       if ($config->getValue('extradebug')) {
          if (is_array($message)) {
