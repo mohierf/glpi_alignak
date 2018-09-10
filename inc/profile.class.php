@@ -41,73 +41,218 @@
 class PluginAlignakProfile extends Profile
 {
 
-   static $rightname = "profile";
-
-   static function getAllRights() {
-
-      $rights = [
-         ['itemtype'  => 'PluginAlignakEntity',
-            'label'     => __('Entity management', 'alignak'),
-            'field'     => 'plugin_alignak_entity'],
-         ['itemtype'  => 'PluginAlignakComputer',
-            'label'     => __('Computer management', 'alignak'),
-            'field'     => 'plugin_alignak_computer',
-            'rights'    => [READ => __('Read')]]];
-      return $rights;
-   }
+   /**
+    * The right name for this class
+    *
+    * @var string
+    */
+   static $rightname = "config";
 
    /**
-    * Clean profiles_id from plugin's profile table
+    * Get the tab name used for item
     *
-    * @param $ID
-    **/
-   function cleanProfiles($ID) {
-
-      global $DB;
-      $query = "DELETE FROM `glpi_profiles`
-                WHERE `profiles_id`='$ID'
-                   AND `name` LIKE '%plugin_alignak%'";
-      $DB->query($query);
-   }
-
+    * @param object $item the item object
+    * @param integer $withtemplate 1 if is a template form
+    * @return string name of the tab
+    */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-
-      if ($item->getType() == 'Profile') {
-         if ($item->getField('interface') == 'central') {
-            return __('Monitoring profiles', 'alignak');
-         }
-         return '';
-      }
-      return '';
+      return self::createTabEntry(__('Monitoring configuration', 'alignak'));
    }
 
 
+   /**
+    * Display the content of the tab
+    *
+    * @param CommonGLPI $item
+    * @param integer $tabnum number of the tab to display
+    * @param integer $withtemplate 1 if is a template form
+    * @return boolean
+    */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-
-      if ($item->getType() == 'Profile') {
-         $profile = new self();
-         $ID   = $item->getField('id');
-         //In case there's no right alignak for this profile, create it
-         self::addDefaultProfileInfos(
-            $item->getID(),
-            ['plugin_alignak_entity' => 0]
-         );
-         $profile->showForm($ID);
+      $pfProfile = new self();
+      if ($item->fields['interface'] == 'central') {
+         $pfProfile->showForm($item->getID());
+      } else {
+         $pfProfile->showFormSelfService($item->getID());
       }
       return true;
    }
 
-   /**
-    * @param $profile
-    **/
-   static function addDefaultProfileInfos($profiles_id, $rights) {
 
+   /**
+    * Display form
+    *
+    * @param integer $profiles_id
+    * @param boolean $openform
+    * @param boolean $closeform
+    * @return true
+    */
+   function showForm($profiles_id = 0, $openform = true, $closeform = true) {
+
+      echo "<div class='firstbloc'>";
+      if (($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE]))
+         && $openform) {
+         $profile = new Profile();
+         echo "<form method='post' action='".$profile->getFormURL()."'>";
+      }
+
+      $profile = new Profile();
+      $profile->getFromDB($profiles_id);
+
+      $rights = $this->getRightsGeneral(false);
+      if (! empty($rights)) {
+         $profile->displayRightsChoiceMatrix($rights, ['canedit' => $canedit,
+            'default_class' => 'tab_bg_2',
+            'title' => __('General', 'alignak')]);
+      }
+
+      $rights = $this->getRightsAlignak(false);
+      if (! empty($rights)) {
+         $profile->displayRightsChoiceMatrix($rights, ['canedit' => $canedit,
+            'default_class' => 'tab_bg_2',
+            'title' => __('Alignak', 'alignak')]);
+      }
+
+      if ($canedit && $closeform) {
+         echo "<div class='center'>";
+         echo Html::hidden('id', ['value' => $profiles_id]);
+         echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
+         echo "</div>\n";
+         Html::closeForm();
+      }
+      echo "</div>";
+
+      $this->showLegend();
+      return true;
+   }
+
+
+   /**
+    * Display profile form for helpdesk simplified interface
+    *
+    * @param integer $profiles_id
+    * @param boolean $openform
+    * @param boolean $closeform
+    */
+   function showFormSelfService($profiles_id = 0, $openform = true, $closeform = true) {
+
+      echo "<div class='firstbloc'>";
+      if (($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE])) && $openform) {
+         $profile = new Profile();
+         echo "<form method='post' action='".$profile->getFormURL()."'>";
+      }
+
+      $profile = new Profile();
+      $profile->getFromDB($profiles_id);
+
+      $rights = $this->getRightsGeneral(true);
+      if (! empty($rights)) {
+         $profile->displayRightsChoiceMatrix($rights, ['canedit'       => $canedit,
+            'default_class' => 'tab_bg_2',
+            'title'         => __('General', 'alignak')]);
+      }
+
+      if ($canedit && $closeform) {
+         echo "<div class='center'>";
+         echo Html::hidden('id', ['value' => $profiles_id]);
+         echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
+         echo "</div>\n";
+         Html::closeForm();
+      }
+      echo "</div>";
+
+      $this->showLegend();
+   }
+
+
+   /**
+    * Delete profiles
+    */
+   static function uninstallProfile() {
+      $pfProfile = new self();
+      $a_rights = $pfProfile->getAllRights();
+      foreach ($a_rights as $data) {
+         ProfileRight::deleteProfileRights([$data['field']]);
+      }
+   }
+
+
+   /**
+    * Get all rights
+    *
+    * @return array
+    */
+   function getAllRights($self_service = false) {
+      $a_rights = [];
+      $a_rights = array_merge($a_rights, $this->getRightsGeneral($self_service));
+      $a_rights = array_merge($a_rights, $this->getRightsAlignak($self_service));
+      return $a_rights;
+   }
+
+
+   /**
+    * Get rights for inventory part
+    *
+    * @return array
+    */
+   function getRightsAlignak($self_service = false) {
+      $rights = [
+         ['itemtype'  => 'PluginAlignakAlignak',
+            'label'     => __('XxX - Alignak', 'alignak'),
+            'field'     => 'plugin_alignak_alignak',
+            'rights'    => [READ => __('Read')]],
+         ['rights'    => [READ => __('Read')],
+            'label'     => __('XxX - Right 2', 'alignak'),
+            'field'     => 'plugin_alignak_right2']
+      ];
+      return $rights;
+   }
+
+
+   /**
+    * Get general rights
+    *
+    * @return array
+    */
+   function getRightsGeneral($self_service = false) {
+      $rights = [
+         ['rights'    => [READ => __('Read')],
+            'label'     => __('XxX - Central page', 'alignak'),
+            'field'     => 'plugin_alignak_central'],
+         ['rights'    => [READ => __('Read')],
+            'label'     => __('XxX - Login page', 'alignak'),
+            'field'     => 'plugin_alignak_login'],
+      ];
+      if (! $self_service) {
+         array_push($rights,
+            ['rights'    => [READ => __('Read')],
+               'label'     => __('XxX - Menu', 'alignak'),
+               'field'     => 'plugin_alignak_menu'],
+            ['rights'    => [READ => __('Read'), UPDATE => __('Update')],
+               'itemtype'  => 'PluginAlignakConfig',
+               'label'     => __('XxX - Configuration', 'alignak'),
+               'field'     => 'plugin_alignak_configuration']
+//            ['itemtype'  => 'PluginAlignakTask',
+//               'label'     => __('XxX - Tasks', 'alignak'),
+//               'field'     => 'plugin_alignak_tasks']
+         );
+      }
+
+      return $rights;
+   }
+
+
+   /**
+    * Add the default profile
+    *
+    * @param integer $profiles_id
+    * @param array $rights
+    */
+   static function addDefaultProfileInfos($profiles_id, $rights) {
       $profileRight = new ProfileRight();
       foreach ($rights as $right => $value) {
-         if (!countElementsInTable(
-            'glpi_profilerights',
-            "`profiles_id`='$profiles_id' AND `name`='$right'"
-         )) {
+         if (!countElementsInTable('glpi_profilerights',
+            "`profiles_id`='$profiles_id' AND `name`='$right'")) {
             $myright['profiles_id'] = $profiles_id;
             $myright['name']        = $right;
             $myright['rights']      = $value;
@@ -119,92 +264,82 @@ class PluginAlignakProfile extends Profile
       }
    }
 
+
    /**
-    * @param $ID  integer
+    * Create first access (so default profile)
+    *
+    * @param integer $profiles_id id of profile
     */
    static function createFirstAccess($profiles_id) {
-
-      include_once GLPI_ROOT."/plugins/alignak/inc/profile.class.php";
-      foreach (self::getAllRights() as $right) {
-         self::addDefaultProfileInfos(
-            $profiles_id,
-            ['plugin_alignak_entity' => ALLSTANDARDRIGHT,
-               'plugin_alignak_computer' => READ]
-         );
+      include_once(GLPI_ROOT."/plugins/alignak/inc/profile.class.php");
+      $profile = new self();
+      foreach ($profile->getAllRights() as $right) {
+         self::addDefaultProfileInfos($profiles_id,
+            [$right['field'] => ALLSTANDARDRIGHT]);
       }
    }
 
-   static function migrateProfiles() {
-      global $DB;
-      if (!$DB->tableExists('glpi_plugin_alignak_profiles')) {
-         return true;
-      }
-
-      $profiles = getAllDatasFromTable('glpi_plugin_alignak_profiles');
-      foreach ($profiles as $id => $profile) {
-         $query = "SELECT `id` FROM `glpi_profiles` WHERE `name`='".$profile['name']."'";
-         $result = $DB->query($query);
-         if ($DB->numrows($result) == 1) {
-            $id = $DB->result($result, 0, 'id');
-            switch ($profile['entity']) {
-               case 'r' :
-                  $value = READ;
-                  break;
-               case 'w':
-                  $value = ALLSTANDARDRIGHT;
-                  break;
-               case 0:
-               default:
-                  $value = 0;
-                  break;
-            }
-            self::addDefaultProfileInfos($id, ['plugin_alignak_entity' => $value]);
-            if ($value > 0) {
-               self::addDefaultProfileInfos($id, ['plugin_alignak_computer' => READ]);
-            } else {
-               self::addDefaultProfileInfos($id, ['plugin_alignak_entity' => 0]);
-            }
-         }
-      }
-   }
 
    /**
-    * Show profile form
-    *
-    * @param $items_id integer id of the profile
-    * @param $target value url of target
-    *
-    * @return nothing
-    **/
-   function showForm($profiles_id = 0, $openform = true, $closeform = true) {
+    * Delete rights stored in session
+    */
+   static function removeRightsFromSession() {
+      $profile = new self();
+      foreach ($profile->getAllRights() as $right) {
+         if (isset($_SESSION['glpiactiveprofile'][$right['field']])) {
+            unset($_SESSION['glpiactiveprofile'][$right['field']]);
+         }
+      }
+      ProfileRight::deleteProfileRights([$right['field']]);
 
-      echo "<div class='firstbloc'>";
-      if (($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE]))
-         && $openform
-      ) {
-         $profile = new Profile();
-         echo "<form method='post' action='".$profile->getFormURL()."'>";
+      if (isset($_SESSION['glpimenu']['plugins']['types']['PluginAlignakMenu'])) {
+         unset ($_SESSION['glpimenu']['plugins']['types']['PluginAlignakMenu']);
+      }
+      if (isset($_SESSION['glpimenu']['plugins']['content']['PluginAlignakMenu'])) {
+         unset ($_SESSION['glpimenu']['plugins']['content']['PluginAlignakMenu']);
+      }
+   }
+
+
+   /**
+    * Init profiles during installation:
+    * - add rights in profile table for the current user's profile
+    * - current profile has all rights on the plugin
+    */
+   static function initProfile() {
+      $pfProfile = new self();
+      $profile   = new Profile();
+      $a_rights  = $pfProfile->getAllRights();
+
+      foreach ($a_rights as $data) {
+         if (countElementsInTable("glpi_profilerights", "`name` = '".$data['field']."'") == 0) {
+            ProfileRight::addProfileRights([$data['field']]);
+            $_SESSION['glpiactiveprofile'][$data['field']] = 0;
+         }
       }
 
-      $profile = new Profile();
-      $profile->getFromDB($profiles_id);
+      // Add all rights to current profile of the user
+      if (isset($_SESSION['glpiactiveprofile'])) {
+         $dataprofile       = [];
+         $dataprofile['id'] = $_SESSION['glpiactiveprofile']['id'];
+         $profile->getFromDB($_SESSION['glpiactiveprofile']['id']);
+         foreach ($a_rights as $info) {
+            if (is_array($info)
+               && ((!empty($info['itemtype'])) || (!empty($info['rights'])))
+               && (!empty($info['label'])) && (!empty($info['field']))) {
 
-      $rights = self::getAllRights();
-      $profile->displayRightsChoiceMatrix(
-         self::getAllRights(),
-         ['canedit'       => $canedit,
-            'default_class' => 'tab_bg_2',
-            'title'         => __('General')]
-      );
-      if ($canedit
-         && $closeform
-      ) {
-         echo "<div class='center'>";
-         echo Html::hidden('id', ['value' => $profiles_id]);
-         echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
-         echo "</div>\n";
-         Html::closeForm();
+               if (isset($info['rights'])) {
+                  $rights = $info['rights'];
+               } else {
+                  $rights = $profile->getRightsFor($info['itemtype']);
+               }
+               foreach ($rights as $right => $label) {
+                  $dataprofile['_'.$info['field']][$right] = 1;
+                  $_SESSION['glpiactiveprofile'][$data['field']] = $right;
+               }
+            }
+         }
+         $profile->update($dataprofile);
       }
-      echo "</div>";
    }
 }

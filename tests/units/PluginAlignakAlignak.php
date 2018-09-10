@@ -2,10 +2,10 @@
 
 namespace tests\units;
 
-class PluginAlignakConfig extends \AlignakDbTestCase {
+class PluginAlignakAlignak extends \AlignakDbTestCase {
 
    public function testGetTypeName() {
-      $this->string(\PluginAlignakConfig::getTypeName())->isIdenticalTo('Configuration');
+      $this->string(\PluginAlignakAlignak::getTypeName())->isIdenticalTo('Alignak');
    }
 
    /*

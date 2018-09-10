@@ -91,7 +91,7 @@ class PluginAlignakConfig extends CommonDBTM {
     *@return string, text name of this type by language of the user connected
     *
     **/
-   static function getTypeName($nb=0) {
+   static function getTypeName($nb = 0) {
       return __('Configuration', 'alignak');
    }
 
@@ -112,10 +112,13 @@ class PluginAlignakConfig extends CommonDBTM {
       $table = self::getTable();
       if ($DB->tableExists($table)) {
          $PA_CONFIG = [];
-         foreach ($DB->request($table) as $data) {
-            $PA_CONFIG[$data['type']] = $data['value'];
+
+         $pmConfig = new PluginAlignakConfig();
+         if ($pmConfig->getFromDBByCrit(['1'])) {
+            $PA_CONFIG = $pmConfig->fields;
+         } else {
+            PluginAlignakToolbox::log("Not found any configuration parameters!");
          }
-         PluginAlignakToolbox::log("Configuration parameter: " . $data['type'] . "=" . $data['value']);
       }
    }
 

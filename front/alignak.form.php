@@ -46,9 +46,9 @@
 include ('../../../inc/includes.php');
 
 if ($_SESSION["glpiactiveprofile"]["interface"] == "central") {
-   Html::header("TITRE", $_SERVER['PHP_SELF'], "plugins", "pluginalignakalignak", "");
+   Html::header("Alignak", $_SERVER['PHP_SELF'], "plugins", "pluginalignakalignak", "");
 } else {
-   Html::helpHeader("TITRE", $_SERVER['PHP_SELF']);
+   Html::helpHeader("Alignak", $_SERVER['PHP_SELF']);
 }
 
 $alignak = new PluginAlignakAlignak();

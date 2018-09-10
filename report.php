@@ -41,7 +41,7 @@ include (GLPI_ROOT . "/inc/includes.php");
 
 Session::checkRight("config", "w");
 
-Html::header("TITRE", $_SERVER['PHP_SELF'], "plugins");
+Html::header("Alignak report", $_SERVER['PHP_SELF'], "plugins");
 
 echo "This is the plugin report page";
 

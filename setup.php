@@ -83,7 +83,7 @@ if (!file_exists(PLUGIN_ALIGNAK_FRONT_PATH)) {
  * @return void
  */
 function plugin_init_alignak() {
-   global $PLUGIN_HOOKS,$CFG_GLPI;
+   global $PLUGIN_HOOKS;
 
    // manage autoload of plugin custom classes
    include_once(PLUGIN_ALIGNAK_DIR . "/vendor/autoload.php");
@@ -94,36 +94,41 @@ function plugin_init_alignak() {
    // CSRF compliance : All actions must be done via POST and forms closed by Html::closeForm();
    $PLUGIN_HOOKS['csrf_compliant']['alignak'] = true;
 
-   // Params : plugin name - string type - ID - Array of attributes
-   // No specific information passed so not needed
-   //Plugin::registerClass('PluginAlignakAlignak',
-   //                      array('classname'              => 'PluginAlignakAlignak',
-   //                        ));
+   $plugin = new Plugin();
+   if ($plugin->isInstalled('alignak')
+      && $plugin->isActivated('alignak')
+      && Session::getLoginUserID() ) {
 
-   // Plugin configuration class
-   Plugin::registerClass('PluginAlignakConfig', ['addtabon' => 'Config']);
+      // Params : plugin name - string type - ID - Array of attributes
+      // No specific information passed so not needed
+      // Plugin::registerClass('PluginAlignakAlignak', ['classname' => 'PluginAlignakAlignak']);
 
-   // Params : plugin name - string type - ID - Array of attributes
-   Plugin::registerClass('PluginAlignakDropdown');
+      // Plugin configuration class
+      Plugin::registerClass('PluginAlignakConfig', ['addtabon' => 'Config']);
 
-   // Add forms tab on several classes
-   $types = [
-      'Central', 'Computer', 'Preference', 'Profile', 'Entity'
-   ];
-   Plugin::registerClass("PluginAlignakAlignak",
-                         ['notificationtemplates_types' => true,
-                          'addtabon' => $types,
-                          'link_types' => true]);
-   foreach ($types as $type) {
-      Plugin::registerClass("PluginAlignak$type", array('addtabon' => $type));
+      // Plugin Mail notification class
+      Plugin::registerClass('PluginAlignakMailNotification', ['addtabon' => 'User']);
+
+      // Params : plugin name - string type - ID - Array of attributes
+      Plugin::registerClass('PluginAlignakDropdown');
+
+      // Add forms tab on several classes
+      $types = [
+         'Central', 'Computer', 'Preference', 'Profile', 'Entity'
+      ];
+      Plugin::registerClass("PluginAlignakAlignak", [
+         'notificationtemplates_types' => true, 'addtabon' => $types, 'link_types' => true
+      ]);
+      foreach ($types as $type) {
+         Plugin::registerClass("PluginAlignak$type", ['addtabon' => $type]);
+      }
+
+      //   Plugin::registerClass('PluginAlignakRuleTestCollection',
+      //                         ['rulecollections_types' => true]);
+
+      // Load the plugin configuration
+      PluginAlignakConfig::loadConfiguration();
    }
-
-   //   Plugin::registerClass('PluginAlignakRuleTestCollection',
-   //                         ['rulecollections_types' => true]);
-
-   // Load the plugin configuration
-   PluginAlignakConfig::loadConfiguration();
-
 
    // Add tags for the plugin
    if (version_compare(GLPI_VERSION, 'PLUGIN_ALIGNAK_GLPI_MIN_VERSION', 'ge')) {
@@ -137,6 +142,8 @@ function plugin_init_alignak() {
    if (isset($_SESSION["glpi_plugin_alignak_profile"])) {
       // Add an entry to the Tools menu
       $PLUGIN_HOOKS['menu_toadd']['alignak'] = ['tools' => 'PluginAlignakAlignak'];
+      // Add an entry to the configuration menu
+      $PLUGIN_HOOKS["menu_toadd"]['alignak'] = ['config' => 'PluginAlignakMenu'];
 
       $PLUGIN_HOOKS["helpdesk_menu_entry"]['alignak'] = true;
    }
@@ -361,4 +368,26 @@ function plugin_alignak_check_config($verbose = false) {
       echo __('Installed / not configured', 'alignak');
    }
    return false;
+}
+
+
+/**
+ * Add the Alignak footer in GLPI interface
+ *
+ * @param string $baseroot
+ */
+function plugin_alignak_footer($baseroot) {
+
+   echo "<div id='footer'>";
+   echo "<table width='100%'>";
+   echo "<tr>";
+   echo "<td class='right'>";
+   echo "<a href='http://alignak.net/'>";
+   echo "<span class='copyright'>Glpi Alignak plugin ".PLUGIN_ALIGNAK_VERSION." | copyleft " .
+      "<img src='".$baseroot."/plugins/alignak/pics/copyleft.png'/> " . " 2018 Alignak Team." . "</span>";
+   echo "</a>";
+   echo "</td>";
+   echo "</tr>";
+   echo "</table>";
+   echo "</div>";
 }

@@ -349,7 +349,7 @@ class PluginAlignakAlignak extends CommonDBTM {
             printf(__('Plugin Alignak object type=%1$s id=%2$d, tab: %3$d', 'alignak'),
                $item->getType(), $item->getField('id'), $tabnum);
 
-//            $item->displayTabContentForItem($item, $tabnum, $withtemplate);
+            // $item->displayTabContentForItem($item, $tabnum, $withtemplate);
             break;
       }
       return true;

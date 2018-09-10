@@ -71,7 +71,7 @@ class PluginAlignakToolbox {
     */
    static function logIfDebug($message) {
       $config = new PluginAlignakConfig();
-      if ($config->getValue('extradebug')) {
+      if ($config->getValue('extra_debug')) {
          if (is_array($message)) {
             $message = print_r($message, true);
          }

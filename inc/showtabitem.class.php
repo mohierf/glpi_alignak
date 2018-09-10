@@ -144,7 +144,7 @@ class PluginAlignakShowtabitem {
       if (!is_array($params['item'])) {
          switch ($params['item']->getType()) {
             case 'Ticket':
-               echo 'test !!!!!' ;
+               echo 'test !!!!!';
                break;
             case 'TicketTask' :
                //echo 'test' ;

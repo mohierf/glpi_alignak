@@ -114,7 +114,7 @@ class PluginAlignakEntity extends CommonDBTM {
    }
 
 
-/*
+   /*
    static function canCreate() {
       return Session::haveRight('plugin_alignak_entity', CREATE));
    }
@@ -123,7 +123,7 @@ class PluginAlignakEntity extends CommonDBTM {
    static function canView() {
       return PluginAlignakProfile::haveRight("config", 'r');
    }
-*/
+   */
 
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {

@@ -491,6 +491,13 @@ function plugin_alignak_install() {
    ProfileRight::addProfileRights(['alignak:read']);
 
    $migration = new Migration($version);
+
+   /*
+    * Manage profiles
+    */
+   $migration->displayMessage("Initialize profiles");
+   PluginAlignakProfile::initProfile();
+
    echo "<div>";
    echo "<table class='tab_cadre_fixe'>";
    echo "<tr><th>".__("Database tables installation", "alignak")."<th></tr>";
@@ -547,6 +554,11 @@ function plugin_alignak_install() {
          $DB->queryOrDie("ALTER TABLE {$table['TABLE_NAME']} ENGINE = InnoDB");
          echo " Done.\n";
       }
+   }
+
+   //Create first access to the current profile is needed
+   if (isset($_SESSION['glpiactiveprofile'])) {
+      PluginAlignakProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
    }
 
    // To be called for each task the plugin manage
@@ -621,6 +633,11 @@ function plugin_alignak_uninstall() {
    $pref->deleteByCriteria([
       'itemtype' => ['LIKE' , 'PluginAlignak%']
    ]);
+
+   // Remove informations related to profiles from the session (to clean menu and breadcrumb)
+   PluginAlignakProfile::removeRightsFromSession();
+   // Remove profiles rights
+   PluginAlignakProfile::uninstallProfile();
 
    return true;
 }
@@ -709,32 +726,34 @@ function plugin_alignak_status($param) {
 /**
  * Display information on the central home page
  *
- * @param $param   array
- *
- * @return un tableau
  **/
 function plugin_alignak_display_central() {
-   PluginAlignakToolbox::log("On the central page!");
-   echo "<tr><th colspan='2'>";
-   echo "<div style='text-align:center; font-size:2em'>";
-   echo __("Plugin alignak displays on central page", "alignak");
-   echo "</div>";
-   echo "</th></tr>";
+   PluginAlignakToolbox::log("Central page...");
+   PluginAlignakToolbox::log(serialize($_SESSION["glpiactiveprofile"]));
+   if (Session::haveRight('plugin_alignak_central', READ)) {
+      PluginAlignakToolbox::log("On the central page!");
+      echo "<tr><th colspan='2'>";
+      echo "<div style='text-align:center; font-size:2em'>";
+      echo __("Plugin alignak displays on central page", "alignak");
+      echo "</div>";
+      echo "</th></tr>";
+   } else {
+
+   }
 }
 
 
 /**
  * Display information on the login page
  *
- * @param $param   array
- *
- * @return un tableau
  **/
 function plugin_alignak_display_login() {
-   PluginAlignakToolbox::log("On the login page!");
-   echo "<div style='text-align:center; font-size:2em'>";
-   echo __("Plugin alignak displays on login page", "alignak");
-   echo "</div>";
+   if (Session::haveRight('plugin_alignak_central', READ)) {
+      PluginAlignakToolbox::log("On the login page!");
+      echo "<div style='text-align:center; font-size:2em'>";
+      echo __("Plugin alignak displays on login page", "alignak");
+      echo "</div>";
+   }
 }
 
 

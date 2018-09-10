@@ -222,19 +222,19 @@ class PluginAlignakComputer extends CommonDBTM {
     *@return bool true if form is ok
     *
     **/
-   function showForm($items_id, $options=[]) {
+   function showForm($items_id, $options = []) {
       global $DB,$CFG_GLPI;
 
       PluginAlignakToolbox::logIfDebug("Show form for: " . $items_id);
-/*
+      /*
       if ($items_id!='') {
          $this->getFromDB($items_id);
       } else {
          $this->getEmpty();
       }
-*/
+      */
 
-//      $this->showTabs($options);
+      // $this->showTabs($options);
       $this->showFormHeader($options);
 
       echo "<tr class='tab_bg_1'>";
@@ -267,7 +267,6 @@ class PluginAlignakComputer extends CommonDBTM {
       echo "<td colspan='2'>";
       echo "</td>";
       echo "</tr>";
-
 
       $this->showFormButtons($options);
 
