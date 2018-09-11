@@ -27,7 +27,6 @@
 
    @package   Alignak
    @author    Frederic Mohier
-   @co-author David Durieux
    @copyright Copyright (c) 2018 Alignak team
    @license   AGPLv3 or (at your option) any later version
               http://www.gnu.org/licenses/agpl-3.0-standalone.html
@@ -43,17 +42,31 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-include ('../../../inc/includes.php');
+include ("../../../inc/includes.php");
 
-if ($_SESSION["glpiactiveprofile"]["interface"] == "central") {
-   Html::header("Alignak", $_SERVER['PHP_SELF'], "plugins", "pluginalignakalignak", "");
-} else {
-   Html::helpHeader("Alignak", $_SERVER['PHP_SELF']);
+// Check if plugin is activated...
+$plugin = new Plugin();
+if (!$plugin->isInstalled('alignak') || !$plugin->isActivated('alignak')) {
+   Html::displayNotFoundError();
 }
 
+// Check for ACLs
+if (PluginAlignakAlignak::canView()) {
+   // View is granted: display the list.
 
-//checkTypeRight('PluginAlignakAlignak',"r");
+   // Add page header
+   if ($_SESSION["glpiactiveprofile"]["interface"] == "central") {
+      Html::header(__('Alignak instances', 'alignak'), $_SERVER['PHP_SELF'], "config", "pluginalignakmenu", "alignak");
+   } else {
+      Html::helpHeader(__('Alignak instances', 'alignak'), $_SERVER['PHP_SELF']);
+   }
 
-Search::show('PluginAlignakAlignak');
+   Session::checkRight('plugin_alignak_alignak', READ);
 
-Html::footer();
+   Search::show('PluginAlignakAlignak');
+
+   Html::footer();
+} else {
+   // View is not granted.
+   Html::displayRightError();
+}
