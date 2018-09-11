@@ -728,8 +728,6 @@ function plugin_alignak_status($param) {
  *
  **/
 function plugin_alignak_display_central() {
-   PluginAlignakToolbox::log("Central page...");
-   PluginAlignakToolbox::log(serialize($_SESSION["glpiactiveprofile"]));
    if (Session::haveRight('plugin_alignak_central', READ)) {
       PluginAlignakToolbox::log("On the central page!");
       echo "<tr><th colspan='2'>";
@@ -737,8 +735,6 @@ function plugin_alignak_display_central() {
       echo __("Plugin alignak displays on central page", "alignak");
       echo "</div>";
       echo "</th></tr>";
-   } else {
-
    }
 }
 
