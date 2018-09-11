@@ -51,6 +51,7 @@ before_script:
   - cd ..
   - git clone --depth=1 https://github.com/glpi-project/glpi glpi -b $GLPI
   - cd glpi
+  - pwd
   - composer install --no-dev
   - mysql -u root -e 'create database glpi_test;'
   # Prepare test database

@@ -188,9 +188,10 @@ class PluginAlignakProfile extends Profile
       ];
       echo "Self: $self_service";
       if (! $self_service) {
+         // Add a menu in the Administration menu
          $rights[] = [
             'rights'    => [READ => __('Read')],
-            'label'     => __('XxX - Menu', 'alignak'),
+            'label'     => __('Menu', 'alignak'),
             'field'     => 'plugin_alignak_menu'
          ];
 
@@ -202,7 +203,6 @@ class PluginAlignakProfile extends Profile
          ];
 
          $rights[] = [
-            'rights'    => [READ => __('Read'), UPDATE => __('Update')],
             'itemtype'  => 'PluginAlignakMailNotification',
             'label'     => __('Mail notification', 'alignak'),
             'field'     => 'plugin_alignak_mailnotification'

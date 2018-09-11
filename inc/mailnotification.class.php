@@ -13,11 +13,68 @@ class PluginAlignakMailNotification extends CommonDBTM
 {
 
    /**
+    * We activate the history.
+    *
+    * @var boolean
+    */
+   public $dohistory = true;
+
+   /**
     * The right name for this class
     *
     * @var string
     */
    static $rightname = 'plugin_alignak_mailnotification';
+
+
+   static function install(Migration $migration) {
+      global $DB;
+
+      $table = self::getTable();
+
+      if (!$DB->tableExists($table)) {
+         $migration->displayMessage(sprintf(__("Installing %s"), $table));
+
+         $query = "CREATE TABLE `$table` (
+                  `id` int(11) NOT NULL auto_increment,
+                  `entities_id` int(11) NOT NULL DEFAULT 0,
+                  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+                  `name` varchar(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+                  `user_to_id` int(11) NOT NULL DEFAULT '-1',
+                  `user_cc_1_id` int(11) NOT NULL DEFAULT '-1',
+                  `user_cc_2_id` int(11) NOT NULL DEFAULT '-1',
+                  `user_cc_3_id` int(11) NOT NULL DEFAULT '-1',
+                  `user_bcc_id` int(11) NOT NULL DEFAULT '-1',
+                  `daily_mail` tinyint(1) NOT NULL DEFAULT '0',
+                  `daily_subject_template` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Compteurs quotidiens (#date#)',
+                  `weekly_mail` tinyint(1) NOT NULL DEFAULT '0',
+                  `weekly_subject_template` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Compteurs hebdomadaires (#date#)',
+                  `weekly_mail_day` int(11) NOT NULL DEFAULT '1',
+                  `monthly_mail` tinyint(1) NOT NULL DEFAULT '0',
+                  `monthly_subject_template` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Compteurs mensuels (#date#)',
+                  `monthly_mail_day` int(11) NOT NULL DEFAULT '1',
+                  `component_1` int(11) NOT NULL DEFAULT '-1',
+                  `component_2` int(11) NOT NULL DEFAULT '-1',
+                  `component_3` int(11) NOT NULL DEFAULT '-1',
+                  `component_4` int(11) NOT NULL DEFAULT '-1',
+                  `component_5` int(11) NOT NULL DEFAULT '-1',
+                  PRIMARY KEY (`id`)
+               ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+
+         $DB->query($query) or die("error creating $table". $DB->error());
+      }
+
+      return true;
+   }
+
+
+   static function uninstall() {
+      global $DB;
+
+      $DB->query("DROP TABLE IF EXISTS `".self::getTable()."`");
+
+      return true;
+   }
 
 
    static function getSpecificValueToDisplay($field, $values, array $options = []) {
@@ -47,6 +104,7 @@ class PluginAlignakMailNotification extends CommonDBTM
          return parent::getSpecificValueToDisplay($field, $values, $options);
    }
 
+
    function defineTabs($options = []) {
        $ong = [];
        return $ong;
@@ -58,7 +116,7 @@ class PluginAlignakMailNotification extends CommonDBTM
 
          case 'User' :
             if (self::canView()) {
-                return [1 => __('DashKiosk mail', 'kiosks')];
+                return [1 => __('Mail notification', 'alignak')];
             } else {
                return '';
             }
@@ -72,10 +130,12 @@ class PluginAlignakMailNotification extends CommonDBTM
       switch ($item->getType()) {
 
          case 'User' :
-            if (Session::haveRight("config", 'r')) {
+            if (Session::haveRight("config", READ)) {
                 $pkMailNotification = new PluginAlignakMailNotification();
                 // Show form from entity Id
-                $pkMailNotification->showForm(-1, $item->getID(), [ 'canedit'=>self::canUpdate(), 'colspan'=>4 ]);
+                $pkMailNotification->showForm(-1, $item->getID(), [
+                   'canedit'=>self::canUpdate(),
+                   'colspan'=>4 ]);
             } else {
                return '';
             }
@@ -168,12 +228,12 @@ class PluginAlignakMailNotification extends CommonDBTM
        $this->fields["component_5"]    = -1;
 
        $this->fields["daily_mail"]               = 0;
-       $this->fields["daily_subject_template"]   = __('Daily counters (#date#)', 'kiosks');
+       $this->fields["daily_subject_template"]   = __('Daily counters (#date#)', 'alignak');
        $this->fields["weekly_mail"]              = 0;
        $this->fields["weekly_mail_day"]          = 1;
-       $this->fields["weekly_subject_template"]  = __('Weekly counters (#date#)', 'kiosks');
+       $this->fields["weekly_subject_template"]  = __('Weekly counters (#date#)', 'alignak');
        $this->fields["monthly_mail"]             = 0;
-       $this->fields["monthly_subject_template"] = __('Monthy counters (#date#)', 'kiosks');
+       $this->fields["monthly_subject_template"] = __('Monthy counters (#date#)', 'alignak');
        $this->fields["monthly_mail_day"]         = 1;
    }
 
@@ -212,28 +272,28 @@ class PluginAlignakMailNotification extends CommonDBTM
          }
       }
 
-         $this->initForm($items_id, $options);
-         // $this->showTabs($options);
-         $this->showFormHeader($options);
+      $this->initForm($items_id, $options);
+      // $this->showTabs($options);
+      $this->showFormHeader($options);
 
-         echo "<tr>";
-         echo "<td>";
-         echo __('Is active?', 'kiosks').'&nbsp;';
-         echo "</td>";
-         echo "<td>";
+      echo "<tr>";
+      echo "<td>";
+      echo __('Is active?', 'alignak').'&nbsp;';
+      echo "</td>";
+      echo "<td>";
       if (self::canUpdate()) {
          Dropdown::showYesNo('is_active', $this->fields['is_active']);
       } else {
          echo Dropdown::getYesNo($this->fields['is_active']);
       }
-         echo "</td>";
-         echo "</tr>";
+      echo "</td>";
+      echo "</tr>";
 
-         echo "<tr>";
-         echo "<td>".__('Recipient', "kiosks")."</td>";
-         echo "<td colspan='5'>";
-         // User must have an email set ...
-         echo $user->getName();
+      echo "<tr>";
+      echo "<td>".__('Recipient', "alignak")."</td>";
+      echo "<td colspan='5'>";
+      // User must have an email set ...
+      echo $user->getName();
       if ($user->getDefaultEmail()) {
          echo "&nbsp;:&nbsp;".$user->getDefaultEmail();
          echo "<input type='hidden' name='id' value='".$this->fields['id']."' size='20'/>";
@@ -241,73 +301,68 @@ class PluginAlignakMailNotification extends CommonDBTM
       } else {
          echo "&nbsp;:&nbsp;".'<strong><i class="red">&nbsp;'.__('User email is not defined, notifications will not be sent !')."&nbsp;".'</i></strong>';
       }
-         echo "</td>";
-         echo "</tr>";
+      echo "</td>";
+      echo "</tr>";
 
-         $entity = new Entity();
-         $entity->getFromDB($user->fields['entities_id']);
+      $entity = new Entity();
+      $entity->getFromDB($user->fields['entities_id']);
 
-         echo "<tr>";
-         echo "<td>".__('Mail notification name', "kiosks")."</td>";
-         echo "<td colspan='7'>";
+      echo "<tr>";
+      echo "<td>".__('Mail notification name', "alignak")."</td>";
+      echo "<td colspan='7'>";
       if (! empty($this->fields["name"])) {
          echo "<input type='text' name='name' value='".$this->fields["name"]."' size='20'/>";
       } else {
-         echo "<input type='text' name='name' value='". __('Mail notification ', 'kiosks') . $user->fields["name"] ."' size='20'/>";
+         echo "<input type='text' name='name' value='". __('Mail notification ', 'alignak') . $user->fields["name"] ."' size='20'/>";
       }
-         echo "</td>";
-         echo "</tr>";
+      echo "</td>";
+      echo "</tr>";
 
-         echo "<tr><td colspan=\"8\">";
-         echo "<hr/>";
-         echo "</td></tr>";
+      echo "<tr><td colspan=\"8\">";
+      echo "<hr/>";
+      echo "</td></tr>";
 
-         // Counters components
-         echo "<tr><td colspan=\"8\">";
-         echo "<strong>".__('Components: ', 'monitoring')."</strong>";
-         echo "</td></tr>";
+      // Counters components
+      echo "<tr><td colspan=\"8\">";
+      echo "<strong>".__('Components: ', 'monitoring')."</strong>";
+      echo "</td></tr>";
 
-         echo "<tr>";
-         echo "<td>".__('Components', "monitoring")."</td>";
+      echo "<tr>";
+      echo "<td>".__('Components', "monitoring")."</td>";
 
-         echo "<td colspan='1'>";
-         Dropdown::show(
-           "PluginMonitoringComponent",
-           ['name'=>'component_1',
-           'value'=>$this->fields['component_1']]
-       );
+      echo "<td colspan='1'>";
+      Dropdown::show(
+        "PluginMonitoringComponent",
+        ['name'=>'component_1',
+        'value'=>$this->fields['component_1']]);
+      echo "</td>";
+
+      echo "<td colspan='1'>";
+      Dropdown::show(
+         "PluginMonitoringComponent",
+         ['name'=>'component_2',
+         'value'=>$this->fields['component_2']]);
+      echo "</td>";
+
+      echo "<td colspan='1'>";
+      Dropdown::show(
+         "PluginMonitoringComponent",
+         ['name'=>'component_3',
+         'value'=>$this->fields['component_3']]);
+      echo "</td>";
+
+       echo "<td colspan='1'>";
+       Dropdown::show(
+         "PluginMonitoringComponent",
+         ['name'=>'component_4',
+         'value'=>$this->fields['component_4']]);
        echo "</td>";
 
        echo "<td colspan='1'>";
        Dropdown::show(
-           "PluginMonitoringComponent",
-           ['name'=>'component_2',
-           'value'=>$this->fields['component_2']]
-       );
-       echo "</td>";
-
-       echo "<td colspan='1'>";
-       Dropdown::show(
-           "PluginMonitoringComponent",
-           ['name'=>'component_3',
-           'value'=>$this->fields['component_3']]
-       );
-       echo "</td>";
-
-       echo "<td colspan='1'>";
-       Dropdown::show(
-           "PluginMonitoringComponent",
-           ['name'=>'component_4',
-           'value'=>$this->fields['component_4']]
-       );
-       echo "</td>";
-
-       echo "<td colspan='1'>";
-       Dropdown::show(
-           "PluginMonitoringComponent",
-           ['name'=>'component_5',
-           'value'=>$this->fields['component_5']]
-       );
+         "PluginMonitoringComponent",
+         ['name'=>'component_5',
+         'value'=>$this->fields['component_5']]);
        echo "</td>";
        echo "<td colspan='2'>";
        echo "</td>";
@@ -315,68 +370,56 @@ class PluginAlignakMailNotification extends CommonDBTM
 
        // Mail copies
        echo "<tr><td colspan=\"8\">";
-       echo "<strong>".__('Send copies to: ', 'kiosks')."</strong>";
+       echo "<strong>".__('Send copies to: ', 'alignak')."</strong>";
        echo "</td></tr>";
 
        echo "<tr>";
-       echo "<td>".__('Copies', "kiosks")."</td>";
+       echo "<td>".__('Copies', "alignak")."</td>";
 
        echo "<td colspan='2'>";
-       $user->dropdown(
-           [
-                     'name'=>'user_cc_1_id',
-                     'value'=>$this->fields['user_cc_1_id'],
-                     'right'=>'all',
-                     'comments'=>true,
-                     'entity'=>$entity->getID(),
-                     'entity_sons'=>true
-                     ]
-       );
+       $user->dropdown([
+         'name'=>'user_cc_1_id',
+         'value'=>$this->fields['user_cc_1_id'],
+         'right'=>'all',
+         'comments'=>true,
+         'entity'=>$entity->getID(),
+         'entity_sons'=>true]);
        echo "</td>";
 
        echo "<td colspan='2'>";
-       $user->dropdown(
-           [
-                     'name'=>'user_cc_2_id',
-                     'value'=>$this->fields['user_cc_2_id'],
-                     'right'=>'all',
-                     'comments'=>true,
-                     'entity'=>$entity->getID(),
-                     'entity_sons'=>true
-                     ]
-       );
+       $user->dropdown([
+         'name'=>'user_cc_2_id',
+         'value'=>$this->fields['user_cc_2_id'],
+         'right'=>'all',
+         'comments'=>true,
+         'entity'=>$entity->getID(),
+         'entity_sons'=>true]);
        echo "</td>";
 
        echo "<td colspan='2'>";
-       $user->dropdown(
-           [
-                     'name'=>'user_cc_3_id',
-                     'value'=>$this->fields['user_cc_3_id'],
-                     'right'=>'all',
-                     'comments'=>true,
-                     'entity'=>$entity->getID(),
-                     'entity_sons'=>true
-                     ]
-       );
+       $user->dropdown([
+         'name'=>'user_cc_3_id',
+         'value'=>$this->fields['user_cc_3_id'],
+         'right'=>'all',
+         'comments'=>true,
+         'entity'=>$entity->getID(),
+         'entity_sons'=>true]);
        echo "</td>";
        echo "<td colspan='1'>";
        echo "</td>";
        echo "</tr>";
 
        echo "<tr>";
-       echo "<td>".__('Blind copies', "kiosks")."</td>";
+       echo "<td>".__('Blind copies', "alignak")."</td>";
 
        echo "<td colspan='6'>";
-       $user->dropdown(
-           [
-           'name'=>'user_bcc_id',
-           'value'=>$this->fields['user_bcc_id'],
-           'right'=>'all',
-           'comments'=>true,
-           'entity'=>$entity->getID(),
-           'entity_sons'=>true
-           ]
-       );
+       $user->dropdown([
+         'name'=>'user_bcc_id',
+         'value'=>$this->fields['user_bcc_id'],
+         'right'=>'all',
+         'comments'=>true,
+         'entity'=>$entity->getID(),
+         'entity_sons'=>true]);
        echo "</td>";
        echo "<td colspan='1'>";
        echo "</td>";
@@ -388,13 +431,13 @@ class PluginAlignakMailNotification extends CommonDBTM
 
        // Mail notifications
        echo "<tr><td colspan=\"8\">";
-       echo "<strong>".__('Mail notifications types: ', 'kiosks')."</strong>";
+       echo "<strong>".__('Mail notifications types: ', 'alignak')."</strong>";
        echo "/".$this->fields['daily_subject_template']."/";
        echo "</td></tr>";
 
        echo "<tr>";
        echo "<td>";
-       echo __('Daily mail', 'kiosks').'&nbsp;';
+       echo __('Daily mail', 'alignak').'&nbsp;';
        echo "</td>";
        echo "<td>";
       if (self::canUpdate()) {
@@ -406,7 +449,7 @@ class PluginAlignakMailNotification extends CommonDBTM
        echo "<td>";
        echo "</td>";
        echo "<td>";
-       echo __(', subject template:', 'kiosks').'&nbsp;';
+       echo __(', subject template:', 'alignak').'&nbsp;';
        echo "</td>";
        echo "<td colspan='5'>";
       if (self::canUpdate()) {
@@ -414,74 +457,74 @@ class PluginAlignakMailNotification extends CommonDBTM
       } else {
          echo '<input type="text" name="daily_subject_template" value="' . $this->fields["daily_subject_template"] . '" size="80" readonly="1" disabled="1" />';
       }
-         echo "</td>";
-         echo "</tr>";
+      echo "</td>";
+      echo "</tr>";
 
-         echo "<tr>";
-         echo "<td>";
-         echo __('Weekly mail', 'kiosks').'&nbsp;';
-         echo "</td>";
-         echo "<td>";
+      echo "<tr>";
+      echo "<td>";
+      echo __('Weekly mail', 'alignak').'&nbsp;';
+      echo "</td>";
+      echo "<td>";
       if (self::canUpdate()) {
          Dropdown::showYesNo('weekly_mail', $this->fields['weekly_mail']);
       } else {
          echo Dropdown::getYesNo($this->fields['weekly_mail']);
       }
-         echo "</td>";
-         echo "<td>";
+      echo "</td>";
+      echo "<td>";
       if (self::canUpdate()) {
          echo '<input type="text" name="weekly_mail_day" value="' . $this->fields["weekly_mail_day"] . '" size="2"/>';
       } else {
          echo '<input type="text" name="weekly_mail_day" value="' . $this->fields["weekly_mail_day"] . '" size="2" readonly="1" disabled="1" />';
       }
-         echo "</td>";
-         echo "<td>";
-         echo __(', subject template:', 'kiosks').'&nbsp;';
-         echo "</td>";
-         echo "<td colspan='5'>";
+      echo "</td>";
+      echo "<td>";
+      echo __(', subject template:', 'alignak').'&nbsp;';
+      echo "</td>";
+      echo "<td colspan='5'>";
       if (self::canUpdate()) {
          echo '<input type="text" name="weekly_subject_template" value="'.$this->fields["weekly_subject_template"].'" size="80"/>';
       } else {
          echo '<input type="text" name="weekly_subject_template" value="'.$this->fields["weekly_subject_template"].'" size="80" readonly="1" disabled="1" />';
       }
-         echo "</td>";
-         echo "</tr>";
+      echo "</td>";
+      echo "</tr>";
 
-         echo "<tr>";
-         echo "<td>";
-         echo __('Monthly mail', 'kiosks').'&nbsp;';
-         echo "</td>";
-         echo "<td>";
+      echo "<tr>";
+      echo "<td>";
+      echo __('Monthly mail', 'alignak').'&nbsp;';
+      echo "</td>";
+      echo "<td>";
       if (self::canUpdate()) {
          Dropdown::showYesNo('monthly_mail', $this->fields['monthly_mail']);
       } else {
          echo Dropdown::getYesNo($this->fields['monthly_mail']);
       }
-         echo "</td>";
-         echo "<td>";
+      echo "</td>";
+      echo "<td>";
       if (self::canUpdate()) {
          echo '<input type="text" name="monthly_mail_day" value="' . $this->fields["monthly_mail_day"] . '" size="2"/>';
       } else {
          echo '<input type="text" name="monthly_mail_day" value="' . $this->fields["monthly_mail_day"] . '" size="2" readonly="1" disabled="1" />';
       }
-         echo "</td>";
-         echo "<td>";
-         echo __(', subject template:', 'kiosks').'&nbsp;';
-         echo "</td>";
-         echo "<td colspan='5'>";
+      echo "</td>";
+      echo "<td>";
+      echo __(', subject template:', 'alignak').'&nbsp;';
+      echo "</td>";
+      echo "<td colspan='5'>";
       if (self::canUpdate()) {
          echo '<input type="text" name="monthly_subject_template" value="'.$this->fields["monthly_subject_template"].'" size="80"/>';
       } else {
          echo '<input type="text" name="monthly_subject_template" value="'.$this->fields["monthly_subject_template"].'" size="80" readonly="1" disabled="1" />';
       }
-         echo "</td>";
-         echo "</tr>";
+      echo "</td>";
+      echo "</tr>";
 
-         $options['addbuttons'] =  ["send" => __('Send notification', 'kiosks')];
-         $this->showFormButtons($options);
+      $options['addbuttons'] =  ["send" => __('Send notification', 'alignak')];
+      $this->showFormButtons($options);
 
-         Html::closeForm();
+      Html::closeForm();
 
-         return true;
+      return true;
    }
 }

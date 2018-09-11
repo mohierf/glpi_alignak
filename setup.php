@@ -141,11 +141,32 @@ function plugin_init_alignak() {
    $_SESSION["glpi_plugin_alignak_profile"]['alignak'] = 'w';
    if (isset($_SESSION["glpi_plugin_alignak_profile"])) {
       // Add an entry to the Tools menu
-      $PLUGIN_HOOKS['menu_toadd']['alignak'] = ['tools' => 'PluginAlignakAlignak'];
-      // Add an entry to the configuration menu
-      //      $PLUGIN_HOOKS["menu_toadd"]['alignak'] = ['config' => 'PluginAlignakMenu'];
+      $PLUGIN_HOOKS['menu_toadd']['alignak'] = [
+         'tools' => 'PluginAlignakAlignak'];
 
-      $PLUGIN_HOOKS["helpdesk_menu_entry"]['alignak'] = true;
+      /*// Add an entry to the Administration menu
+      if (Session::haveRight('plugin_alignak_menu', READ)) {
+         $PLUGIN_HOOKS["menu_toadd"]['alignak']['admin'] = 'PluginAlignakMenu';
+      }
+
+      // Old menu style
+      //       $PLUGIN_HOOKS['menu_entry']['example'] = 'front/example.php';
+      //
+      //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['title'] = "Search";
+      //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['page']  = '/plugins/example/front/example.php';
+      //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']['search'] = '/plugins/example/front/example.php';
+      //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']['add']    = '/plugins/example/front/example.form.php';
+      //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']['config'] = '/plugins/example/index.php';
+      //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']["<img  src='".$CFG_GLPI["root_doc"]."/pics/menu_showall.png' title='".__s('Show all')."' alt='".__s('Show all')."'>"] = '/plugins/example/index.php';
+      //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links'][__s('Test link', 'example')] = '/plugins/example/index.php';
+      $PLUGIN_HOOKS['menu_toadd']['alignak']['options']['optionname']['title'] = "Search";
+      $PLUGIN_HOOKS['menu_toadd']['alignak']['options']['optionname']['page']  = '/plugins/alignak/front/example.php';
+      $PLUGIN_HOOKS['menu_toadd']['alignak']['options']['optionname']['links']['search'] = '/plugins/alignak/front/example.php';
+      $PLUGIN_HOOKS['menu_toadd']['alignak']['options']['optionname']['links']['add']    = '/plugins/alignak/front/example.form.php';
+      */
+
+      // No menu when on simplified interface
+      $PLUGIN_HOOKS["helpdesk_menu_entry"]['alignak'] = false;
    }
 
    // Configuration page

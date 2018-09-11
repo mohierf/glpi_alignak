@@ -20,8 +20,8 @@ if (!$plugin->isInstalled('alignak') || !$plugin->isActivated('alignak')) {
 if (PluginAlignakMailNotification::canView()) {
    // View is granted: display the list.
 
-   Html::header(__('Alignak - mail notifications', 'alignak'), $_SERVER["PHP_SELF"], "config",
-      "plugin_alignak_mailnotification", "notification");
+   Html::header(__('Alignak - mail notifications', 'alignak'), $_SERVER["PHP_SELF"], "plugins",
+      "alignak", "notification");
 
    Search::show('PluginAlignakMailNotification');
 
