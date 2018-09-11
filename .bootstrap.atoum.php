@@ -33,7 +33,7 @@ echo("Glpi root dir: " . GLPI_ROOT . "\n");
 define("GLPI_CONFIG_DIR", GLPI_ROOT . "/tests");
 include GLPI_ROOT . "/inc/includes.php";
 echo("Included: " . GLPI_ROOT . "/inc/includes.php" . "\n");
-include_once GLPI_ROOT . '/tests/GLPITestCase.php';
+//include_once GLPI_ROOT . '/tests/GLPITestCase.php';
 include_once GLPI_ROOT . '/tests/DbTestCase.php';
 echo("Included: " . GLPI_ROOT . '/tests/DbTestCase.php' . "\n");
 

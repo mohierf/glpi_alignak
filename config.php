@@ -158,6 +158,20 @@ echo '<div style="margin-left: 350px; background: #eee; border: outset 2px white
 if (Session::haveRight("config", READ)) {
    echo "
    <div style='margin-top: 5px;'>
+   <strong>". __("Alignak", "alignak") ."</strong>
+   <br/>
+   <small><em>". __("Configure Alignak instances", "alignak") ."</em></small>
+   <br/>
+   <ul style='margin-left: 5px;'>
+      <li><a href='front/alignak.php'>".  __("Alignak instances", "alignak") ."</a></li>
+   </ul>
+   </div>
+   ";
+}
+
+if (Session::haveRight("config", READ)) {
+   echo "
+   <div style='margin-top: 5px;'>
    <strong>". __("Mail notifications", "alignak") ."</strong>
    <br/>
    <small><em>". __("Configure mail notifications for counters", "alignak") ."</em></small>

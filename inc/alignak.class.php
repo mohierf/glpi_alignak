@@ -50,6 +50,21 @@ class PluginAlignakAlignak extends CommonDBTM
    static $tags = '[ALIGNAK_ID]';
 
 
+   /**
+    * We activate the history.
+    *
+    * @var boolean
+    */
+   public $dohistory = true;
+
+   /**
+    * The right name for this class
+    *
+    * @var string
+    */
+   static $rightname = 'plugin_alignak_alignak';
+
+
    static function install(Migration $migration) {
        global $DB;
 
@@ -97,48 +112,48 @@ class PluginAlignakAlignak extends CommonDBTM
    }
 
 
-   static function canCreate() {
-
-      if (isset($_SESSION["glpi_plugin_alignak_profile"])) {
-          return ($_SESSION["glpi_plugin_alignak_profile"]['alignak'] == 'w');
-      }
-         return false;
-   }
-
-
-   static function canView() {
-
-      if (isset($_SESSION["glpi_plugin_alignak_profile"])) {
-          return ($_SESSION["glpi_plugin_alignak_profile"]['alignak'] == 'w'
-               || $_SESSION["glpi_plugin_alignak_profile"]['alignak'] == 'r');
-      }
-         return false;
-   }
-
-
-    /**
-     *
-     * @see CommonGLPI::getMenuName()
-     **/
-   static function getMenuName() {
-       return __('Alignak monitoring plugin');
-   }
+//   static function canCreate() {
+//
+//      if (isset($_SESSION["glpi_plugin_alignak_profile"])) {
+//          return ($_SESSION["glpi_plugin_alignak_profile"]['alignak'] == 'w');
+//      }
+//         return false;
+//   }
+//
+//
+//   static function canView() {
+//
+//      if (isset($_SESSION["glpi_plugin_alignak_profile"])) {
+//          return ($_SESSION["glpi_plugin_alignak_profile"]['alignak'] == 'w'
+//               || $_SESSION["glpi_plugin_alignak_profile"]['alignak'] == 'r');
+//      }
+//         return false;
+//   }
 
 
-    /**
-     *
-     * @see CommonGLPI::getAdditionalMenuLinks()
-     **/
-   static function getAdditionalMenuLinks() {
-       global $CFG_GLPI;
-       $links = [];
-
-       $links['config'] = PLUGIN_ALIGNAK_DIR . '/index.php';
-       $links["<img  src='".$CFG_GLPI["root_doc"]."/pics/menu_showall.png' title='".__s('Show all')."' alt='".__s('Show all')."'>"] = PLUGIN_ALIGNAK_DIR . '/index.php';
-       $links[__s('Test link', 'alignak')] = PLUGIN_ALIGNAK_DIR . '/index.php';
-
-       return $links;
-   }
+//    /**
+//     *
+//     * @see CommonGLPI::getMenuName()
+//     **/
+//   static function getMenuName() {
+//       return __('Alignak monitoring plugin');
+//   }
+//
+//
+//    /**
+//     *
+//     * @see CommonGLPI::getAdditionalMenuLinks()
+//     **/
+//   static function getAdditionalMenuLinks() {
+//       global $CFG_GLPI;
+//       $links = [];
+//
+//       $links['config'] = PLUGIN_ALIGNAK_DIR . '/index.php';
+//       $links["<img  src='".$CFG_GLPI["root_doc"]."/pics/menu_showall.png' title='".__s('Show all')."' alt='".__s('Show all')."'>"] = PLUGIN_ALIGNAK_DIR . '/index.php';
+//       $links[__s('Test link', 'alignak')] = PLUGIN_ALIGNAK_DIR . '/index.php';
+//
+//       return $links;
+//   }
 
    function defineTabs($options = []) {
 
@@ -166,6 +181,7 @@ class PluginAlignakAlignak extends CommonDBTM
 
        return true;
    }
+
 
    function rawSearchOptions() {
 

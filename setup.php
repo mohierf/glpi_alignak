@@ -128,164 +128,167 @@ function plugin_init_alignak() {
 
       // Load the plugin configuration
       PluginAlignakConfig::loadConfiguration();
-   }
 
-   // Add tags for the plugin
-   if (version_compare(GLPI_VERSION, 'PLUGIN_ALIGNAK_GLPI_MIN_VERSION', 'ge')) {
-      if (class_exists('PluginAlignakAlignak')) {
-         Link::registerTag(PluginAlignakAlignak::$tags);
-      }
-   }
-
-   // Display a menu entry ?
-   $_SESSION["glpi_plugin_alignak_profile"]['alignak'] = 'w';
-   if (isset($_SESSION["glpi_plugin_alignak_profile"])) {
-      // Add an entry to the Tools menu
-      $PLUGIN_HOOKS['menu_toadd']['alignak'] = [
-         'tools' => 'PluginAlignakAlignak'];
-
-      /*// Add an entry to the Administration menu
-      if (Session::haveRight('plugin_alignak_menu', READ)) {
-         $PLUGIN_HOOKS["menu_toadd"]['alignak']['admin'] = 'PluginAlignakMenu';
+      // Add tags for the plugin
+      // todo: what for?
+      if (version_compare(GLPI_VERSION, 'PLUGIN_ALIGNAK_GLPI_MIN_VERSION', 'ge')) {
+         if (class_exists('PluginAlignakAlignak')) {
+            Link::registerTag(PluginAlignakAlignak::$tags);
+         }
       }
 
-      // Old menu style
-      //       $PLUGIN_HOOKS['menu_entry']['example'] = 'front/example.php';
-      //
-      //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['title'] = "Search";
-      //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['page']  = '/plugins/example/front/example.php';
-      //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']['search'] = '/plugins/example/front/example.php';
-      //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']['add']    = '/plugins/example/front/example.form.php';
-      //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']['config'] = '/plugins/example/index.php';
-      //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']["<img  src='".$CFG_GLPI["root_doc"]."/pics/menu_showall.png' title='".__s('Show all')."' alt='".__s('Show all')."'>"] = '/plugins/example/index.php';
-      //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links'][__s('Test link', 'example')] = '/plugins/example/index.php';
-      $PLUGIN_HOOKS['menu_toadd']['alignak']['options']['optionname']['title'] = "Search";
-      $PLUGIN_HOOKS['menu_toadd']['alignak']['options']['optionname']['page']  = '/plugins/alignak/front/example.php';
-      $PLUGIN_HOOKS['menu_toadd']['alignak']['options']['optionname']['links']['search'] = '/plugins/alignak/front/example.php';
-      $PLUGIN_HOOKS['menu_toadd']['alignak']['options']['optionname']['links']['add']    = '/plugins/alignak/front/example.form.php';
+      // Display a menu entry ?
+      if (Session::haveRight('config', UPDATE)) {
+         // Configuration page
+         $PLUGIN_HOOKS['config_page']['alignak'] = 'config.php';
+
+         // Add an entry to the Administration menu
+         if (Session::haveRight('plugin_alignak_menu', READ)) {
+            $PLUGIN_HOOKS["menu_toadd"]['alignak']['admin'] = 'PluginAlignakAlignak';
+            $links  = [];
+            $links['config'] = '/plugins/alignak/front/alignak.php';
+            $links['add']    = '/plugins/alignak/front/alignak.form.php';
+            $PLUGIN_HOOKS['submenu_entry']['alignak']['options'] = [
+               'config'       => ['title'  => __('Setup'),
+                  'page'   => '/plugins/alignak/front/alignak.php',
+                  'links'  => $links],
+               'options'      => ['title'  => _n('Alignak', 'Alignak', 2, 'alignak'),
+                  'links'  => $links],
+            ];
+         }
+
+         // Old menu style
+         //       $PLUGIN_HOOKS['menu_entry']['example'] = 'front/example.php';
+         //
+         //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['title'] = "Search";
+         //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['page']  = '/plugins/example/front/example.php';
+         //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']['search'] = '/plugins/example/front/example.php';
+         //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']['add']    = '/plugins/example/front/example.form.php';
+         //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']['config'] = '/plugins/example/index.php';
+         //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']["<img  src='".$CFG_GLPI["root_doc"]."/pics/menu_showall.png' title='".__s('Show all')."' alt='".__s('Show all')."'>"] = '/plugins/example/index.php';
+         //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links'][__s('Test link', 'example')] = '/plugins/example/index.php';
+//         $PLUGIN_HOOKS['menu_toadd']['alignak']['options']['optionname']['title'] = "Search";
+//         $PLUGIN_HOOKS['menu_toadd']['alignak']['options']['optionname']['page']  = '/plugins/alignak/front/example.php';
+//         $PLUGIN_HOOKS['menu_toadd']['alignak']['options']['optionname']['links']['search'] = '/plugins/alignak/front/example.php';
+//         $PLUGIN_HOOKS['menu_toadd']['alignak']['options']['optionname']['links']['add']    = '/plugins/alignak/front/example.form.php';
+
+         // No menu when on simplified interface
+         $PLUGIN_HOOKS["helpdesk_menu_entry"]['alignak'] = false;
+      }
+
+      // Init session
+      //$PLUGIN_HOOKS['init_session']['alignak'] = 'plugin_init_session_alignak';
+      // When the user changes its profile
+      // $PLUGIN_HOOKS['change_profile']['alignak'] = 'plugin_change_profile_alignak';
+      // When the user changes its entity
+      // $PLUGIN_HOOKS['change_entity']['alignak'] = 'plugin_change_entity_alignak';
+
+      // Item action events // See define.php for defined ITEM_TYPE
+      $PLUGIN_HOOKS['pre_item_update']['alignak'] = ['Computer' => 'plugin_pre_item_update_alignak'];
+      $PLUGIN_HOOKS['item_update']['alignak'] = ['Computer' => 'plugin_item_update_alignak'];
+      $PLUGIN_HOOKS['item_empty']['alignak'] = ['Computer' => 'plugin_item_empty_alignak'];
+
+      // Restrict right
+      $PLUGIN_HOOKS['item_can']['alignak'] = ['Computer' => ['PluginAlignakComputer', 'item_can']];
+      $PLUGIN_HOOKS['add_default_where']['alignak'] = ['Computer' => ['PluginAlignakComputer', 'add_default_where']];
+
+      // Alignak using a method in class (eg. Computer)
+      $PLUGIN_HOOKS['pre_item_add']['alignak'] = ['Computer' => ['PluginAlignakAlignak', 'pre_item_add_computer']];
+      $PLUGIN_HOOKS['post_prepareadd']['alignak'] = ['Computer' => ['PluginAlignakAlignak', 'post_prepareadd_computer']];
+      $PLUGIN_HOOKS['item_add']['alignak'] = ['Computer' => ['PluginAlignakAlignak', 'item_add_computer']];
+
+      $PLUGIN_HOOKS['pre_item_delete']['alignak'] = ['Computer' => 'plugin_pre_item_delete_alignak'];
+      $PLUGIN_HOOKS['item_delete']['alignak'] = ['Computer' => 'plugin_item_delete_alignak'];
+
+      $PLUGIN_HOOKS['pre_item_purge']['alignak'] = ['Computer' => 'plugin_pre_item_purge_alignak'];
+      $PLUGIN_HOOKS['item_purge']['alignak'] = ['Computer' => 'plugin_item_purge_alignak'];
+
+      $PLUGIN_HOOKS['pre_item_restore']['alignak'] = ['Computer' => 'plugin_pre_item_restore_alignak'];
+      $PLUGIN_HOOKS['item_restore']['alignak'] = ['Computer' => 'plugin_item_restore_alignak'];
+
+      /* Add event to GLPI core itemtype, event will be raised by the plugin.
+      // See plugin_alignak_uninstall for cleanup of notification
+      $PLUGIN_HOOKS['item_get_events']['alignak'] = ['NotificationTargetTicket' => 'plugin_alignak_get_events'];
       */
 
-      // No menu when on simplified interface
-      $PLUGIN_HOOKS["helpdesk_menu_entry"]['alignak'] = false;
+      /* Add datas to GLPI core itemtype for notifications template.
+      $PLUGIN_HOOKS['item_get_datas']['alignak'] = [
+         'NotificationTargetTicket' => 'plugin_alignak_get_datas'];
+      */
+
+      // $PLUGIN_HOOKS['item_transfer']['alignak'] = 'plugin_item_transfer_alignak';
+
+      /*
+      // function to populate planning
+      // No more used since GLPI 0.84
+      // $PLUGIN_HOOKS['planning_populate']['alignak'] = 'plugin_planning_populate_alignak';
+      // Use instead : add class to planning types and define populatePlanning in class
+      $CFG_GLPI['planning_types'][] = 'PluginAlignakAlignak';
+
+      //function to display planning items
+      // No more used since GLPi 0.84
+      // $PLUGIN_HOOKS['display_planning']['alignak'] = 'plugin_display_planning_alignak';
+      // Use instead : displayPlanningItem of the specific itemtype
+      */
+
+      // Massive Action definition
+      $PLUGIN_HOOKS['use_massive_action']['alignak'] = 1;
+
+      $PLUGIN_HOOKS['assign_to_ticket']['alignak'] = 1;
+
+      // Add specific files to add to the header : javascript or css
+      $PLUGIN_HOOKS['add_javascript']['alignak'] = 'alignak.js';
+      $PLUGIN_HOOKS['add_css']['alignak'] = 'alignak.css';
+
+      /*
+      // request more attributes from ldap
+      //$PLUGIN_HOOKS['retrieve_more_field_from_ldap']['alignak']="plugin_retrieve_more_field_from_ldap_alignak";
+
+      // Retrieve others datas from LDAP
+      //$PLUGIN_HOOKS['retrieve_more_data_from_ldap']['alignak']="plugin_retrieve_more_data_from_ldap_alignak";
+      */
+
+      /*   // Reports
+      $PLUGIN_HOOKS['reports']['alignak'] = [
+         'report.php' => 'New Report',
+         'report.php?other' => 'New Report 2'];
+      */
+      /*
+      // Stats
+      $PLUGIN_HOOKS['stats']['alignak'] = ['stat.php'       => 'New stat',
+                                           'stat.php?other' => 'New stats 2',];
+      */
+
+      $PLUGIN_HOOKS['post_init']['alignak'] = 'plugin_alignak_postinit';
+
+      $PLUGIN_HOOKS['status']['alignak'] = 'plugin_alignak_status';
+
+      // To display on central home page
+      $PLUGIN_HOOKS['display_central']['alignak'] = "plugin_alignak_display_central";
+      // To display on login page
+      $PLUGIN_HOOKS['display_login']['alignak'] = "plugin_alignak_display_login";
+      // To display on infocom
+      $PLUGIN_HOOKS['infocom']['alignak'] = "plugin_alignak_infocom_hook";
+
+      /* pre_show and post_show for tabs and items,
+      // see PluginAlignakShowtabitem class for implementation explanations
+      $PLUGIN_HOOKS['pre_show_tab']['alignak']     = ['PluginAlignakShowtabitem', 'pre_show_tab'];
+      $PLUGIN_HOOKS['post_show_tab']['alignak']    = ['PluginAlignakShowtabitem', 'post_show_tab'];
+      $PLUGIN_HOOKS['pre_show_item']['alignak']    = ['PluginAlignakShowtabitem', 'pre_show_item'];
+      $PLUGIN_HOOKS['post_show_item']['alignak']   = ['PluginAlignakShowtabitem', 'post_show_item'];
+
+      $PLUGIN_HOOKS['pre_item_form']['alignak']    = ['PluginAlignakItemForm', 'preItemForm'];
+      $PLUGIN_HOOKS['post_item_form']['alignak']   = ['PluginAlignakItemForm', 'postItemForm'];
+      */
+
+      /* declare this plugin as an import plugin for Computer itemtype
+      $PLUGIN_HOOKS['import_item']['exemple'] = ['Computer' => ['Plugin']];
+
+      // add additional informations on Computer::showForm
+      $PLUGIN_HOOKS['autoinventory_information']['exemple'] =  [
+         'Computer' =>  ['PluginAlignakComputer', 'showInfo']];
+      */
    }
-
-   // Configuration page
-   if (Session::haveRight('config', UPDATE)) {
-      $PLUGIN_HOOKS['config_page']['alignak'] = 'config.php';
-   }
-
-   // Init session
-   //$PLUGIN_HOOKS['init_session']['alignak'] = 'plugin_init_session_alignak';
-   // When the user changes its profile
-   // $PLUGIN_HOOKS['change_profile']['alignak'] = 'plugin_change_profile_alignak';
-   // When the user changes its entity
-   // $PLUGIN_HOOKS['change_entity']['alignak'] = 'plugin_change_entity_alignak';
-
-   // Item action events // See define.php for defined ITEM_TYPE
-   $PLUGIN_HOOKS['pre_item_update']['alignak'] = ['Computer' => 'plugin_pre_item_update_alignak'];
-   $PLUGIN_HOOKS['item_update']['alignak'] = ['Computer' => 'plugin_item_update_alignak'];
-   $PLUGIN_HOOKS['item_empty']['alignak'] = ['Computer' => 'plugin_item_empty_alignak'];
-
-   // Restrict right
-   $PLUGIN_HOOKS['item_can']['alignak'] = ['Computer' => ['PluginAlignakComputer', 'item_can']];
-   $PLUGIN_HOOKS['add_default_where']['alignak'] = ['Computer' => ['PluginAlignakComputer', 'add_default_where']];
-
-   // Alignak using a method in class (eg. Computer)
-   $PLUGIN_HOOKS['pre_item_add']['alignak'] = ['Computer' => ['PluginAlignakAlignak', 'pre_item_add_computer']];
-   $PLUGIN_HOOKS['post_prepareadd']['alignak'] = ['Computer' => ['PluginAlignakAlignak', 'post_prepareadd_computer']];
-   $PLUGIN_HOOKS['item_add']['alignak'] = ['Computer' => ['PluginAlignakAlignak', 'item_add_computer']];
-
-   $PLUGIN_HOOKS['pre_item_delete']['alignak'] = ['Computer' => 'plugin_pre_item_delete_alignak'];
-   $PLUGIN_HOOKS['item_delete']['alignak'] = ['Computer' => 'plugin_item_delete_alignak'];
-
-   $PLUGIN_HOOKS['pre_item_purge']['alignak'] = ['Computer' => 'plugin_pre_item_purge_alignak'];
-   $PLUGIN_HOOKS['item_purge']['alignak'] = ['Computer' => 'plugin_item_purge_alignak'];
-
-   $PLUGIN_HOOKS['pre_item_restore']['alignak'] = ['Computer' => 'plugin_pre_item_restore_alignak'];
-   $PLUGIN_HOOKS['item_restore']['alignak'] = ['Computer' => 'plugin_item_restore_alignak'];
-
-   /* Add event to GLPI core itemtype, event will be raised by the plugin.
-   // See plugin_alignak_uninstall for cleanup of notification
-   $PLUGIN_HOOKS['item_get_events']['alignak'] = ['NotificationTargetTicket' => 'plugin_alignak_get_events'];
-   */
-
-   /* Add datas to GLPI core itemtype for notifications template.
-   $PLUGIN_HOOKS['item_get_datas']['alignak'] = [
-      'NotificationTargetTicket' => 'plugin_alignak_get_datas'];
-   */
-
-   // $PLUGIN_HOOKS['item_transfer']['alignak'] = 'plugin_item_transfer_alignak';
-
-   /*
-   // function to populate planning
-   // No more used since GLPI 0.84
-   // $PLUGIN_HOOKS['planning_populate']['alignak'] = 'plugin_planning_populate_alignak';
-   // Use instead : add class to planning types and define populatePlanning in class
-   $CFG_GLPI['planning_types'][] = 'PluginAlignakAlignak';
-
-   //function to display planning items
-   // No more used since GLPi 0.84
-   // $PLUGIN_HOOKS['display_planning']['alignak'] = 'plugin_display_planning_alignak';
-   // Use instead : displayPlanningItem of the specific itemtype
-   */
-
-   // Massive Action definition
-   $PLUGIN_HOOKS['use_massive_action']['alignak'] = 1;
-
-   $PLUGIN_HOOKS['assign_to_ticket']['alignak'] = 1;
-
-   // Add specific files to add to the header : javascript or css
-   $PLUGIN_HOOKS['add_javascript']['alignak'] = 'alignak.js';
-   $PLUGIN_HOOKS['add_css']['alignak'] = 'alignak.css';
-
-   /*
-   // request more attributes from ldap
-   //$PLUGIN_HOOKS['retrieve_more_field_from_ldap']['alignak']="plugin_retrieve_more_field_from_ldap_alignak";
-
-   // Retrieve others datas from LDAP
-   //$PLUGIN_HOOKS['retrieve_more_data_from_ldap']['alignak']="plugin_retrieve_more_data_from_ldap_alignak";
-   */
-
-   /*   // Reports
-   $PLUGIN_HOOKS['reports']['alignak'] = [
-      'report.php' => 'New Report',
-      'report.php?other' => 'New Report 2'];
-   */
-   /*
-   // Stats
-   $PLUGIN_HOOKS['stats']['alignak'] = ['stat.php'       => 'New stat',
-                                        'stat.php?other' => 'New stats 2',];
-   */
-
-   $PLUGIN_HOOKS['post_init']['alignak'] = 'plugin_alignak_postinit';
-
-   $PLUGIN_HOOKS['status']['alignak'] = 'plugin_alignak_status';
-
-   // To display on central home page
-   $PLUGIN_HOOKS['display_central']['alignak'] = "plugin_alignak_display_central";
-   // To display on login page
-   $PLUGIN_HOOKS['display_login']['alignak'] = "plugin_alignak_display_login";
-   // To display on infocom
-   $PLUGIN_HOOKS['infocom']['alignak'] = "plugin_alignak_infocom_hook";
-
-   /* pre_show and post_show for tabs and items,
-   // see PluginAlignakShowtabitem class for implementation explanations
-   $PLUGIN_HOOKS['pre_show_tab']['alignak']     = ['PluginAlignakShowtabitem', 'pre_show_tab'];
-   $PLUGIN_HOOKS['post_show_tab']['alignak']    = ['PluginAlignakShowtabitem', 'post_show_tab'];
-   $PLUGIN_HOOKS['pre_show_item']['alignak']    = ['PluginAlignakShowtabitem', 'pre_show_item'];
-   $PLUGIN_HOOKS['post_show_item']['alignak']   = ['PluginAlignakShowtabitem', 'post_show_item'];
-
-   $PLUGIN_HOOKS['pre_item_form']['alignak']    = ['PluginAlignakItemForm', 'preItemForm'];
-   $PLUGIN_HOOKS['post_item_form']['alignak']   = ['PluginAlignakItemForm', 'postItemForm'];
-   */
-
-   /* declare this plugin as an import plugin for Computer itemtype
-   $PLUGIN_HOOKS['import_item']['exemple'] = ['Computer' => ['Plugin']];
-
-   // add additional informations on Computer::showForm
-   $PLUGIN_HOOKS['autoinventory_information']['exemple'] =  [
-      'Computer' =>  ['PluginAlignakComputer', 'showInfo']];
-   */
 }
 
 

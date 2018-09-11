@@ -164,8 +164,7 @@ class PluginAlignakProfile extends Profile
        $rights = [
         ['itemtype'  => 'PluginAlignakAlignak',
            'label'     => __('XxX - Alignak', 'alignak'),
-           'field'     => 'plugin_alignak_alignak',
-           'rights'    => [READ => __('Read')]],
+           'field'     => 'plugin_alignak_alignak'],
         ['rights'    => [READ => __('Read')],
            'label'     => __('XxX - Right 2', 'alignak'),
            'field'     => 'plugin_alignak_right2']
