@@ -495,13 +495,15 @@ function plugin_alignak_install() {
    /*
     * Manage profiles
     */
-   $migration->displayMessage("Initialize profiles");
+   $migration->displayMessage("Initializing profiles...");
    PluginAlignakProfile::initProfile();
+   $migration->displayMessage("Profiles initialized");
 
    echo "<div>";
    echo "<table class='tab_cadre_fixe'>";
-   echo "<tr><th>".__("Database tables installation", "alignak")."<th></tr>";
+   echo "<tr><th>".__("Database tables installation:", "alignak")."<th></tr>";
 
+   $migration->displayMessage("Initializing tables...");
    $classes = [
       'PluginAlignakConfig',
       'PluginAlignakAlignak',
@@ -532,9 +534,8 @@ function plugin_alignak_install() {
          }
       }
    }
+   $migration->displayMessage("Tables initialized");
 
-   echo "</td>";
-   echo "</tr>";
    echo "</table>";
    echo "</div>";
 
@@ -546,13 +547,14 @@ function plugin_alignak_install() {
     */
    $version = rtrim(GLPI_VERSION, '-dev');
    if (version_compare($version, '9.3', '>=')) {
+      $migration->displayMessage("Migrating tables...");
       $tomigrate = $DB->getMyIsamTables();
-      echo "Tables found: ".count($tomigrate)."\n";
+      $migration->displayMessage("Tables found: ".count($tomigrate));
 
       while ($table = $tomigrate->next()) {
-         echo "Migrating {$table['TABLE_NAME']}...";
+         $migration->displayMessage("Migrating {$table['TABLE_NAME']}...");
          $DB->queryOrDie("ALTER TABLE {$table['TABLE_NAME']} ENGINE = InnoDB");
-         echo " Done.\n";
+         $migration->displayMessage(" done.");
       }
    }
 
@@ -675,36 +677,11 @@ function plugin_alignak_postinit() {
 
 
 /**
- * Hook to add more data from ldap
- * fields from plugin_retrieve_more_field_from_ldap_alignak
- *
- * @param $datas   array
- *
- * @return un tableau
- **/
-function plugin_retrieve_more_data_from_ldap_alignak(array $datas) {
-   return $datas;
-}
-
-
-/**
- * Hook to add more fields from LDAP
- *
- * @param $fields   array
- *
- * @return un tableau
- **/
-function plugin_retrieve_more_field_from_ldap_alignak($fields) {
-   return $fields;
-}
-
-
-/**
  * Add information to the status page
  *
  * @param $param   array
  *
- * @return un tableau
+ * @return array
  **/
 // Check to add to status page
 function plugin_alignak_status($param) {
@@ -744,12 +721,10 @@ function plugin_alignak_display_central() {
  *
  **/
 function plugin_alignak_display_login() {
-   if (Session::haveRight('plugin_alignak_central', READ)) {
-      PluginAlignakToolbox::log("On the login page!");
-      echo "<div style='text-align:center; font-size:2em'>";
-      echo __("Plugin alignak displays on login page", "alignak");
-      echo "</div>";
-   }
+   PluginAlignakToolbox::log("On the login page!");
+   echo "<div style='text-align:center; font-size:2em'>";
+   echo __("Plugin alignak displays on login page", "alignak");
+   echo "</div>";
 }
 
 

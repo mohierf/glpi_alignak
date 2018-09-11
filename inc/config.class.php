@@ -87,17 +87,17 @@ class PluginAlignakConfig extends CommonDBTM
    }
 
 
-    /**
+   /**
      * Get name of this type
      *
      * @return string, text name of this type by language of the user connected
      **/
    static function getTypeName($nb = 0) {
-       return __('Configuration', 'alignak');
+      return __('Configuration', 'alignak');
    }
 
 
-    /**
+   /**
      * Load the plugin configuration in a global variable $PA_CONFIG
      *
      * Test if the table exists before loading cache
@@ -108,17 +108,17 @@ class PluginAlignakConfig extends CommonDBTM
      * @global array $PA_CONFIG
      */
    static function loadConfiguration() {
-       global $DB, $PA_CONFIG;
+      global $DB, $PA_CONFIG;
 
-       $table = self::getTable();
+      $table = self::getTable();
       if ($DB->tableExists($table)) {
-          $PA_CONFIG = [];
+         $PA_CONFIG = [];
 
-          $pmConfig = new PluginAlignakConfig();
+         $pmConfig = new PluginAlignakConfig();
          if ($pmConfig->getFromDBByCrit(['1'])) {
             $PA_CONFIG = $pmConfig->fields;
          } else {
-             PluginAlignakToolbox::log("Not found any configuration parameters!");
+            PluginAlignakToolbox::log("Not found any configuration parameters!");
          }
       }
    }
@@ -132,17 +132,17 @@ class PluginAlignakConfig extends CommonDBTM
      * @return null|string|integer
      */
    function getValue($name) {
-       global $PA_CONFIG;
+      global $PA_CONFIG;
 
       if (isset($PA_CONFIG[$name])) {
-          return $PA_CONFIG[$name];
+         return $PA_CONFIG[$name];
       }
 
-         $config = current($this->find("`type`='".$name."'"));
+      $config = current($this->find("`type`='".$name."'"));
       if (isset($config['value'])) {
          return $config['value'];
       }
-         return null;
+      return null;
    }
 
 
@@ -154,77 +154,75 @@ class PluginAlignakConfig extends CommonDBTM
      * @return boolean
      */
    function updateValue($name, $value) {
-       global $PF_CONFIG;
+      global $PF_CONFIG;
 
-       // retrieve current config
-       $config = current($this->find("`type`='".$name."'"));
+      // retrieve current config
+      $config = current($this->find("`type`='".$name."'"));
 
-       // set in db
+      // set in db
       if (isset($config['id'])) {
-          $result = $this->update(['id'=> $config['id'], 'value'=>$value]);
+         $result = $this->update(['id'=> $config['id'], 'value'=>$value]);
       } else {
          $result = $this->add(['type' => $name, 'value' => $value]);
       }
 
-         // set cache
+      // set cache
       if ($result) {
          $PF_CONFIG[$name] = $value;
       }
 
-         return $result;
+      return $result;
    }
 
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-
       if (!$withtemplate) {
          if ($item->getType() == 'Config') {
             return __('Alignak monitoring plugin');
          }
       }
-         return '';
+      return '';
    }
 
    static function configUpdate($input) {
-       $input['configuration'] = 1 - $input['configuration'];
-       return $input;
+      $input['configuration'] = 1 - $input['configuration'];
+      return $input;
    }
 
    function showConfigurationForm() {
-       global $PLUGIN_ALIGNAK_LOG;
+      global $PLUGIN_ALIGNAK_LOG;
 
       if (!Session::haveRight("config", UPDATE)) {
-          return false;
+         return false;
       }
 
-         $my_config = Config::getConfigurationValues('plugin:Alignak');
+      $my_config = Config::getConfigurationValues('plugin:Alignak');
 
-         echo "<form name='form' action=\"".Toolbox::getItemTypeFormURL('Config')."\" method='post'>";
-         echo "<div class='center' id='tabsbody'>";
-         echo "<table class='tab_cadre_fixe'>";
-         echo "<tr><th colspan='4'>" . __('Alignak monitoring plugin setup') . "</th></tr>";
-         echo "<td >" . __('My boolean choice :') . "</td>";
-         echo "<td colspan='3'>";
-         echo "<input type='hidden' name='config_class' value='".__CLASS__."'>";
-         echo "<input type='hidden' name='config_context' value='plugin:Alignak'>";
-         Dropdown::showYesNo("configuration", $my_config['configuration']);
-         echo "</td></tr>";
+      echo "<form name='form' action=\"".Toolbox::getItemTypeFormURL('Config')."\" method='post'>";
+      echo "<div class='center' id='tabsbody'>";
+      echo "<table class='tab_cadre_fixe'>";
+      echo "<tr><th colspan='4'>" . __('Alignak monitoring plugin setup') . "</th></tr>";
+      echo "<td >" . __('My boolean choice :') . "</td>";
+      echo "<td colspan='3'>";
+      echo "<input type='hidden' name='config_class' value='".__CLASS__."'>";
+      echo "<input type='hidden' name='config_context' value='plugin:Alignak'>";
+      Dropdown::showYesNo("configuration", $my_config['configuration']);
+      echo "</td></tr>";
 
-         echo "<tr class='tab_bg_2'>";
-         echo "<td colspan='4' class='center'>";
-         echo "<input type='submit' name='update' class='submit' value=\""._sx('button', 'Save')."\">";
-         echo "</td></tr>";
+      echo "<tr class='tab_bg_2'>";
+      echo "<td colspan='4' class='center'>";
+      echo "<input type='submit' name='update' class='submit' value=\""._sx('button', 'Save')."\">";
+      echo "</td></tr>";
 
-         echo "</table></div>";
-         echo "Log: $PLUGIN_ALIGNAK_LOG";
-         Html::closeForm();
+      echo "</table></div>";
+      echo "Log: $PLUGIN_ALIGNAK_LOG";
+      Html::closeForm();
    }
 
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-
       if ($item->getType() == 'Config') {
-          $config = new self();
-          $config->showConfigurationForm();
+         $config = new self();
+         $config->showConfigurationForm();
       }
    }
 

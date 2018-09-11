@@ -12,134 +12,13 @@ if (!defined('GLPI_ROOT')) {
 class PluginAlignakMailNotification extends CommonDBTM
 {
 
-    //   static function getTypeName($nb=0) {
-    //      if ($nb==1) {
-    //         return __('Mail notification', 'kiosks');
-    //      }
-    //      return __('Mail notification', 'kiosks');
-    //   }
-    //
-    //   function getSearchOptions() {
-    //      $tab = array();
-    //      $i = 1;
-    //
-    //      $tab['common'] = self::getTypeName();
-    //
-    //      $i=1;
-    //      $tab[$i]['table']           = $this->getTable();
-    //      $tab[$i]['field']           = 'name';
-    //      $tab[$i]['linkfield']       = 'name';
-    //      $tab[$i]['name']            = __('Name');
-    //      $tab[$i]['datatype']        = 'itemlink';
-    //
-    //      $i++;
-    //      $tab[$i]['table']           = $this->getTable();
-    //      $tab[$i]['field']           = 'user_to_id';
-    //      $tab[$i]['name']            = __('To: ', 'kiosks');
-    //      $tab[$i]['datatype']        = 'specific';
-    //
-    //      $i++;
-    //      $tab[$i]['table']           = $this->getTable();
-    //      $tab[$i]['field']           = 'user_cc_1_id';
-    //      $tab[$i]['name']            = __('Cc: ', 'kiosks');
-    //      $tab[$i]['datatype']        = 'specific';
-    //
-    //      $i++;
-    //      $tab[$i]['table']           = $this->getTable();
-    //      $tab[$i]['field']           = 'user_cc_2_id';
-    //      $tab[$i]['name']            = __('Cc: ', 'kiosks');
-    //      $tab[$i]['datatype']        = 'specific';
-    //
-    //      $i++;
-    //      $tab[$i]['table']           = $this->getTable();
-    //      $tab[$i]['field']           = 'user_cc_3_id';
-    //      $tab[$i]['name']            = __('Cc: ', 'kiosks');
-    //      $tab[$i]['datatype']        = 'specific';
-    //
-    //      $i++;
-    //      $tab[$i]['table']           = $this->getTable();
-    //      $tab[$i]['field']           = 'user_bcc_id';
-    //      $tab[$i]['name']            = __('Bcc: ', 'kiosks');
-    //      $tab[$i]['datatype']        = 'specific';
-    //
-    //      $i++;
-    //      $tab[$i]['table']           = 'glpi_plugin_monitoring_components';
-    //      $tab[$i]['field']           = 'name';
-    //      $tab[$i]['linkfield']       = 'component_1';
-    //      $tab[$i]['name']            = __('Component', 'monitoring')." 1";
-    //      $tab[$i]['datatype']        = 'itemlink';
-    //      $tab[$i]['itemlink_type']   = 'PluginMonitoringComponent';
-    //
-    //      $i++;
-    //      $tab[$i]['table']           = 'glpi_plugin_monitoring_components';
-    //      $tab[$i]['field']           = 'name';
-    //      $tab[$i]['linkfield']       = 'component_2';
-    //      $tab[$i]['name']            = __('Component', 'monitoring')." 2";
-    //      $tab[$i]['datatype']        = 'itemlink';
-    //      $tab[$i]['itemlink_type']   = 'PluginMonitoringComponent';
-    //
-    //      $i++;
-    //      $tab[$i]['table']           = 'glpi_plugin_monitoring_components';
-    //      $tab[$i]['field']           = 'name';
-    //      $tab[$i]['linkfield']       = 'component_3';
-    //      $tab[$i]['name']            = __('Component', 'monitoring')." 3";
-    //      $tab[$i]['datatype']        = 'itemlink';
-    //      $tab[$i]['itemlink_type']   = 'PluginMonitoringComponent';
-    //
-    //      $i++;
-    //      $tab[$i]['table']           = 'glpi_plugin_monitoring_components';
-    //      $tab[$i]['field']           = 'name';
-    //      $tab[$i]['linkfield']       = 'component_4';
-    //      $tab[$i]['name']            = __('Component', 'monitoring')." 2";
-    //      $tab[$i]['datatype']        = 'itemlink';
-    //      $tab[$i]['itemlink_type']   = 'PluginMonitoringComponent';
-    //
-    //      $i++;
-    //      $tab[$i]['table']           = 'glpi_plugin_monitoring_components';
-    //      $tab[$i]['field']           = 'name';
-    //      $tab[$i]['linkfield']       = 'component_5';
-    //      $tab[$i]['name']            = __('Component', 'monitoring')." 3";
-    //      $tab[$i]['datatype']        = 'itemlink';
-    //      $tab[$i]['itemlink_type']   = 'PluginMonitoringComponent';
-    //
-    //      $i++;
-    //      $tab[$i]['table']           = $this->getTable();
-    //      $tab[$i]['field']           = 'daily_mail';
-    //      $tab[$i]['name']            = __('Daily mail', 'kiosks');
-    //      $tab[$i]['datatype']        = 'bool';
-    //
-    //      $i++;
-    //      $tab[$i]['table']           = $this->getTable();
-    //      $tab[$i]['field']           = 'weekly_mail';
-    //      $tab[$i]['name']            = __('Weekly mail', 'kiosks');
-    //      $tab[$i]['datatype']        = 'bool';
-    //
-    //      $i++;
-    //      $tab[$i]['table']           = $this->getTable();
-    //      $tab[$i]['field']           = 'monthly_mail';
-    //      $tab[$i]['name']            = __('Monthly mail', 'kiosks');
-    //      $tab[$i]['datatype']        = 'bool';
-    //
-    //      $i++;
-    //      $tab[$i]['table']           = $this->getTable();
-    //      $tab[$i]['field']           = 'is_active';
-    //      $tab[$i]['name']            = __('Is active ?', 'kiosks');
-    //      $tab[$i]['datatype']        = 'bool';
-    //
-    //      $i++;
-    //      $tab[$i]['table']           = $this->getTable();
-    //      $tab[$i]['field']           = 'weekly_mail_day';
-    //      $tab[$i]['name']            = __('Weekly mail day', 'kiosks');
-    //      $tab[$i]['datatype']        = 'int';
-    //
-    //      $i++;
-    //      $tab[$i]['table']           = $this->getTable();
-    //      $tab[$i]['field']           = 'monthly_mail_day';
-    //      $tab[$i]['name']            = __('Monthly mail day', 'kiosks');
-    //      $tab[$i]['datatype']        = 'int';
-    //
-    //      return $tab;
-    //   }
+   /**
+    * The right name for this class
+    *
+    * @var string
+    */
+   static $rightname = 'plugin_alignak_mailnotification';
+
 
    static function getSpecificValueToDisplay($field, $values, array $options = []) {
 
@@ -168,11 +47,11 @@ class PluginAlignakMailNotification extends CommonDBTM
          return parent::getSpecificValueToDisplay($field, $values, $options);
    }
 
-
    function defineTabs($options = []) {
        $ong = [];
        return $ong;
    }
+
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
       switch ($item->getType()) {
@@ -237,6 +116,7 @@ class PluginAlignakMailNotification extends CommonDBTM
          return $this->getField($name);
    }
 
+
     /**
      * Get the value (of this entity or parent entity or in general config
      *
@@ -266,7 +146,6 @@ class PluginAlignakMailNotification extends CommonDBTM
       }
          return $this->getValueAncestor($name, $users_id);
    }
-
 
 
     /**

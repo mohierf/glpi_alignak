@@ -56,12 +56,11 @@ if (PluginAlignakAlignak::canView()) {
 
    // Add page header
    if ($_SESSION["glpiactiveprofile"]["interface"] == "central") {
-      Html::header(__('Alignak instances', 'alignak'), $_SERVER['PHP_SELF'], "config", "pluginalignakmenu", "alignak");
+      Html::header(__('Alignak instances', 'alignak'), $_SERVER['PHP_SELF'],
+         "config", "pluginalignakmenu", "alignak");
    } else {
       Html::helpHeader(__('Alignak instances', 'alignak'), $_SERVER['PHP_SELF']);
    }
-
-   Session::checkRight('plugin_alignak_alignak', READ);
 
    Search::show('PluginAlignakAlignak');
 

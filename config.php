@@ -114,11 +114,11 @@ try {
    echo(nl2br("Loading template: " . $filename . "\n"));
    PluginAlignakToolbox::log("Loading template: " . $filename);
    $template = $twig->load($filename);
-   echo(nl2br("Loaded: " . $template . "\n"));
    $result = $template->render(['template' => 'test-host', 'name' => 'localhost', 'address' => '127.0.0.1']);
    echo nl2br("\nTemplate result is: \n", true);
    echo nl2br("\n-----\n", true);
    echo nl2br($result, true);
+   echo nl2br("\n-----\n", true);
 } catch (Twig_Error_Loader $e) {
    // Could not get the templates, raise an error !
    Session::addMessageAfterRedirect(__("Alignak monitoring plugin templates are not available:", 'alignak'), true, ERROR);
@@ -155,43 +155,15 @@ if ($cronTask->fields['lastrun'] == ''
 
 echo '<div style="margin-left: 350px; background: #eee; border: outset 2px white; padding: 0.5%;">';
 
-if (Session::haveRight("config", 'r')) {
+if (Session::haveRight("config", READ)) {
    echo "
    <div style='margin-top: 5px;'>
-   <b>". __("Applications", "kiosks") ."</b>
+   <strong>". __("Mail notifications", "alignak") ."</strong>
    <br/>
-   <small><i>". __("Manage kiosks applications and embedded user's services", "kiosks") ."</i></small>
-   <ul style='margin-left: 5px;'>
-      <li><a href='front/application.php'>".  __("Applications", "kiosks") ."</a></li>
-   </ul>
-   </div>
-   ";
-}
-
-
-if (Session::haveRight("config", 'r')) {
-   echo "
-   <div style='margin-top: 5px;'>
-   <b>". __("Mail notifications", "kiosks") ."</b>
-   <br/>
-   <small><i>". __("Configure mail notifications for counters", "kiosks") ."</i></small>
+   <small><em>". __("Configure mail notifications for counters", "alignak") ."</em></small>
    <br/>
    <ul style='margin-left: 5px;'>
-      <li><a href='front/mailnotification.php'>".  __("Mail notifications", "kiosks") ."</a></li>
-   </ul>
-   </div>
-   ";
-}
-
-
-if (Session::haveRight("messages", 'r')) {
-   echo "
-   <div style='margin-top: 5px;'>
-   <b>". __("User messages", "kiosks") ."</b>
-   <br/>
-   <ul style='margin-left: 5px;'>
-      <li><a href='front/message.php'>".  __("User messages", "kiosks") ."</a></li>
-      <li><a href='front/message.table.php?table=". 'glpi_plugin_kiosks_messages' ."'>". __("User messages table", "kiosks") ."</a></li>
+      <li><a href='front/mailnotification.php'>".  __("Mail notifications", "alignak") ."</a></li>
    </ul>
    </div>
    ";
@@ -203,20 +175,20 @@ if (Session::haveRight("counters", 'r')) {
    $component_list = $components->find();
    echo "
    <div style='margin-top: 5px;'>
-   <b>". __("Components counters", "kiosks") ."</b>
+   <b>". __("Components counters", "alignak") ."</b>
    <br/>
-   <small><i>". __("Display known counters for a specific component", "kiosks") ."</i></small>
+   <small><i>". __("Display known counters for a specific component", "alignak") ."</i></small>
 
    <table><tr>";
    $i=1;
    foreach ($component_list as $component) {
       $component_name = str_replace(" ", "", $component['description']);
       // $component_name = str_replace("'", "", $component_name);
-      $hdc_table = "glpi_plugin_kiosks_hdc_".$component_name;
+      $hdc_table = "glpi_plugin_alignak_hdc_".$component_name;
 
 
       if (TableExists($hdc_table)) {
-         echo "<td><a style='display: block; padding: 3px; margin: 1px; text-align: center; background: #eee; border: outset 2px white; ' href='front/componentcountertables.php?id_component=".$component['id']."'>". __("Counters for", "kiosks") . " '{$component['name']}' (<i>{$component['description']}</i>)</a></td>";
+         echo "<td><a style='display: block; padding: 3px; margin: 1px; text-align: center; background: #eee; border: outset 2px white; ' href='front/componentcountertables.php?id_component=".$component['id']."'>". __("Counters for", "alignak") . " '{$component['name']}' (<i>{$component['description']}</i>)</a></td>";
 
          if ($i > 4) {
             $i = 1;
@@ -236,14 +208,14 @@ if (Session::haveRight("counters", 'r')) {
 
 
 if (Session::haveRight("counters", 'r')) {
-   $sql = "SHOW TABLES LIKE 'glpi_plugin_kiosks_monitoring_%'";
+   $sql = "SHOW TABLES LIKE 'glpi_plugin_alignak_monitoring_%'";
    $result = $DB->query($sql);
    if ($DB->numrows($result)) {
       echo "
       <div style='margin-top: 5px;'>
-      <b>". __("Specific client monitoring page", "kiosks") ."</b>
+      <b>". __("Specific client monitoring page", "alignak") ."</b>
       <br/>
-      <small><i>". __("Specific counters views for a client", "kiosks") ."</i></small>
+      <small><i>". __("Specific counters views for a client", "alignak") ."</i></small>
 
       <table><tr>";
 
@@ -251,7 +223,7 @@ if (Session::haveRight("counters", 'r')) {
       while ($row = $DB->fetch_array($result)) {
          $array_client = explode("_", $row[0]);
          $client = array_pop($array_client);
-         echo "<td><a style='display: block; padding: 3px; margin: 1px; text-align: center; background: #eee; border: outset 2px white; ' href='front/monitoring".$client.".php'>". __("Monitoring for", "kiosks") . " '".$client."'</a></td>";
+         echo "<td><a style='display: block; padding: 3px; margin: 1px; text-align: center; background: #eee; border: outset 2px white; ' href='front/monitoring".$client.".php'>". __("Monitoring for", "alignak") . " '".$client."'</a></td>";
 
          if ($i > 4) {
             $i = 1;
@@ -269,35 +241,17 @@ if (Session::haveRight("counters", 'r')) {
    }
 }
 
-/*
-if (Session::haveRight("counters", 'r')) {
-   echo "
-   <div style='margin-top: 5px;'>
-   <b>".  __("Counters", "kiosks") ."</b>
-   <br/>
-   <ul style='margin-left: 5px;'>
-      <li><a href='front/hostcounterdaily.php'>". __("Daily counters display", "kiosks") ."</a></li>
-      <li><a href='front/hostcounterall.php'>". __("All time counters display", "kiosks") ."</a></li>
 
-      <li><a href='front/hostcounterrecord.php'>".  __("Record counters display", "kiosks") ."</a></li>
-
-      <li><a href='front/hostcountercond.php'>".  __("Conditional counters display", "kiosks") ."</a></li>
-   </ul>
-   </div>
-   ";
-}
-*/
-
-if (Session::haveRight("config", 'r')) {
+if (Session::haveRight("config", READ)) {
    echo"
    <div style='margin-top: 5px;'>
-   <b>". __("DashKiosk configuration", "kiosks") ."</b>
+   <b>". __("DashKiosk configuration", "alignak") ."</b>
    <br/>
-   <small><i>". __("Manage Dashkiosk configurations and mail notifications", "kiosks") ."</i></small>
+   <small><i>". __("Manage Dashkiosk configurations and mail notifications", "alignak") ."</i></small>
 
    <ul style='margin-left: 5px;'>
-      <li><a href='front/dashboard.php'>". __("Dashkiosk configurations", "kiosks") . "</a></li>
-      <li><a href='front/mailnotification.php'>". __("Mail counters notifications", "kiosks") . "</a></li>
+      <li><a href='front/dashboard.php'>". __("Dashkiosk configurations", "alignak") . "</a></li>
+      <li><a href='front/mailnotification.php'>". __("Mail counters notifications", "alignak") . "</a></li>
       <li>
    </ul>
    <br/>
@@ -305,17 +259,17 @@ if (Session::haveRight("config", 'r')) {
 
    echo"
    <div style='margin-top: 5px;'>
-   <b>". __("DashKiosk table", "kiosks") ."</b>
+   <b>". __("DashKiosk table", "alignak") ."</b>
    <br/>
-   <small><i>". __("Display known counters tables for the current entity", "kiosks") ."</i></small>
+   <small><i>". __("Display known counters tables for the current entity", "alignak") ."</i></small>
    <table><tr>";
    $i=1;
-   foreach (glob(GLPI_ROOT . "/plugins/kiosks/conf/table.*.php") as $file) {
+   foreach (glob(GLPI_ROOT . "/plugins/alignak/conf/table.*.php") as $file) {
       if ($file == '.' || $file == '..') {
          continue;
       }
       if (preg_match("/table.(\w+).php/i", $file, $matches, PREG_OFFSET_CAPTURE)) {
-         echo "<td><a style='display: block; padding: 3px; margin: 1px; text-align: center; background: #eee; border: outset 2px white;' href='front/dashkiosk.table.php?table=". $matches[1][0] ."'>". __("DashKiosk table", "kiosks") . ": " . $matches[1][0] ."</a></td>";
+         echo "<td><a style='display: block; padding: 3px; margin: 1px; text-align: center; background: #eee; border: outset 2px white;' href='front/dashkiosk.table.php?table=". $matches[1][0] ."'>". __("DashKiosk table", "alignak") . ": " . $matches[1][0] ."</a></td>";
 
          if ($i > 4) {
             $i = 1;
@@ -333,33 +287,17 @@ if (Session::haveRight("config", 'r')) {
 
    echo"
    <div style='margin-top: 5px;'>
-   <b>". __("Counters configuration", "kiosks") ."</b>
+   <b>". __("Counters configuration", "alignak") ."</b>
    <br/>
-   <small><i>". __("Manage known counters configurations", "kiosks") ."</i></small>
+   <small><i>". __("Manage known counters configurations", "alignak") ."</i></small>
 
    <ul style='margin-left: 5px;'>
-      <li><a href='front/counter.php'>". __("Counters configuration", "kiosks") . "</a></li>
-      <li><a href='front/condcounter.php'>". __("Conditional counters configuration", "kiosks") ."</a></li>
+      <li><a href='front/counter.php'>". __("Counters configuration", "alignak") . "</a></li>
+      <li><a href='front/condcounter.php'>". __("Conditional counters configuration", "alignak") ."</a></li>
    </ul>
    </div>
    <br/>
    ";
 }
-
-if (Session::haveRight("production", 'r')) {
-   echo"
-   <div style='margin-top: 5px;'>
-   <b>". __("Kiosks configuration", "kiosks") ."</b>
-   <br/>
-   <small><i>". __("Manage kiosks production configurations", "kiosks") ."</i></small>
-
-   <ul style='margin-left: 5px;'>
-      <li><a href='front/kioskconfiguration.php'>". __("Kiosks configuration", "kiosks") . "</a></li>
-   </ul>
-   </div>
-   <br/>
-   ";
-};
-echo "</div>";
 
 Html::footer();

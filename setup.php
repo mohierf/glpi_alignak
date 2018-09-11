@@ -143,7 +143,7 @@ function plugin_init_alignak() {
       // Add an entry to the Tools menu
       $PLUGIN_HOOKS['menu_toadd']['alignak'] = ['tools' => 'PluginAlignakAlignak'];
       // Add an entry to the configuration menu
-      $PLUGIN_HOOKS["menu_toadd"]['alignak'] = ['config' => 'PluginAlignakMenu'];
+      //      $PLUGIN_HOOKS["menu_toadd"]['alignak'] = ['config' => 'PluginAlignakMenu'];
 
       $PLUGIN_HOOKS["helpdesk_menu_entry"]['alignak'] = true;
    }
@@ -215,7 +215,7 @@ function plugin_init_alignak() {
 
    // Add specific files to add to the header : javascript or css
    $PLUGIN_HOOKS['add_javascript']['alignak'] = 'alignak.js';
-   $PLUGIN_HOOKS['add_css']['alignak']        = 'alignak.css';
+   $PLUGIN_HOOKS['add_css']['alignak'] = 'alignak.css';
 
    /*
    // request more attributes from ldap

@@ -10,11 +10,23 @@
 
 include ("../../../inc/includes.php");
 
-Html::header(__('Alignak - mail notifications', 'alignak'), $_SERVER["PHP_SELF"], "config",
-             "pluginalignakmenu", "notification");
+// Check if plugin is activated...
+$plugin = new Plugin();
+if (!$plugin->isInstalled('alignak') || !$plugin->isActivated('alignak')) {
+   Html::displayNotFoundError();
+}
 
-Session::checkRight("config","r");
+// Check for ACLs
+if (PluginAlignakMailNotification::canView()) {
+   // View is granted: display the list.
 
-Search::show('PluginAlignakMailNotification');
+   Html::header(__('Alignak - mail notifications', 'alignak'), $_SERVER["PHP_SELF"], "config",
+      "plugin_alignak_mailnotification", "notification");
 
-Html::footer();
+   Search::show('PluginAlignakMailNotification');
+
+   Html::footer();
+} else {
+   // View is not granted.
+   Html::displayRightError();
+}
