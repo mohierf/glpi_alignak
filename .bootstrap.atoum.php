@@ -24,7 +24,7 @@ define("PLUGINALIGNAK_DOC_DIR", __DIR__ . "/generated_test_data");
 
 if (getenv("TRAVIS") !== false) {
    echo("Running Travis tests...\n");
-   define('GLPI_ROOT', dirname(dirname(dirname(__DIR__))));
+   define('GLPI_ROOT', dirname(dirname(__DIR__)));
 } else {
    echo("Running local tests...\n");
    define('GLPI_ROOT', '/home/glpi/glpi-dev-plugins');
