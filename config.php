@@ -209,7 +209,7 @@ if (Session::haveRight("counters", 'r')) {
 
    <table><tr>";
    $i=1;
-   foreach($component_list as $component) {
+   foreach ($component_list as $component) {
       $component_name = str_replace(" ", "", $component['description']);
       // $component_name = str_replace("'", "", $component_name);
       $hdc_table = "glpi_plugin_kiosks_hdc_".$component_name;
@@ -288,21 +288,6 @@ if (Session::haveRight("counters", 'r')) {
 }
 */
 
-if (Session::haveRight("alerts", 'r')) {
-   echo "
-   <div style='margin-top: 5px;'>
-   <b>".  __("Alerts", "kiosks") ."</b>
-   <br/>
-   <small><i>". __("Display kiosks alerts", "kiosks") ."</i></small>
-
-   <ul style='margin-left: 5px;'>
-      <li><a href='front/alert.php'>". __("Alerts", "kiosks") ."</a></li>
-   </ul>
-   </div>
-   <br/>
-   ";
-}
-
 if (Session::haveRight("config", 'r')) {
    echo"
    <div style='margin-top: 5px;'>
@@ -326,7 +311,9 @@ if (Session::haveRight("config", 'r')) {
    <table><tr>";
    $i=1;
    foreach (glob(GLPI_ROOT . "/plugins/kiosks/conf/table.*.php") as $file) {
-      if($file == '.' || $file == '..') continue;
+      if ($file == '.' || $file == '..') {
+         continue;
+      }
       if (preg_match("/table.(\w+).php/i", $file, $matches, PREG_OFFSET_CAPTURE)) {
          echo "<td><a style='display: block; padding: 3px; margin: 1px; text-align: center; background: #eee; border: outset 2px white;' href='front/dashkiosk.table.php?table=". $matches[1][0] ."'>". __("DashKiosk table", "kiosks") . ": " . $matches[1][0] ."</a></td>";
 

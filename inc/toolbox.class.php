@@ -44,38 +44,39 @@
 // ----------------------------------------------------------------------
 
 if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+    die("Sorry. You can't access directly to this file");
 }
 global $PLUGIN_ALIGNAK_LOG;
 
 /**
  * Toolbox of various utility methods
  **/
-class PluginAlignakToolbox {
+class PluginAlignakToolbox
+{
 
-   /**
-    * Log when extra-debug is activated
-    */
+    /**
+     * Log when extra-debug is activated
+     */
    static function log($message) {
-      /*
+       /*
        * Call the Glpi base file logging function:
        * - base filename
        * - log message
        * - force file logging - not set ti use the default Glpi configuration (use_log_in_files)
        */
-      Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, $message . "\n");
+       Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, $message . "\n");
    }
 
-   /**
-    * Log when extra-debug is activated
-    */
+    /**
+     * Log when extra-debug is activated
+     */
    static function logIfDebug($message) {
-      $config = new PluginAlignakConfig();
+       $config = new PluginAlignakConfig();
       if ($config->getValue('extra_debug')) {
          if (is_array($message)) {
             $message = print_r($message, true);
          }
-         PluginAlignakToolbox::log($message);
+            PluginAlignakToolbox::log($message);
       }
    }
 

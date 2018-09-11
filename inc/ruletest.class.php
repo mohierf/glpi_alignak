@@ -32,51 +32,51 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+    die("Sorry. You can't access directly to this file");
 }
 
 
 /**
-* Rule class store all informations about a GLPI rule :
-*   - description
-*   - criterias
-*   - actions
-*
-**/
-class PluginAlignakRuleTest extends Rule {
+ * Rule class store all informations about a GLPI rule :
+ *   - description
+ *   - criterias
+ *   - actions
+ **/
+class PluginAlignakRuleTest extends Rule
+{
 
-   // From Rule
+    // From Rule
    static public $right     = 'rule_import';
    public $can_sort  = true;
 
 
    function getTitle() {
-      return 'test';
+       return 'test';
    }
 
 
    function maxActionsCount() {
-      return 1;
+       return 1;
    }
 
 
    function getCriterias() {
 
-      $criterias = [];
-      $criterias['name']['field'] = 'name';
-      $criterias['name']['name']  = __('Software');
-      $criterias['name']['table'] = 'glpi_softwares';
+       $criterias = [];
+       $criterias['name']['field'] = 'name';
+       $criterias['name']['name']  = __('Software');
+       $criterias['name']['table'] = 'glpi_softwares';
 
-      return $criterias;
+       return $criterias;
    }
 
 
    function getActions() {
 
-      $actions = [];
-      $actions['softwarecategories_id']['name']  = __('Category (class)', 'example');
-      $actions['softwarecategories_id']['type']  = 'dropdown';
-      $actions['softwarecategories_id']['table'] = 'glpi_softwarecategories';
-      return $actions;
+       $actions = [];
+       $actions['softwarecategories_id']['name']  = __('Category (class)', 'example');
+       $actions['softwarecategories_id']['type']  = 'dropdown';
+       $actions['softwarecategories_id']['table'] = 'glpi_softwarecategories';
+       return $actions;
    }
 }

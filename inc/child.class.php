@@ -38,64 +38,65 @@
 // enhancements.
 // For CommonDBRelation, the variable are quiet equivalent, but they use _1 and _2 for each side
 // parent
-class PluginAlignakChild extends CommonDBChild {
+class PluginAlignakChild extends CommonDBChild
+{
 
-   // A child rely on an item. If $itemtype=='itemtype', then that is a variable item.
+    // A child rely on an item. If $itemtype=='itemtype', then that is a variable item.
    static public $itemtype = 'itemtype';
    static public $items_id = 'items_id';
 
 
-   // With 0.84, you have to specify each right (create, view, update and delete), because
-   // CommonDBChild(s) and CommonDBRelation(s) mainly depend on the rights on the parent item
-   // All these methods rely on parent:can*. Two attributs are usefull :
-   // * $checkParentRights: define what to check regarding the parent :
-   //         - CommonDBConnexity::DONT_CHECK_ITEM_RIGHTS  don't eaven relly on parents rights
-   //         - CommonDBConnexity::HAVE_VIEW_RIGHT_ON_ITEM view right on the item is enough
-   //         - CommonDBConnexity::HAVE_SAME_RIGHT_ON_ITEM we must have at least update right
-   //                                                      on the item
-   // * $mustBeAttached: some CommonDBChild can be free, without any parent.
+    // With 0.84, you have to specify each right (create, view, update and delete), because
+    // CommonDBChild(s) and CommonDBRelation(s) mainly depend on the rights on the parent item
+    // All these methods rely on parent:can*. Two attributs are usefull :
+    // * $checkParentRights: define what to check regarding the parent :
+    //         - CommonDBConnexity::DONT_CHECK_ITEM_RIGHTS  don't eaven relly on parents rights
+    //         - CommonDBConnexity::HAVE_VIEW_RIGHT_ON_ITEM view right on the item is enough
+    //         - CommonDBConnexity::HAVE_SAME_RIGHT_ON_ITEM we must have at least update right
+    //                                                      on the item
+    // * $mustBeAttached: some CommonDBChild can be free, without any parent.
    static function canCreate() {
 
-      return (Session::haveRight('internet', UPDATE)
-              && parent::canCreate());
+       return (Session::haveRight('internet', UPDATE)
+             && parent::canCreate());
    }
 
 
    static function canView() {
 
-      return (Session::haveRight('internet', READ)
-              && parent::canView());
+       return (Session::haveRight('internet', READ)
+             && parent::canView());
    }
 
 
    static function canUpdate() {
 
-      return (Session::haveRight('internet', UPDATE)
-              && parent::canUpdate());
+       return (Session::haveRight('internet', UPDATE)
+             && parent::canUpdate());
    }
 
 
    static function canDelete() {
 
-      return (Session::haveRight('internet', DELETE)
-              && parent::canDelete());
+       return (Session::haveRight('internet', DELETE)
+             && parent::canDelete());
    }
 
 
-   // By default, post_addItem, post_updateItem and post_deleteFromDB are defined.
-   // They define the history to add to the parents
-   // This method define the name to set inside the history of the parent.
-   // All these methods use $log_history_add, $log_history_update and $log_history_delete to
-   // define the level of log (Log::HISTORY_ADD_DEVICE, Log::HISTORY_UPDATE_DEVICE ...)
+    // By default, post_addItem, post_updateItem and post_deleteFromDB are defined.
+    // They define the history to add to the parents
+    // This method define the name to set inside the history of the parent.
+    // All these methods use $log_history_add, $log_history_update and $log_history_delete to
+    // define the level of log (Log::HISTORY_ADD_DEVICE, Log::HISTORY_UPDATE_DEVICE ...)
    function getHistoryName_for_item($case) {
    }
 
-   // CommonDBChild also check if we can add or updatethe item regarding the new item
-   // ($input[static::$itemtype] and $input[static::$items_id]).
-   // But don't forget to call parent::prepareInputForAdd()
+    // CommonDBChild also check if we can add or updatethe item regarding the new item
+    // ($input[static::$itemtype] and $input[static::$items_id]).
+    // But don't forget to call parent::prepareInputForAdd()
    function prepareInputForAdd($input) {
-      // My preparation on $input
-      return parent::prepareInputForAdd($input);
+       // My preparation on $input
+       return parent::prepareInputForAdd($input);
    }
 
 }

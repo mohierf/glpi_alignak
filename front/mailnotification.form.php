@@ -9,12 +9,12 @@ include ("../../../inc/includes.php");
 
 //Session::checkRight("config","r");
 
-Html::header(__('Alignak - mail notification', 'alignak'),$_SERVER["PHP_SELF"], "plugins",
+Html::header(__('Alignak - mail notification', 'alignak'), $_SERVER["PHP_SELF"], "plugins",
              "alignak", "mailnotification");
 
 $pkMailNotification = new PluginAlignakMailNotification();
 if (isset($_POST["copy"])) {
-   $pkMailNotification->showForm(-1, -1, array( 'canedit'=>PluginAlignakMailNotification::canUpdate(), 'colspan'=>4 ), $_POST);
+   $pkMailNotification->showForm(-1, -1, [ 'canedit'=>PluginAlignakMailNotification::canUpdate(), 'colspan'=>4 ], $_POST);
    Html::footer();
    exit;
 } else if (isset ($_POST["add"])) {
@@ -33,9 +33,9 @@ if (isset($_POST["copy"])) {
 
 //Session::checkRight("config","w");
 if (isset($_GET["id"])) {
-  $pkMailNotification->showForm($_GET['id'], -1, array( 'canedit'=>PluginAlignakMailNotification::canUpdate(), 'colspan'=>4 ));
+   $pkMailNotification->showForm($_GET['id'], -1, [ 'canedit'=>PluginAlignakMailNotification::canUpdate(), 'colspan'=>4 ]);
 } else {
-  $pkMailNotification->showForm();
+   $pkMailNotification->showForm();
 }
 
 Html::footer();

@@ -32,18 +32,19 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+    die("Sorry. You can't access directly to this file");
 }
 
 
-class PluginAlignakRuleTestCollection extends RuleCollection {
+class PluginAlignakRuleTestCollection extends RuleCollection
+{
 
-   // From RuleCollection
+    // From RuleCollection
    public $stop_on_first_match = true;
    static public  $right       = 'rule_import';
    public $menu_option         = 'test';
 
    function getTitle() {
-      return 'Rulesengine test';
+       return 'Rulesengine test';
    }
 }
