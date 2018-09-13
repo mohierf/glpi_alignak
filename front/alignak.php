@@ -57,7 +57,7 @@ if (PluginAlignakAlignak::canView()) {
    // Add page header
    if ($_SESSION["glpiactiveprofile"]["interface"] == "central") {
       Html::header(__('Alignak instances', 'alignak'), $_SERVER['PHP_SELF'],
-         "config", "pluginalignakmenu", "alignak");
+         "admin", "pluginalignakalignak", "alignak");
    } else {
       Html::helpHeader(__('Alignak instances', 'alignak'), $_SERVER['PHP_SELF']);
    }

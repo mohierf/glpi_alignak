@@ -112,6 +112,40 @@ class PluginAlignakAlignak extends CommonDBTM
    }
 
 
+   /**
+    * @see CommonGLPI::getMenuName()
+    **/
+   static function getMenuName() {
+      return __('Alignak plugin - Alignak class');
+   }
+
+
+   /**
+    * @see CommonGLPI::getAdditionalMenuLinks()
+    **/
+   static function getAdditionalMenuLinks() {
+      global $CFG_GLPI;
+      $links = [];
+
+      $links['config'] = '/plugins/alignak/index.php';
+      $links["<img  src='".$CFG_GLPI["root_doc"]."/pics/menu_showall.png' title='".__s('Show all')."' alt='".__s('Show all')."'>"] = '/plugins/alignak/index.php';
+      $links[__s('Test link 123', 'example')] = '/plugins/alignak/index.php';
+
+      return $links;
+   }
+
+   static function getMenuContent() {
+      global $CFG_GLPI;
+
+      $menu  = parent::getMenuContent();
+      PluginAlignakToolbox::log("Alignak Menu content");
+      $menu['links']['search']          = PluginAlignakAlignak::getSearchURL(false);
+      $menu['links']['config']          = PluginAlignakAlignak::getSearchURL(false);
+
+      return $menu;
+   }
+
+
 //   static function canCreate() {
 //
 //      if (isset($_SESSION["glpi_plugin_alignak_profile"])) {

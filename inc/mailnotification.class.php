@@ -77,6 +77,18 @@ class PluginAlignakMailNotification extends CommonDBTM
    }
 
 
+   static function getMenuContent() {
+      global $CFG_GLPI;
+
+      $menu  = parent::getMenuContent();
+      PluginAlignakToolbox::log("Mail Menu content");
+      $menu['links']['search']          = PluginAlignakMailNotification::getSearchURL(false);
+      $menu['links']['config']          = PluginAlignakMailNotification::getSearchURL(false);
+
+      return $menu;
+   }
+
+
    static function getSpecificValueToDisplay($field, $values, array $options = []) {
 
       if (!is_array($values)) {

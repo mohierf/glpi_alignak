@@ -156,6 +156,23 @@ if ($cronTask->fields['lastrun'] == ''
 echo '<div style="margin-left: 350px; background: #eee; border: outset 2px white; padding: 0.5%;">';
 
 if (Session::haveRight("config", READ)) {
+   echo '
+   ';
+   echo "
+   <div style='margin-top: 5px;'>
+   <strong>". __("Example", "alignak") ."</strong>
+   <br/>
+   <small><em>". __("Examples", "alignak") ."</em></small>
+   <br/>
+   <ul style='margin-left: 5px;'>
+      <li><a href='front/example.php'>".  __("Examples", "alignak") ."</a></li>
+   </ul>
+   </div>
+   <hr>
+   ";
+}
+
+if (Session::haveRight("config", READ)) {
    echo "
    <div style='margin-top: 5px;'>
    <strong>". __("Alignak", "alignak") ."</strong>

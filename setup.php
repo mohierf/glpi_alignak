@@ -116,6 +116,11 @@ function plugin_init_alignak() {
       $types = [
          'Central', 'Computer', 'Preference', 'Profile', 'Entity'
       ];
+      Plugin::registerClass('PluginAlignakExample',
+         ['notificationtemplates_types' => true,
+            'addtabon'                    => $types,
+            'link_types' => true]);
+
       Plugin::registerClass("PluginAlignakAlignak", [
          'notificationtemplates_types' => true, 'addtabon' => $types, 'link_types' => true
       ]);
@@ -144,6 +149,12 @@ function plugin_init_alignak() {
 
          // Add an entry to the Administration menu
          if (Session::haveRight('plugin_alignak_menu', READ)) {
+            $PLUGIN_HOOKS['menu_toadd']['alignak'] = [
+               'admin' => 'PluginAlignakAlignak'
+            ];
+//            $PLUGIN_HOOKS["menu_toadd"]['alignak']['admin'] = 'PluginAlignakAlignak';
+
+            /*
             $PLUGIN_HOOKS["menu_toadd"]['alignak']['admin'] = 'PluginAlignakAlignak';
             $links  = [];
             $links['config'] = '/plugins/alignak/front/alignak.php';
@@ -154,7 +165,7 @@ function plugin_init_alignak() {
                   'links'  => $links],
                'options'      => ['title'  => _n('Alignak', 'Alignak', 2, 'alignak'),
                   'links'  => $links],
-            ];
+            ];*/
          }
 
          // Old menu style
