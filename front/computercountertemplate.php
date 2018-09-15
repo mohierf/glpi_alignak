@@ -27,6 +27,7 @@
 
    @package   Alignak
    @author    Frederic Mohier
+   @co-author David Durieux
    @copyright Copyright (c) 2018 Alignak team
    @license   AGPLv3 or (at your option) any later version
               http://www.gnu.org/licenses/agpl-3.0-standalone.html
@@ -38,11 +39,11 @@
  */
 
 // ----------------------------------------------------------------------
-// Original Author of file: Frederic Mohier
+// Original Author of file: Francois Mohier
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-include ("../../../inc/includes.php");
+include ('../../../inc/includes.php');
 
 // Check if plugin is activated...
 $plugin = new Plugin();
@@ -50,22 +51,20 @@ if (!$plugin->isInstalled('alignak') || !$plugin->isActivated('alignak')) {
    Html::displayNotFoundError();
 }
 
+// Check if current user have the appropriate right
+Session::checkRight("plugin_alignak_counters", UPDATE);
+
 // Check for ACLs
-if (PluginAlignakAlignak::canView()) {
+if (PluginAlignakMailNotification::canView()) {
    // View is granted: display the list.
 
-   // Add page header
-   if ($_SESSION["glpiactiveprofile"]["interface"] == "central") {
-      Html::header(__('Alignak instances', 'alignak'), $_SERVER['PHP_SELF'],
-         "admin", "pluginalignakmenu", "alignak");
-   } else {
-      Html::helpHeader(__('Alignak instances', 'alignak'), $_SERVER['PHP_SELF']);
-   }
+   Html::header(
+      __('Alignak - computers counters templates', 'alignak'),
+      $_SERVER['PHP_SELF'],
+      'admin',
+      'pluginalignakmenu', 'computercountertemplate');
 
-   Search::show('PluginAlignakAlignak');
+   Search::show('PluginAlignakComputerCounterTemplate');
 
    Html::footer();
-} else {
-   // View is not granted.
-   Html::displayRightError();
 }

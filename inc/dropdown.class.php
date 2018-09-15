@@ -69,10 +69,6 @@ class PluginAlignakDropdown extends CommonDropdown
    }
 
    static function getTypeName($nb = 0) {
-
-      if ($nb > 0) {
-          return __('Plugin Example Dropdowns', 'example');
-      }
-         return __('Plugin Example Dropdowns', 'example');
+      return _n('Dropdown', 'Dropdowns', $nb, 'alignak');
    }
 }

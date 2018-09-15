@@ -51,10 +51,6 @@
 function plugin_alignak_install() {
    global $DB;
 
-   /*
-   $config = new Config();
-   $config->setConfigurationValues('plugin:Alignak', ['configuration' => false]);
-   */
    set_time_limit(900);
    ini_set('memory_limit', '2048M');
 
@@ -81,15 +77,22 @@ function plugin_alignak_install() {
    $classes = [
       'PluginAlignakConfig',
       'PluginAlignakAlignak',
+      'PluginAlignakExample',
       'PluginAlignakEntity',
       'PluginAlignakComputer',
-      'PluginAlignakMailNotification'
+      'PluginAlignakDashboard',
+      'PluginAlignakMailNotification',
+      // Counters
+      'PluginAlignakCounter',
+      'PluginAlignakCounterTemplate',
+      'PluginAlignakComputerCounterTemplate'
    ];
    // Load classes
    foreach ($classes as $class) {
       if ($plug = isPluginItemType($class)) {
          $dir  = PLUGIN_ALIGNAK_DIR . "/inc/";
          $item = strtolower($plug['class']);
+         Toolbox::logInFile("init", "Loading $item...\n");
          if (file_exists($dir . $item . ".class.php")) {
             include_once ($dir . $item . ".class.php");
          }
@@ -152,16 +155,11 @@ function plugin_alignak_install() {
 function plugin_alignak_uninstall() {
    global $DB;
 
-   /*
-   $config = new Config();
-   $config->deleteConfigurationValues('plugin:Alignak', ['configuration' => false]);
-   */
-
    ProfileRight::deleteProfileRights(['alignak:read']);
 
    if (!class_exists('PluginAlignakProfile')) {
       Session::addMessageAfterRedirect(
-         __("The plugin can't be uninstalled when the plugin is disabled", 'fields'),
+         __("The plugin can't be uninstalled when it is disabled", 'alignak'),
          true, WARNING, true);
       return false;
    }
@@ -178,9 +176,15 @@ function plugin_alignak_uninstall() {
    $classes = [
       'PluginAlignakConfig',
       'PluginAlignakAlignak',
+      'PluginAlignakExample',
       'PluginAlignakEntity',
       'PluginAlignakComputer',
-      'PluginAlignakMailNotification'
+      'PluginAlignakDashboard',
+      'PluginAlignakMailNotification',
+      // Counters
+      'PluginAlignakCounter',
+      'PluginAlignakCounterTemplate',
+      'PluginAlignakComputerCounterTemplate'
    ];
    foreach ($classes as $class) {
       if ($plug = isPluginItemType($class)) {

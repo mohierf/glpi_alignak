@@ -37,16 +37,91 @@ class PluginAlignakExample extends CommonDBTM {
 
    static $tags = '[EXAMPLE_ID]';
 
-   // Should return the localized name of the type
    static function getTypeName($nb = 0) {
-      return 'Example Type';
+      return _n('Example', 'Examples', $nb, 'alignak');
+   }
+
+   static function install(Migration $migration) {
+      global $DB;
+
+      $table = self::getTable();
+
+      if (! $DB->tableExists($table)) {
+         $migration->displayMessage(sprintf(__("Installing %s"), $table));
+
+         $query = "CREATE TABLE `$table` (
+                  `id` int(11) NOT NULL auto_increment,
+                  `name` varchar(255) collate utf8_unicode_ci default NULL,
+                  `comment` text collate utf8_unicode_ci,
+                PRIMARY KEY  (`id`),
+                KEY `name` (`name`)
+               ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+
+         $DB->query($query) or die("error creating $table". $DB->error());
+
+         /* Populate data
+         $query = "INSERT INTO `glpi_plugin_alignak_examples`
+                       (`id`, `name`, `comment`)
+                VALUES (1, 'dp 1', 'comment 1'),
+                       (2, 'dp2', 'comment 2')";
+
+         $DB->query($query) or die("error populate glpi_plugin_alignak_dropdowns". $DB->error());
+         */
+      }
+
+      return true;
+   }
+
+
+   static function uninstall() {
+      global $DB;
+
+      $DB->query("DROP TABLE IF EXISTS `".self::getTable()."`");
+
+      return true;
+   }
+
+
+   /**
+    * @see CommonGLPI::getMenuName()
+    **/
+   static function getMenuName() {
+      return __('Alignak plugin - Example class');
+   }
+
+
+   /**
+    * @see CommonGLPI::getAdditionalMenuLinks()
+    **/
+   static function getAdditionalMenuLinks() {
+      global $CFG_GLPI;
+      $links = [];
+
+      $links['config'] = '/plugins/alignak/index.php';
+      $links["<img  src='".$CFG_GLPI["root_doc"]."/pics/menu_showall.png' title='".__s('Show all')."' alt='".__s('Show all')."'>"] = '/plugins/alignak/index.php';
+      $links[__s('Test link 123', 'alignak')] = '/plugins/alignak/index.php';
+
+      return $links;
+   }
+
+   static function getMenuContent() {
+      global $CFG_GLPI;
+
+      $menu  = parent::getMenuContent();
+      PluginAlignakToolbox::log("Alignak example Menu content");
+      $menu['links']['search']          = PluginAlignakExample::getSearchURL(false);
+      $menu['links']['config']          = PluginAlignakExample::getSearchURL(false);
+
+      return $menu;
    }
 
 
    static function canCreate() {
 
+      return true;
+
       if (isset($_SESSION["glpi_plugin_example_profile"])) {
-         return ($_SESSION["glpi_plugin_example_profile"]['example'] == 'w');
+         return ($_SESSION["glpi_plugin_example_profile"]['alignak'] == 'w');
       }
       return false;
    }
@@ -54,41 +129,21 @@ class PluginAlignakExample extends CommonDBTM {
 
    static function canView() {
 
+      return true;
+
       if (isset($_SESSION["glpi_plugin_example_profile"])) {
-         return ($_SESSION["glpi_plugin_example_profile"]['example'] == 'w'
-                 || $_SESSION["glpi_plugin_example_profile"]['example'] == 'r');
+         return ($_SESSION["glpi_plugin_example_profile"]['alignak'] == 'w'
+                 || $_SESSION["glpi_plugin_example_profile"]['alignak'] == 'r');
       }
       return false;
    }
 
 
-   /**
-    * @see CommonGLPI::getMenuName()
-   **/
-   static function getMenuName() {
-      return __('Alignak plugin');
-   }
-
-
-   /**
-    * @see CommonGLPI::getAdditionalMenuLinks()
-   **/
-   static function getAdditionalMenuLinks() {
-      global $CFG_GLPI;
-      $links = [];
-
-      $links['config'] = '/plugins/alignak/index.php';
-      $links["<img  src='".$CFG_GLPI["root_doc"]."/pics/menu_showall.png' title='".__s('Show all')."' alt='".__s('Show all')."'>"] = '/plugins/alignak/index.php';
-      $links[__s('Test link 123', 'example')] = '/plugins/alignak/index.php';
-
-      return $links;
-   }
-
    function defineTabs($options = []) {
 
       $ong = [];
       $this->addDefaultFormTab($ong);
-      $this->addStandardTab('Link', $ong, $options);
+      $this->addStandardTab('Example ', $ong, $options);
 
       return $ong;
    }
@@ -122,7 +177,7 @@ class PluginAlignakExample extends CommonDBTM {
 
       $tab[] = [
          'id'                 => '1',
-         'table'              => 'glpi_plugin_example_examples',
+         'table'              => 'glpi_plugin_alignak_examples',
          'field'              => 'name',
          'name'               => __('Name'),
       ];
@@ -136,7 +191,7 @@ class PluginAlignakExample extends CommonDBTM {
 
       $tab[] = [
          'id'                 => '3',
-         'table'              => 'glpi_plugin_example_examples',
+         'table'              => 'glpi_plugin_alignak_examples',
          'field'              => 'serial',
          'name'               => __('Serial number'),
          'usehaving'          => true,
@@ -145,7 +200,7 @@ class PluginAlignakExample extends CommonDBTM {
 
       $tab[] = [
          'id'                 => '30',
-         'table'              => 'glpi_plugin_example_examples',
+         'table'              => 'glpi_plugin_alignak_examples',
          'field'              => 'id',
          'name'               => __('ID'),
          'usehaving'          => true,
@@ -167,8 +222,8 @@ class PluginAlignakExample extends CommonDBTM {
 
       switch ($name) {
          case 'Sample' :
-            return ['description' => __('Cron description for example', 'example'),
-                    'parameter'   => __('Cron parameter for example', 'example')];
+            return ['description' => __('Cron description for example', 'alignak'),
+                    'parameter'   => __('Cron parameter for example', 'alignak')];
       }
       return [];
    }
@@ -225,27 +280,31 @@ class PluginAlignakExample extends CommonDBTM {
          switch ($item->getType()) {
             case 'Profile' :
                if ($item->getField('central')) {
-                  return __('Example', 'example');
+                  return __('Example', 'alignak');
                }
                break;
 
             case 'Phone' :
                if ($_SESSION['glpishow_count_on_tabs']) {
-                  return self::createTabEntry(__('Example', 'example'),
+                  return self::createTabEntry(__('Example', 'alignak'),
                                               countElementsInTable($this->getTable()));
                }
-               return __('Example', 'example');
+               return __('Example', 'alignak');
 
             case 'ComputerDisk' :
             case 'Supplier' :
-               return [1 => __("Test Plugin", 'example'),
-                       2 => __("Test Plugin 2", 'example')];
+               return [1 => __("Test Plugin", 'alignak'),
+                       2 => __("Test Plugin 2", 'alignak')];
 
+            case 'Entity' :
             case 'Computer' :
+            case 'User' :
+               return [1 => __("Example", 'alignak')];
+
             case 'Central' :
             case 'Preference':
             case 'Notification':
-               return [1 => __("Test Plugin", 'example')];
+               return [1 => __("Test Plugin", 'alignak')];
 
          }
       }
@@ -257,11 +316,11 @@ class PluginAlignakExample extends CommonDBTM {
 
       switch ($item->getType()) {
          case 'Phone' :
-            echo __("Plugin Example on Phone", 'example');
+            echo __("Plugin Example on Phone", 'alignak');
             break;
 
          case 'Central' :
-            echo __("Plugin central action", 'example');
+            echo __("Plugin central action", 'alignak');
             break;
 
          case 'Preference' :
@@ -284,21 +343,21 @@ class PluginAlignakExample extends CommonDBTM {
             break;
 
          case 'Notification' :
-            echo __("Plugin mailing action", 'example');
+            echo __("Plugin mailing action", 'alignak');
             break;
 
          case 'ComputerDisk' :
          case 'Supplier' :
             if ($tabnum==1) {
-               echo __('First tab of Plugin example', 'example');
+               echo __('First tab of Plugin example', 'alignak');
             } else {
-               echo __('Second tab of Plugin example', 'example');
+               echo __('Second tab of Plugin example', 'alignak');
             }
             break;
 
          default :
             //TRANS: %1$s is a class name, %2$d is an item ID
-            printf(__('Plugin example CLASS=%1$s id=%2$d', 'example'), $item->getType(), $item->getField('id'));
+            printf(__('Plugin example CLASS=%1$s id=%2$d', 'alignak'), $item->getType(), $item->getField('id'));
             break;
       }
       return true;
@@ -327,7 +386,7 @@ class PluginAlignakExample extends CommonDBTM {
       $key = $parm["begin"]."$$$"."plugin_example1";
       $output[$key]["begin"]  = date("Y-m-d 17:00:00");
       $output[$key]["end"]    = date("Y-m-d 18:00:00");
-      $output[$key]["name"]   = __("test planning example 1", 'example');
+      $output[$key]["name"]   = __("test planning example 1", 'alignak');
       // Specify the itemtype to be able to use specific display system
       $output[$key]["itemtype"] = "PluginAlignakExample";
       // Set the ID using the ID of the item in the database to have unique ID
@@ -387,7 +446,7 @@ class PluginAlignakExample extends CommonDBTM {
 
       switch ($data['linked_action'] - Log::HISTORY_PLUGIN) {
          case 0:
-            return __('History from plugin example', 'example');
+            return __('History from plugin example', 'alignak');
       }
 
       return '';
@@ -408,7 +467,7 @@ class PluginAlignakExample extends CommonDBTM {
       $actions['Document_Item'.MassiveAction::CLASS_ACTION_SEPARATOR.'add']  =
                                         _x('button', 'Add a document');         // GLPI core one
       $actions[__CLASS__.MassiveAction::CLASS_ACTION_SEPARATOR.'do_nothing'] =
-                                        __('Do Nothing - just for fun', 'example');  // Specific one
+                                        __('Do Nothing - just for fun', 'alignak');  // Specific one
 
       return $actions;
    }
@@ -425,11 +484,11 @@ class PluginAlignakExample extends CommonDBTM {
          case 'DoIt':
             echo "&nbsp;<input type='hidden' name='toto' value='1'>".
                  Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']).
-                 " ".__('Write in item history', 'example');
+                 " ".__('Write in item history', 'alignak');
             return true;
          case 'do_nothing' :
             echo "&nbsp;".Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']).
-                 " ".__('but do nothing :)', 'example');
+                 " ".__('but do nothing :)', 'alignak');
             return true;
       }
       return parent::showMassiveActionsSubForm($ma);
@@ -448,8 +507,8 @@ class PluginAlignakExample extends CommonDBTM {
       switch ($ma->getAction()) {
          case 'DoIt' :
             if ($item->getType() == 'Computer') {
-               Session::addMessageAfterRedirect(__("Right it is the type I want...", 'example'));
-               Session::addMessageAfterRedirect(__('Write in item history', 'example'));
+               Session::addMessageAfterRedirect(__("Right it is the type I want...", 'alignak'));
+               Session::addMessageAfterRedirect(__('Write in item history', 'alignak'));
                $changes = [0, 'old value', 'new value'];
                foreach ($ids as $id) {
                   if ($item->getFromDB($id)) {
@@ -470,9 +529,9 @@ class PluginAlignakExample extends CommonDBTM {
 
          case 'do_nothing' :
             If ($item->getType() == 'PluginAlignakExample') {
-               Session::addMessageAfterRedirect(__("Right it is the type I want...", 'example'));
+               Session::addMessageAfterRedirect(__("Right it is the type I want...", 'alignak'));
                Session::addMessageAfterRedirect(__("But... I say I will do nothing for:",
-                                                   'example'));
+                                                   'alignak'));
                foreach ($ids as $id) {
                   if ($item->getFromDB($id)) {
                      Session::addMessageAfterRedirect("- ".$item->getField("name"));

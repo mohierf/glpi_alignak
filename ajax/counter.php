@@ -28,20 +28,19 @@
  */
 
 // ----------------------------------------------------------------------
-// Original Author of file:
+// Original Author of file: Francois Mohier
 // Purpose of file:
 // ----------------------------------------------------------------------
 
 include ('../../../inc/includes.php');
+Session::checkRight("entity", UPDATE);
 
-if ($_SESSION["glpiactiveprofile"]["interface"] == "central") {
-   Html::header("Example", $_SERVER['PHP_SELF'],
-      "admin", "pluginalignakmenu", "example");
+$counter = new PluginAlignakCounter();
+if (empty($_REQUEST['counter_id'])) {
+   $counter_id = 0;
+   $counter->getEmpty();
 } else {
-   Html::helpHeader("TITRE", $_SERVER['PHP_SELF']);
+   $counter_id = intval($_REQUEST['counter_id']);
+   $counter->getFromDB($counter_id);
 }
-
-$example = new PluginAlignakExample();
-$example->display($_GET);
-
-Html::footer();
+$counter->showForm($counter_id);

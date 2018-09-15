@@ -46,6 +46,7 @@
 /*
  * Plugin global configuration variables
  */
+define ("PLUGIN_ALIGNAK_OFFICIAL_RELEASE", "0");
 define ('PLUGIN_ALIGNAK_VERSION', '9.3 + 0.1');
 define ('PLUGIN_ALIGNAK_PHP_MIN_VERSION', '5.6');
 define ('PLUGIN_ALIGNAK_GLPI_MIN_VERSION', '9.2');
@@ -103,30 +104,50 @@ function plugin_init_alignak() {
       // No specific information passed so not needed
       // Plugin::registerClass('PluginAlignakAlignak', ['classname' => 'PluginAlignakAlignak']);
 
+      // Plugin Alignak - profile management
+      Plugin::registerClass('PluginAlignakAlignak',
+         ['addtabon' => ['Profile']]);
+      Plugin::registerClass('PluginAlignakProfile',
+         ['addtabon' => ['Profile']]);
+
       // Plugin configuration class
       Plugin::registerClass('PluginAlignakConfig', ['addtabon' => 'Config']);
 
+      // Plugin Alignak - Example class
+      Plugin::registerClass('PluginAlignakExample',
+         ['addtabon' => ['Entity', 'Computer', 'User']]);
+
+      // Plugin Alignak - Dashboard class
+      Plugin::registerClass('PluginAlignakDashboard',
+         ['addtabon' => ['Entity']]);
+
+      // Plugin Alignak - Counters related classes
+      Plugin::registerClass('PluginAlignakCounter',
+         ['addtabon' => ['Computer']]);
+      // todo: to be registered ?
+      Plugin::registerClass('PluginAlignakCounterTemplate',
+         ['addtabon' => ['Entity', 'Computer']]);
+      // todo: to be registered ?
+      Plugin::registerClass('PluginAlignakComputerCounterTemplate',
+         ['addtabon' => ['Computer']]);
+
       // Plugin Mail notification class
-      Plugin::registerClass('PluginAlignakMailNotification', ['addtabon' => 'User']);
+      Plugin::registerClass('PluginAlignakMailNotification',
+         ['addtabon' => 'User']);
 
       // Params : plugin name - string type - ID - Array of attributes
       Plugin::registerClass('PluginAlignakDropdown');
 
-      // Add forms tab on several classes
-      $types = [
-         'Central', 'Computer', 'Preference', 'Profile', 'Entity'
-      ];
-      Plugin::registerClass('PluginAlignakExample',
-         ['notificationtemplates_types' => true,
-            'addtabon'                    => $types,
-            'link_types' => true]);
-
-      Plugin::registerClass("PluginAlignakAlignak", [
-         'notificationtemplates_types' => true, 'addtabon' => $types, 'link_types' => true
-      ]);
-      foreach ($types as $type) {
-         Plugin::registerClass("PluginAlignak$type", ['addtabon' => $type]);
-      }
+//      // Add forms tab on several classes
+//      $types = [
+//         'Central', 'Computer', 'Preference', 'Profile', 'Entity'
+//      ];
+//      Plugin::registerClass("PluginAlignakAlignak", [
+//         'notificationtemplates_types' => true, 'addtabon' => $types, 'link_types' => true
+//      ]);
+//      foreach ($types as $type) {
+//         Plugin::registerClass("PluginAlignak$type", ['addtabon' => $type]);
+//      }
 
       //   Plugin::registerClass('PluginAlignakRuleTestCollection',
       //                         ['rulecollections_types' => true]);
@@ -142,6 +163,9 @@ function plugin_init_alignak() {
          }
       }
 
+//      $PLUGIN_HOOKS["menu_toadd"]['alignak'] =
+//         ['admin'  => 'PluginAlignakAlignak'];
+
       // Display a menu entry ?
       if (Session::haveRight('config', UPDATE)) {
          // Configuration page
@@ -149,23 +173,7 @@ function plugin_init_alignak() {
 
          // Add an entry to the Administration menu
          if (Session::haveRight('plugin_alignak_menu', READ)) {
-            $PLUGIN_HOOKS['menu_toadd']['alignak'] = [
-               'admin' => 'PluginAlignakAlignak'
-            ];
-//            $PLUGIN_HOOKS["menu_toadd"]['alignak']['admin'] = 'PluginAlignakAlignak';
-
-            /*
-            $PLUGIN_HOOKS["menu_toadd"]['alignak']['admin'] = 'PluginAlignakAlignak';
-            $links  = [];
-            $links['config'] = '/plugins/alignak/front/alignak.php';
-            $links['add']    = '/plugins/alignak/front/alignak.form.php';
-            $PLUGIN_HOOKS['submenu_entry']['alignak']['options'] = [
-               'config'       => ['title'  => __('Setup'),
-                  'page'   => '/plugins/alignak/front/alignak.php',
-                  'links'  => $links],
-               'options'      => ['title'  => _n('Alignak', 'Alignak', 2, 'alignak'),
-                  'links'  => $links],
-            ];*/
+            $PLUGIN_HOOKS['menu_toadd']['alignak'] = ['admin' => 'PluginAlignakMenu', 'tools' => 'PluginAlignakMenu'];
          }
 
          // Old menu style
@@ -247,10 +255,16 @@ function plugin_init_alignak() {
 
       $PLUGIN_HOOKS['assign_to_ticket']['alignak'] = 1;
 
-      // Add specific files to add to the header : javascript or css
-      $PLUGIN_HOOKS['add_javascript']['alignak'] = 'alignak.js';
-      $PLUGIN_HOOKS['add_css']['alignak'] = 'alignak.css';
+      /**
+       * Load the relevant javascript/css files only on pages that need them.
+       */
+//      $PLUGIN_HOOKS['add_javascript']['alignak'] = 'js/alignak.js';
+//      $PLUGIN_HOOKS['add_css']['alignak'] = 'css/alignak.css';
+      if (strpos(filter_input(INPUT_SERVER, "SCRIPT_NAME"), "plugins/alignak") != false) {
+         //$PLUGIN_HOOKS['add_css']['alignak'][] = "css/views.css";
 
+         $PLUGIN_HOOKS['add_javascript']['alignak'][] = 'js/alignak-copyright.js';
+      }
       /*
       // request more attributes from ldap
       //$PLUGIN_HOOKS['retrieve_more_field_from_ldap']['alignak']="plugin_retrieve_more_field_from_ldap_alignak";
@@ -323,7 +337,8 @@ function plugin_version_alignak() {
          ],
          'glpi' => [
             'min' => 'PLUGIN_ALIGNAK_GLPI_MIN_VERSION',
-            'dev' => true
+            'max' => '9.4',
+            'dev' => (PLUGIN_ALIGNAK_OFFICIAL_RELEASE == 0)
          ],
          /* Required Glpi parameters
          'params' => [

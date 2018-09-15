@@ -76,7 +76,7 @@ class PluginAlignakToolbox
          if (is_array($message)) {
             $message = print_r($message, true);
          }
-            PluginAlignakToolbox::log($message);
+         PluginAlignakToolbox::log($message);
       }
    }
 

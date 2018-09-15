@@ -56,7 +56,12 @@ class PluginAlignakProfile extends Profile
      * @return string name of the tab
      */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-       return self::createTabEntry(__('Monitoring configuration', 'alignak'));
+
+      if ($item->getType() == 'Profile'
+         && $item->getField('interface') != 'helpdesk') {
+         return __('Monitoring', 'alignak');
+      }
+      return '';
    }
 
 
@@ -69,9 +74,11 @@ class PluginAlignakProfile extends Profile
      * @return boolean
      */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
+      if ($item->getType() == 'Profile') {
        $paProfile = new self();
        $self_service = ($item->fields['interface'] != 'central');
        $paProfile->showForm($item->getID(), true, true, $self_service);
+      }
        return true;
    }
 
@@ -202,8 +209,20 @@ class PluginAlignakProfile extends Profile
          ];
 
          $rights[] = [
+            'itemtype'  => 'PluginAlignakCounter',
+            'label'     => __('Counters', 'alignak'),
+            'field'     => 'plugin_alignak_counters'
+         ];
+
+         $rights[] = [
+            'itemtype'  => 'PluginAlignakDashboard',
+            'label'     => __('Dashboards', 'alignak'),
+            'field'     => 'plugin_alignak_dashboard'
+         ];
+
+         $rights[] = [
             'itemtype'  => 'PluginAlignakMailNotification',
-            'label'     => __('Mail notification', 'alignak'),
+            'label'     => __('Mail notifications', 'alignak'),
             'field'     => 'plugin_alignak_mailnotification'
          ];
       }
@@ -242,7 +261,7 @@ class PluginAlignakProfile extends Profile
      * @param integer $profiles_id id of profile
      */
    static function createFirstAccess($profiles_id) {
-      include_once GLPI_ROOT."/plugins/alignak/inc/profile.class.php";
+      // include_once GLPI_ROOT."/plugins/alignak/inc/profile.class.php";
       $profile = new self();
       foreach ($profile->getAllRights() as $right) {
           self::addDefaultProfileInfos($profiles_id, [$right['field'] => ALLSTANDARDRIGHT]);
@@ -282,8 +301,10 @@ class PluginAlignakProfile extends Profile
       $profile   = new Profile();
       $a_rights  = $pfProfile->getAllRights();
 
+      // Toolbox::logInFile("init", "initProfile...\n");
       foreach ($a_rights as $data) {
          if (countElementsInTable("glpi_profilerights", "`name` = '".$data['field']."'") == 0) {
+            Toolbox::logInFile("init", "Set right {$data['field']}\n");
             ProfileRight::addProfileRights([$data['field']]);
             $_SESSION['glpiactiveprofile'][$data['field']] = 0;
          }

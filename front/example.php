@@ -35,7 +35,8 @@
 include ('../../../inc/includes.php');
 
 if ($_SESSION["glpiactiveprofile"]["interface"] == "central") {
-   Html::header("Example", $_SERVER['PHP_SELF'], "admin", "pluginalignakexample", "");
+   Html::header("Example", $_SERVER['PHP_SELF'],
+      "admin", "pluginalignakmenu", "example");
 } else {
    Html::helpHeader("Example", $_SERVER['PHP_SELF']);
 }

@@ -17,19 +17,13 @@ if (!$plugin->isInstalled('alignak') || !$plugin->isActivated('alignak')) {
 }
 
 // Check if current user have config right
-Session::checkRight("plugin_alignak_mailnotification", UPDATE);
+Session::checkRight("plugin_alignak_menu", READ);
 
-// Check for ACLs
-if (PluginAlignakMailNotification::canView()) {
-   // View is granted: display the list.
+// View is granted: display the list.
+Html::header(__('Alignak plugin - main menu', 'alignak'), $_SERVER['PHP_SELF']);
 
-   Html::header(
-      __('Alignak - mail notifications', 'alignak'),
-      $_SERVER['PHP_SELF'],
-      'admin',
-      'pluginalignakmenu', 'mail_notification');
+PluginAlignakMenu::displayMenu();
 
-   Search::show('PluginAlignakMailNotification');
+// PluginAlignakMenu::board();
 
-   Html::footer();
-}
+Html::footer();

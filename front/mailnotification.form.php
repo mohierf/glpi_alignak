@@ -7,25 +7,29 @@
 
 include ("../../../inc/includes.php");
 
-//Session::checkRight("config","r");
+// Check if current user have the appropriate right
+//Session::checkRight("plugin_alignak_mailnotification", READ);
 
-Html::header(__('Alignak - mail notification', 'alignak'), $_SERVER["PHP_SELF"], "plugins",
-             "alignak", "mailnotification");
+Html::header(
+   __('Alignak - mail notifications', 'alignak'),
+   $_SERVER['PHP_SELF'],
+   'admin',
+   'pluginalignakmenu', 'mail_notification');
 
-$pkMailNotification = new PluginAlignakMailNotification();
+$paMailNotification = new PluginAlignakMailNotification();
 if (isset($_POST["copy"])) {
-   $pkMailNotification->showForm(-1, -1, [ 'canedit'=>PluginAlignakMailNotification::canUpdate(), 'colspan'=>4 ], $_POST);
+   $paMailNotification->showForm(-1, -1, [ 'canedit'=>PluginAlignakMailNotification::canUpdate(), 'colspan'=>4 ], $_POST);
    Html::footer();
    exit;
 } else if (isset ($_POST["add"])) {
-   $pkMailNotification->add($_POST);
+   $paMailNotification->add($_POST);
    Html::back();
 } else if (isset ($_POST["update"])) {
-   $pkMailNotification->update($_POST);
+   $paMailNotification->update($_POST);
    Html::back();
 } else if (isset ($_POST["delete"])) {
-   $pkMailNotification->delete($_POST);
-   $pkMailNotification->redirectToList();
+   $paMailNotification->delete($_POST);
+   $paMailNotification->redirectToList();
 } else if (isset ($_POST["send"])) {
    Session::crongetCSVDailyCounters($_POST['id']);
    Html::back();
@@ -33,9 +37,9 @@ if (isset($_POST["copy"])) {
 
 //Session::checkRight("config","w");
 if (isset($_GET["id"])) {
-   $pkMailNotification->showForm($_GET['id'], -1, [ 'canedit'=>PluginAlignakMailNotification::canUpdate(), 'colspan'=>4 ]);
+   $paMailNotification->showForm($_GET['id'], -1, [ 'canedit'=>PluginAlignakMailNotification::canUpdate(), 'colspan'=>4 ]);
 } else {
-   $pkMailNotification->showForm();
+   $paMailNotification->showForm();
 }
 
 Html::footer();

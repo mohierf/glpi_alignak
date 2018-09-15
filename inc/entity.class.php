@@ -109,27 +109,27 @@ class PluginAlignakEntity extends CommonDBTM
    }
 
 
-    // Should return the localized name of the type
+   /*
+   // Should return the localized name of the type
    static function getTypeName($nb = 0) {
-       return 'Entity';
+      return 'Entity';
    }
 
 
-    /*
-    static function canCreate() {
-      return Session::haveRight('plugin_alignak_entity', CREATE));
-    }
+   static function canCreate() {
+     return Session::haveRight('plugin_alignak_entity', CREATE));
+   }
 
 
-    static function canView() {
-      return PluginAlignakProfile::haveRight("config", 'r');
-    }
-    */
+   static function canView() {
+     return PluginAlignakProfile::haveRight("config", 'r');
+   }
+   */
 
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
-       $array_ret = [];
+      $array_ret = [];
       if ($item->getID() > -1) {
          if (Session::haveRight('config', READ)) {
             $array_ret[0] = self::createTabEntry(__('Monitoring', 'monitoring'));

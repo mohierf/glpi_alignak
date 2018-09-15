@@ -28,20 +28,39 @@
  */
 
 // ----------------------------------------------------------------------
-// Original Author of file:
+// Original Author of file: Francois Mohier
 // Purpose of file:
 // ----------------------------------------------------------------------
 
 include ('../../../inc/includes.php');
 
-if ($_SESSION["glpiactiveprofile"]["interface"] == "central") {
-   Html::header("Example", $_SERVER['PHP_SELF'],
-      "admin", "pluginalignakmenu", "example");
-} else {
-   Html::helpHeader("TITRE", $_SERVER['PHP_SELF']);
+if ($_POST && isset($_POST['_glpi_csrf_token']) && isset($_POST['computer_id'])) {
+   // Check that a link has been passed
+   if (!isset($_POST['template']) or empty($_POST['template'])) {
+     Html::displayErrorAndDie('Please specified a template');
+   }
+
+   // Load the Computer that need association with that given template
+   $computerCounterTemplate = new PluginAlignakComputerCounterTemplate();
+
+   $ret = $computerCounterTemplate->find( "computer_id = ".$_POST['computer_id']);
+   $computerCounterTemplate->fields['computer_id'] = $_POST['computer_id'];
+   $computerCounterTemplate->fields['template_id'] = $_POST['template'];
+   foreach( $ret as $r) 
+      $id = $r['id'];
+
+   if( $ret != null){ 
+      $computerCounterTemplate->fields['id'] = $id;
+      $updates = ['template_id'];
+      $computerCounterTemplate->updateInDB( $updates);
+   }
+   else {
+      // Save the new computerCounterTemplate to the DataBase
+      $computerCounterTemplate->addToDB();
+   }
+
+   // Redirect the user to the Computer Page
+   $url = explode("?", $_SERVER['HTTP_REFERER']);
+   Html::redirect($url[0] . "?id=" . $_POST['computer_id']);
 }
 
-$example = new PluginAlignakExample();
-$example->display($_GET);
-
-Html::footer();

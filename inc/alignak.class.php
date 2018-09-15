@@ -46,24 +46,11 @@
 // Class of the defined type
 class PluginAlignakAlignak extends CommonDBTM
 {
-
    static $tags = '[ALIGNAK_ID]';
 
-
-   /**
-    * We activate the history.
-    *
-    * @var boolean
-    */
    public $dohistory = true;
 
-   /**
-    * The right name for this class
-    *
-    * @var string
-    */
    static $rightname = 'plugin_alignak_alignak';
-
 
    static function install(Migration $migration) {
        global $DB;
@@ -96,7 +83,6 @@ class PluginAlignakAlignak extends CommonDBTM
          return true;
    }
 
-
    static function uninstall() {
        global $DB;
 
@@ -105,24 +91,19 @@ class PluginAlignakAlignak extends CommonDBTM
        return true;
    }
 
-
-    // Should return the localized name of the type
    static function getTypeName($nb = 0) {
-       return 'Alignak';
+      return _n('Alignak instance', 'Alignak instances', $nb, 'alignak');
    }
-
 
    /**
     * @see CommonGLPI::getMenuName()
     **/
    static function getMenuName() {
-      return __('Alignak plugin - Alignak class');
+      return __('Alignak PluginAlignakAlignak - Alignak class');
    }
-
 
    /**
     * @see CommonGLPI::getAdditionalMenuLinks()
-    **/
    static function getAdditionalMenuLinks() {
       global $CFG_GLPI;
       $links = [];
@@ -144,6 +125,7 @@ class PluginAlignakAlignak extends CommonDBTM
 
       return $menu;
    }
+   **/
 
 
 //   static function canCreate() {
@@ -165,15 +147,6 @@ class PluginAlignakAlignak extends CommonDBTM
 //   }
 
 
-//    /**
-//     *
-//     * @see CommonGLPI::getMenuName()
-//     **/
-//   static function getMenuName() {
-//       return __('Alignak monitoring plugin');
-//   }
-//
-//
 //    /**
 //     *
 //     * @see CommonGLPI::getAdditionalMenuLinks()
@@ -215,7 +188,6 @@ class PluginAlignakAlignak extends CommonDBTM
 
        return true;
    }
-
 
    function rawSearchOptions() {
 
@@ -261,7 +233,6 @@ class PluginAlignakAlignak extends CommonDBTM
        return $tab;
    }
 
-
     /**
      * Give localized information about 1 task
      *
@@ -278,7 +249,6 @@ class PluginAlignakAlignak extends CommonDBTM
       }
          return [];
    }
-
 
     /**
      * Execute 1 task manage by the plugin
@@ -300,8 +270,7 @@ class PluginAlignakAlignak extends CommonDBTM
        return 1;
    }
 
-
-    // Hook done on before add item case (data from form, not altered)
+   // Hook done on before add item case (data from form, not altered)
    static function pre_item_add_computer(Computer $item) {
       if (isset($item->input['name']) && empty($item->input['name'])) {
           Session::addMessageAfterRedirect("Pre Add Computer Hook KO (name empty)", true);
@@ -316,14 +285,12 @@ class PluginAlignakAlignak extends CommonDBTM
        Session::addMessageAfterRedirect("Post prepareAdd Computer Hook", true);
    }
 
-
     // Hook done on add item case
    static function item_add_computer(Computer $item) {
 
        Session::addMessageAfterRedirect("Add Computer Hook, ID=".$item->getID(), true);
        return true;
    }
-
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
@@ -353,7 +320,6 @@ class PluginAlignakAlignak extends CommonDBTM
       }
          return '';
    }
-
 
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
 
@@ -505,10 +471,7 @@ class PluginAlignakAlignak extends CommonDBTM
          return '';
    }
 
-
-    //////////////////////////////
-    ////// SPECIFIC MODIF MASSIVE FUNCTIONS ///////
-    /**
+   /**
      *
      * @since version 0.85
      *
@@ -525,7 +488,6 @@ class PluginAlignakAlignak extends CommonDBTM
 
        return $actions;
    }
-
 
     /**
      *
@@ -548,7 +510,6 @@ class PluginAlignakAlignak extends CommonDBTM
       }
          return parent::showMassiveActionsSubForm($ma);
    }
-
 
     /**
      *
