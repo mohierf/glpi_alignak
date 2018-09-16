@@ -28,22 +28,21 @@
  */
 
 // ----------------------------------------------------------------------
-// Original Author of file: Francois Mohier
+// Original Author of file: Frederic Mohier
 // Purpose of file:
 // ----------------------------------------------------------------------
 
 
-/// Class PluginAlignakCounterTemplate
-class PluginAlignakCounterTemplate extends CommonDBTM {
+class PluginAlignakMonitoringTemplate extends CommonDBTM {
    /**
     * The right name for this class
     *
     * @var string
     */
-   static $rightname = 'plugin_alignak_counters';
+   static $rightname = 'plugin_alignak_monitoring';
 
    static function getTypeName($nb = 0) {
-      return _n('Counters template', 'Counters templates', $nb, 'alignak');
+      return _n('Monitoring template', 'Monitoring templates', $nb, 'alignak');
    }
 
    static function install(Migration $migration) {
@@ -54,7 +53,7 @@ class PluginAlignakCounterTemplate extends CommonDBTM {
       if (!$DB->tableExists($table)) {
 //         $migration->displayMessage(sprintf(__("Installing %s"), $table));
 
-         $query = "CREATE TABLE `glpi_plugin_alignak_countertemplates` (
+         $query = "CREATE TABLE `glpi_plugin_alignak_monitoringtemplates` (
                   `id` int(11) NOT NULL auto_increment,
                   `name` varchar(25) collate utf8_unicode_ci NOT NULL,
                   `entities_id` int(11),
@@ -75,68 +74,35 @@ class PluginAlignakCounterTemplate extends CommonDBTM {
       return true;
    }
 
-   /*
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-
       $array_ret = [];
       if ($item->getID() > -1) {
-         if (PluginAlignakProfile::haveRight("config", 'r')) {
-            $array_ret[0] = self::createTabEntry(__('Monitoring', 'monitoring'));
+         if (Session::haveRight('config', READ)) {
+            switch ($item->getType()) {
+               case 'Entity' :
+                  $array_ret[] = self::createTabEntry(__('Monitoring template', 'alignak'));
+                  break;
+               case 'Computer' :
+                  $array_ret[] = self::createTabEntry(__('Monitoring template', 'alignak'));
+                  break;
+            }
          }
       }
       return $array_ret;
    }
-   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
-
-      $ong = array();
-      $ong[1] = 'titre de mon premier onglet';
-      $ong[2] = 'titre de mon second onglet';
-      return $ong;
-   }
-   */
-
-   /*
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-      echo "DISPLAY SOMETING".$item->getID();
-      if ($item->getID() > -1) {
-         $pmCounter = new PluginAlignakCounterTemplate();
-         $pmHostconfig = new PluginAlignakHostconfig();
-
-         $pmHostconfig->showForm($item->getID(), "CounterTemplate");
-         $pmEntity->showForm($item->fields['id']);
-      }
-      return true;
-   }
-
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
-      echo "countertemplate displayTabContentForItem".$tabnum.":".$item;
-
-      return true;
-   }
-
-   public function defineTabs($options=[]) {
-      $ong = [];
-      $this->addDefaultFormTab($ong);
-      $this->addStandardTab('PluginAlignakCounter', $ong, $options);
-      return $ong;
-   }
-   */
-
-   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-      switch ($item->getType()) {
-
-         case 'Entity' :
-            return [1 => __('Counters template', 'alignak')];
-      }
-      return '';
-   }
 
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
       switch ($item->getType()) {
 
          case 'Entity' :
+            // Call the show form for the provided entity
+            $paTemplate = new PluginAlignakMonitoringTemplate();
+            $paTemplate->showForm(-1, $item->getID(), ['canedit'=>self::canUpdate(), 'colspan'=>4 ]);
+            break;
+
+         case 'Computer' :
             // Call the show form for the current entity
-            $paTemplate = new PluginAlignakCounterTemplate();
+            $paTemplate = new PluginAlignakMonitoringTemplate();
             $paTemplate->showForm(-1, $item->getID(), ['canedit'=>self::canUpdate(), 'colspan'=>4 ]);
             break;
       }
@@ -152,90 +118,6 @@ class PluginAlignakCounterTemplate extends CommonDBTM {
    *@return bool true if form is ok
    *
    **/
-   /* Commented out - Fred - Replaced with another function showForm
-   function showForm($template_id, $options = []) {
-      global $DB,$CFG_GLPI;
-
-      $counters = $this->find("`id`='".$template_id."'", "", 1);
-      $counter = current($counters);
-      $this->getFromDB($counter['id']);
-
-      // echo "<form name='form' method='post'
-      //action='".$CFG_GLPI['root_doc']."/plugins/alignak/front/counter_template.form.php'>";
-
-      $this->initForm($template_id, $options);
-      $this->showFormHeader($options);
-
-      echo "<table class='tab_cadre_fixe'";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<th colspan='2'>";
-      echo __('Set the counter template', 'alignak');
-      echo "</th>";
-      echo "</tr>";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>".__('Template Name', 'alignak').'<span style="color:red;">*</span></td>';
-      echo "<td>";
-      echo "<input type='text' name='name' value='".$this->fields["name"]."' size='30'/>";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>".__('Entity', 'alignak')." :</td>";
-      echo "<td>";
-      echo "<input type='text' name='entities_id' value='".$this->fields["entities_id"]."' size='30'/>";
-
-      echo "</td>";
-      echo "</tr>";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td colspan='2' align='center'>";
-      echo "<input type='hidden' name='id' value='".$this->fields['id']."'/>";
-      echo "<input type='submit' name='save' value=\"".__('Save')."\" class='submit'>";
-      echo "</td>";
-      echo "</tr>";
-
-      echo "</table>";
-      Html::closeForm();
-
-      return true;
-   }
-
-   function getCounterTemplateListForDropdown($entities_id = '') {
-      global $DB;
-
-      $output = [];
-      $query = "SELECT * FROM `".$this->getTable()."` ";
-
-      if ($template_id != '') {
-        $query .= " WHERE `template_id`='".$template_id."'";
-      }
-
-      $result = $DB->query($query);
-      while ($data=$DB->fetch_array($result)) {
-         $output[$data['id']] = $data['name'];
-      }
-      return $output;
-   }
-
-   function getCounterTemplateList($entities_id = '') {
-      global $DB;
-
-      $output = [];
-      $query = "SELECT * FROM `".$this->getTable()."` ";
-
-      if ($template_id != '') {
-        $query .= " WHERE `template_id`='".$template_id."'";
-      }
-
-      $result = $DB->query($query);
-      while ($data=$DB->fetch_array($result)) {
-         $output[$data['id']] = $data['id'];
-         $output[$data['name']] = $data['name'];
-         $output[$data['entities_id']] = $data['entities_id'];
-      }
-      return $output;
-   }
-   */
    function showForm($ID = -1, $entities_id = -1, $options = [], $copy = []) {
       global $DB,$CFG_GLPI;
 
@@ -327,6 +209,36 @@ class PluginAlignakCounterTemplate extends CommonDBTM {
       echo '<hr/>';
       echo '</td></tr>';
 
+      try {
+         $filename = 'host.cfg';
+
+         $loader = new Twig_Loader_Filesystem(PLUGIN_ALIGNAK_TEMPLATES_PATH);
+         $twig = new Twig_Environment($loader, [
+            'debug' => false,
+            'auto_reload' => PLUGIN_ALIGNAK_TPL_AUTO_RELOAD,
+            'cache' => PLUGIN_ALIGNAK_TPL_CACHE,
+            'strict_variables' => PLUGIN_ALIGNAK_TPL_RAISE_ERRORS
+         ]);
+
+         echo(nl2br("Loading template: " . $filename . "\n"));
+         PluginAlignakToolbox::log("Loading template: " . $filename);
+         $template = $twig->load($filename);
+         $result = $template->render(['template' => 'test-host', 'name' => 'localhost', 'address' => '127.0.0.1']);
+         echo nl2br("\nTemplate result is: \n", true);
+         echo nl2br("\n-----\n", true);
+         echo nl2br($result, true);
+         echo nl2br("\n-----\n", true);
+      } catch (Twig_Error_Loader $e) {
+         // Could not get the templates, raise an error !
+         Session::addMessageAfterRedirect(__("Alignak monitoring plugin templates are not available:", 'alignak'), true, ERROR);
+         Session::addMessageAfterRedirect($e->getMessage(), true, ERROR);
+      } catch (Twig_Error_Runtime $e) {
+         // Could not parse the templates, raise an error !
+         Session::addMessageAfterRedirect(__("Alignak monitoring plugin templates runtime exception:", 'alignak'), true, ERROR);
+         Session::addMessageAfterRedirect($e->getMessage(), true, ERROR);
+         echo nl2br(__("Alignak monitoring plugin templates runtime exception: \n", 'alignak') . $e->getMessage());
+      }
+
       $this->showFormButtons($options);
 
       Html::closeForm();
@@ -338,7 +250,6 @@ class PluginAlignakCounterTemplate extends CommonDBTM {
     * Define search options for forms
     *
     * @return Array Array of fields to show in search engine and options for each fields
-    */
    public function getSearchOptionsNew() {
       return $this->rawSearchOptions();
    }
@@ -387,5 +298,6 @@ class PluginAlignakCounterTemplate extends CommonDBTM {
       ];
       return $tab;
    }
+    */
 
 }

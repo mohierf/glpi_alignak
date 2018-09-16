@@ -43,7 +43,7 @@ class PluginAlignakDropdown extends CommonDropdown
        $table = self::getTable();
 
       if (!$DB->tableExists($table)) {
-          $migration->displayMessage(sprintf(__("Installing %s"), $table));
+//          $migration->displayMessage(sprintf(__("Installing %s"), $table));
 
           $query = "CREATE TABLE IF NOT EXISTS `$table` (
                   `id`                                INT(11)  NOT NULL auto_increment,

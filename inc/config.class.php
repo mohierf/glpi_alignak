@@ -27,11 +27,9 @@
 
    @package   Alignak
    @author    Frederic Mohier
-   @co-author David Durieux
    @copyright Copyright (c) 2018 Alignak team
    @license   AGPLv3 or (at your option) any later version
               http://www.gnu.org/licenses/agpl-3.0-standalone.html
-   @link      http://alignak.net/
    @link      http://alignak.net/
    @since     2018
 
@@ -56,7 +54,7 @@ class PluginAlignakConfig extends CommonDBTM
 
        $table = self::getTable();
       if (!$DB->tableExists($table)) {
-          $migration->displayMessage(sprintf(__("Installing %s"), $table));
+//          $migration->displayMessage(sprintf(__("Installing %s"), $table));
 
           $query = "CREATE TABLE `$table` (
                   `id` int(11) NOT NULL auto_increment,

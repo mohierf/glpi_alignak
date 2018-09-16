@@ -41,17 +41,24 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-// Non menu entry case
-//header("Location:../../central.php");
 
-// Entry menu case
-define('GLPI_ROOT', '../..');
-include (GLPI_ROOT . "/inc/includes.php");
+include ('../../../inc/includes.php');
 
-Session::checkRight("config", "w");
+// Check if plugin is activated...
+$plugin = new Plugin();
+if (!$plugin->isInstalled('alignak') || !$plugin->isActivated('alignak')) {
+   Html::displayNotFoundError();
+}
 
-Html::header("TITLE", $_SERVER['PHP_SELF'], "plugins");
+// Check if current user have the appropriate right
+Session::checkRight("plugin_alignak_monitoring", UPDATE);
 
-echo "This is the plugin stat page";
+Html::header(
+   __('Monitoring templates', 'alignak'),
+   $_SERVER['PHP_SELF'],
+   'admin',
+   'pluginalignakmenu', 'monitoring_template');
+
+Search::show('PluginAlignakMonitoringTemplate');
 
 Html::footer();

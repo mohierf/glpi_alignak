@@ -17,17 +17,16 @@ define('TU_USER', '_test_user');
 // Travis run or local run?
 if (getenv("TRAVIS") !== false) {
    echo("Running Travis tests...\n");
-//   define('GLPI_ROOT', dirname(dirname(__DIR__)));
+   //   define('GLPI_ROOT', dirname(dirname(__DIR__)));
    define('GLPI_ROOT', realpath(__DIR__ . '/../../../'));
 
 } else {
    echo("Running local tests...\n");
-   define('GLPI_ROOT', '/home/glpi/glpi');
+   define('GLPI_ROOT', '/home/glpi/glpi-dev-plugins');
 }
 echo("Glpi root dir: " . GLPI_ROOT . "\n");
 
 define("GLPI_CONFIG_DIR", GLPI_ROOT . "/tests");
-echo("Included: " . GLPI_ROOT . "/inc/includes.php" . "\n");
 if (!file_exists(GLPI_CONFIG_DIR . '/config_db.php')) {
    echo "config_db.php missing. Did GLPI successfully initialized ?\n";
    exit(1);
@@ -39,6 +38,7 @@ define('GLPI_LOG_DIR', __DIR__ . '/logs');
 if (!defined('STDERR')) {
    define('STDERR', fopen(GLPI_LOG_DIR . 'stderr.log', 'w'));
 }
+echo("Glpi log dir: " . GLPI_LOG_DIR . "\n");
 
 // Giving --debug argument to atoum will be detected by GLPI too
 // the error handler in Toolbox may output to stdout a message and break process communication
@@ -49,6 +49,32 @@ if ($key) {
 }
 
 include (GLPI_ROOT . "/inc/includes.php");
+echo("Included: " . GLPI_ROOT . "/inc/includes.php" . "\n");
 
-// If GLPI debug mode is disabled, atoum cannot produce backtaces
-//\Toolbox::setDebugMode(Session::DEBUG_MODE);
+// If GLPI debug mode is disabled, atoum cannot produce backtraces
+\Toolbox::setDebugMode(Session::DEBUG_MODE);
+
+// Installing the plugin
+$plugin = new \Plugin();
+$plugin->getFromDBbyDir('alignak');
+// Check from prerequisites as Plugin::install() does not!
+if (!plugin_alignak_check_prerequisites()) {
+   echo "\nPrerequisites are not met!";
+   die(1);
+}
+if (! $plugin->isInstalled('alignak')) {
+   echo("Installing the plugin...\n");
+   call_user_func([$plugin, 'install'], $plugin->getID());
+   echo("Installed\n");
+} else {
+   echo("Plugin is installed\n");
+}
+if (! $plugin->isActivated('alignak')) {
+   echo("Activating the plugin...\n");
+   call_user_func([$plugin, 'activate'], $plugin->getID());
+   echo("Activated\n");
+} else {
+   echo("Plugin is activated\n");
+}
+
+//include_once __DIR__ . '/AlignakDbTestCase.php';

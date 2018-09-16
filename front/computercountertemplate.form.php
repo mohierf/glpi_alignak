@@ -37,7 +37,7 @@ include ('../../../inc/includes.php');
 if ($_POST && isset($_POST['_glpi_csrf_token']) && isset($_POST['computer_id'])) {
    // Check that a link has been passed
    if (!isset($_POST['template']) or empty($_POST['template'])) {
-     Html::displayErrorAndDie('Please specified a template');
+      Html::displayErrorAndDie('Please specified a template');
    }
 
    // Load the Computer that need association with that given template
@@ -46,15 +46,15 @@ if ($_POST && isset($_POST['_glpi_csrf_token']) && isset($_POST['computer_id']))
    $ret = $computerCounterTemplate->find( "computer_id = ".$_POST['computer_id']);
    $computerCounterTemplate->fields['computer_id'] = $_POST['computer_id'];
    $computerCounterTemplate->fields['template_id'] = $_POST['template'];
-   foreach( $ret as $r) 
+   foreach ($ret as $r) {
       $id = $r['id'];
+   }
 
-   if( $ret != null){ 
+   if ($ret != null) {
       $computerCounterTemplate->fields['id'] = $id;
       $updates = ['template_id'];
       $computerCounterTemplate->updateInDB( $updates);
-   }
-   else {
+   } else {
       // Save the new computerCounterTemplate to the DataBase
       $computerCounterTemplate->addToDB();
    }

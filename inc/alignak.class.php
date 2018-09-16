@@ -27,11 +27,9 @@
 
    @package   Alignak
    @author    Frederic Mohier
-   @co-author David Durieux
    @copyright Copyright (c) 2018 Alignak team
    @license   AGPLv3 or (at your option) any later version
               http://www.gnu.org/licenses/agpl-3.0-standalone.html
-   @link      http://alignak.net/
    @link      http://alignak.net/
    @since     2018
 
@@ -58,7 +56,7 @@ class PluginAlignakAlignak extends CommonDBTM
        $table = self::getTable();
 
       if (! $DB->tableExists($table)) {
-          $migration->displayMessage(sprintf(__("Installing %s"), $table));
+//          $migration->displayMessage(sprintf(__("Installing %s"), $table));
 
           $query = "CREATE TABLE `$table` (
                   `id` int(11) NOT NULL auto_increment,
@@ -71,7 +69,7 @@ class PluginAlignakAlignak extends CommonDBTM
           $DB->query($query) or die("error creating $table". $DB->error());
 
           /* Populate data
-          $query = "INSERT INTO `glpi_plugin_alignak_alignak`
+          $query = "INSERT INTO `glpi_plugin_alignak_alignaks`
                         (`id`, `name`, `comment`)
                  VALUES (1, 'dp 1', 'comment 1'),
                         (2, 'dp2', 'comment 2')";
@@ -127,40 +125,6 @@ class PluginAlignakAlignak extends CommonDBTM
    }
    **/
 
-
-//   static function canCreate() {
-//
-//      if (isset($_SESSION["glpi_plugin_alignak_profile"])) {
-//          return ($_SESSION["glpi_plugin_alignak_profile"]['alignak'] == 'w');
-//      }
-//         return false;
-//   }
-//
-//
-//   static function canView() {
-//
-//      if (isset($_SESSION["glpi_plugin_alignak_profile"])) {
-//          return ($_SESSION["glpi_plugin_alignak_profile"]['alignak'] == 'w'
-//               || $_SESSION["glpi_plugin_alignak_profile"]['alignak'] == 'r');
-//      }
-//         return false;
-//   }
-
-
-//    /**
-//     *
-//     * @see CommonGLPI::getAdditionalMenuLinks()
-//     **/
-//   static function getAdditionalMenuLinks() {
-//       global $CFG_GLPI;
-//       $links = [];
-//
-//       $links['config'] = PLUGIN_ALIGNAK_DIR . '/index.php';
-//       $links["<img  src='".$CFG_GLPI["root_doc"]."/pics/menu_showall.png' title='".__s('Show all')."' alt='".__s('Show all')."'>"] = PLUGIN_ALIGNAK_DIR . '/index.php';
-//       $links[__s('Test link', 'alignak')] = PLUGIN_ALIGNAK_DIR . '/index.php';
-//
-//       return $links;
-//   }
 
    function defineTabs($options = []) {
 
@@ -308,9 +272,8 @@ class PluginAlignakAlignak extends CommonDBTM
 
             case 'Central' :
                if ($_SESSION['glpishow_count_on_tabs']) {
-                   return self::createTabEntry(
-                       __('Alignak', 'alignak'),
-                       countElementsInTable($this->getTable())
+                   return self::createTabEntry(__('Alignak', 'alignak'),
+                      countElementsInTable($this->getTable())
                    );
                }
             case 'Preference':

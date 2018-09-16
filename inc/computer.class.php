@@ -27,11 +27,9 @@
 
    @package   Alignak
    @author    Frederic Mohier
-   @co-author David Durieux
    @copyright Copyright (c) 2018 Alignak team
    @license   AGPLv3 or (at your option) any later version
               http://www.gnu.org/licenses/agpl-3.0-standalone.html
-   @link      http://alignak.net/
    @link      http://alignak.net/
    @since     2018
 
@@ -58,7 +56,7 @@ class PluginAlignakComputer extends CommonDBTM
        $table = self::getTable();
 
       if (!$DB->tableExists($table)) {
-          $migration->displayMessage(sprintf(__("Installing %s"), $table));
+//          $migration->displayMessage(sprintf(__("Installing %s"), $table));
 
           $query = "CREATE TABLE `$table` (
                   `id` int(11) NOT NULL auto_increment,
@@ -111,8 +109,8 @@ class PluginAlignakComputer extends CommonDBTM
             array_push($array_ret, self::createTabEntry(__('Monitoring configuration', 'monitoring')));
          }
 
-            // If the item is monitored, add some more tabs...
-            $pmHost = new PluginAlignakComputer();
+         // If the item is monitored, add some more tabs...
+         $pmHost = new PluginAlignakComputer();
          if ($pmHost->exists($item)) {
              array_push($array_ret, self::createTabEntry(__('Monitoring live state', 'monitoring')));
              array_push($array_ret, self::createTabEntry(__('Monitoring history', 'monitoring')));

@@ -27,11 +27,9 @@
 
    @package   Alignak
    @author    Frederic Mohier
-   @co-author David Durieux
    @copyright Copyright (c) 2018 Alignak team
    @license   AGPLv3 or (at your option) any later version
               http://www.gnu.org/licenses/agpl-3.0-standalone.html
-   @link      http://alignak.net/
    @link      http://alignak.net/
    @since     2018
 
@@ -57,12 +55,16 @@ class PluginAlignakEntity extends CommonDBTM
        $table = self::getTable();
 
       if (!$DB->tableExists($table)) {
-          $migration->displayMessage(sprintf(__("Installing %s"), $table));
+//          $migration->displayMessage(sprintf(__("Installing %s"), $table));
 
           $query = "CREATE TABLE `$table` (
                   `id` int(11) NOT NULL auto_increment,
+                  `entities_id` int(11) NOT NULL DEFAULT '0',
                   `name` varchar(255) collate utf8_unicode_ci default NULL,
                   `comment` text collate utf8_unicode_ci,
+                  `tag` varchar(255) collate utf8_unicode_ci default NULL,
+                  `plugin_alignak_monitoring_template_id` int(11) NOT NULL DEFAULT '0',
+                  `plugin_alignak_counters_template_id` int(11) NOT NULL DEFAULT '0',
                 PRIMARY KEY  (`id`),
                 KEY `name` (`name`)
                ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
@@ -132,7 +134,7 @@ class PluginAlignakEntity extends CommonDBTM
       $array_ret = [];
       if ($item->getID() > -1) {
          if (Session::haveRight('config', READ)) {
-            $array_ret[0] = self::createTabEntry(__('Monitoring', 'monitoring'));
+            $array_ret[] = self::createTabEntry(__('Alignak plugin', 'alignak'));
          }
       }
          return $array_ret;
@@ -144,7 +146,7 @@ class PluginAlignakEntity extends CommonDBTM
 
       if ($item->getID() > -1) {
           $pmEntity = new PluginAlignakEntity();
-          $pmEntity->showForm($item->fields['id']);
+          $pmEntity->showForm($item);
       }
          return true;
    }
@@ -152,59 +154,77 @@ class PluginAlignakEntity extends CommonDBTM
 
 
     /**
-     * Display form for entity tag
+     * Display form for an entity
      *
-     * @param $items_id integer ID of the entity
+     * @param $entity Entity
      * @param $options array
      *
      * @return bool true if form is ok
      **/
-   function showForm($items_id, $options = []) {
-       global $DB,$CFG_GLPI;
+   function showForm(Entity $entity) {
+      global $DB,$CFG_GLPI;
 
-       $a_entities = $this->find("`entities_id`='".$items_id."'", "", 1);
+      $ID = $entity->getField('id');
+      if (! $entity->can($ID, READ)) {
+         return false;
+      }
+
+      if (!$this->getFromDB($ID)) {
+         $this->add([
+            'id'                 => $ID
+         ]);
+      }
+
+      $canedit = $entity->canUpdateItem();
+      echo "<div class='spaced'>";
+      if ($canedit) {
+         echo "<form method='post' name=form action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
+      }
+
+      /*
+      $a_entities = $this->find("`entities_id`='".$items_id."'", "", 1);
       if (count($a_entities) == '0') {
-          $input = [];
-          $input['entities_id'] = $items_id;
-          $id = $this->add($input);
-          $this->getFromDB($id);
+         $input = [];
+         $input['entities_id'] = $items_id;
+         $id = $this->add($input);
+         $this->getFromDB($id);
       } else {
          $a_entity = current($a_entities);
          $this->getFromDB($a_entity['id']);
       }
+      */
 
-         echo "<form name='form' method='post' 
-         action='".$CFG_GLPI['root_doc']."/plugins/monitoring/front/entity.form.php'>";
+      echo "<form name='form' method='post' 
+      action='".$CFG_GLPI['root_doc']."/plugins/monitoring/front/entity.form.php'>";
 
-         echo "<table class='tab_cadre_fixe'";
+      echo "<table class='tab_cadre_fixe'";
 
-         echo "<tr class='tab_bg_1'>";
-         echo "<th colspan='2'>";
-         echo __('Set tag to link entity with a specific Alignak server', 'monitoring');
-         echo "</th>";
-         echo "</tr>";
+      echo "<tr class='tab_bg_1'>";
+      echo "<th colspan='2'>";
+      echo __('Set tag to link entity with a specific Alignak server', 'alignak');
+      echo "</th>";
+      echo "</tr>";
 
-         echo "<tr class='tab_bg_1'>";
-         echo "<td>".__('Tag', 'monitoring')." :</td>";
-         echo "<td>";
-         echo "<input type='text' name='tag' value='".$this->fields["tag"]."' size='30'/>";
+      echo "<tr class='tab_bg_1'>";
+      echo "<td>".__('Tag', 'alignak')." :</td>";
+      echo "<td>";
+      echo "<input type='text' name='tag' value='".$this->fields["tag"]."' size='30'/>";
 
-         echo "</td>";
-         echo "</tr>";
+      echo "</td>";
+      echo "</tr>";
 
-         echo "<tr class='tab_bg_1'>";
-         echo "<td colspan='2' align='center'>";
-         echo "<input type='hidden' name='id' value='".$this->fields['id']."'/>";
-         echo "<input type='submit' name='update' value=\"".__('Save')."\" class='submit'>";
-         echo "</td>";
-         echo "</tr>";
+      echo "<tr class='tab_bg_1'>";
+      echo "<td colspan='2' align='center'>";
+      echo "<input type='hidden' name='id' value='".$this->fields['id']."'/>";
+      echo "<input type='submit' name='update' value=\"".__('Save')."\" class='submit'>";
+      echo "</td>";
+      echo "</tr>";
 
-         echo "</table>";
-         Html::closeForm();
+      echo "</table>";
+      Html::closeForm();
 
-         return true;
+      return true;
    }
-
 
    function getEntitiesByTag($tag = '') {
        global $DB;
@@ -222,7 +242,6 @@ class PluginAlignakEntity extends CommonDBTM
          return $output;
       }
    }
-
 
    static function getTagByEntities($entities_id) {
        global $DB;

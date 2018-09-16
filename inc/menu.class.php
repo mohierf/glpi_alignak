@@ -30,13 +30,12 @@ class PluginAlignakMenu extends CommonGLPI
    static function getAdditionalMenuOptions() {
       global $CFG_GLPI;
 
-      Toolbox::logInFile("menu", "PluginAlignakMenu, getAdditionalMenuOptions\n");
-
       $elements = [
          'config' => 'PluginAlignakConfig',
          'example' => 'PluginAlignakExample',
          'alignak' => 'PluginAlignakAlignak',
          'mail_notification' => 'PluginAlignakMailNotification',
+         'monitoring_template' => 'PluginAlignakMonitoringTemplate',
          'counter_template' => 'PluginAlignakCounterTemplate',
          'counter' => 'PluginAlignakCounter'
       ];
@@ -49,12 +48,10 @@ class PluginAlignakMenu extends CommonGLPI
          $options['menu']['links']['config']  = PluginAlignakConfig::getFormURL(false);
       }
       foreach ($elements as $type => $itemtype) {
-         Toolbox::logInFile("menu", "PluginAlignakMenu, getAdditionalMenuOptions for $type\n");
          $options[$type]['title'] = $itemtype::getTypeName();
          $options[$type]['page']  = $itemtype::getSearchURL(false);
          $options[$type]['links']['search'] = $itemtype::getSearchURL(false);
          if ($itemtype::canCreate()) {
-            Toolbox::logInFile("menu", "PluginAlignakMenu, allowed to add $type\n");
             $options[$type]['links']['add'] = $itemtype::getFormURL(false);
          }
          if (Session::haveRight('plugin_alignak_configuration', UPDATE)) {
@@ -184,6 +181,17 @@ class PluginAlignakMenu extends CommonGLPI
          echo '<ul style="margin-left: 5px;">';
          echo '<li><a href="countertemplate.php">'.  __("Counters templates", "alignak") .'</a></li>';
          echo '<li><a href="counter.php">'.  __("Counters", "alignak") .'</a></li>';
+         echo '</ul>';
+         echo '</div>';
+         echo '<hr>';
+      }
+
+      if (Session::haveRight("plugin_alignak_monitoring", READ)) {
+         echo '<div style="margin-top: 5px;">';
+         echo '<strong>'. __("Monitoring templates", "alignak") .'</strong><br/>';
+         echo '<small><em>'. __("Configure monitoring templates", "alignak") .'</em></small><br/>';
+         echo '<ul style="margin-left: 5px;">';
+         echo '<li><a href="monitoringtemplate.php">'.  __("Monitoring templates", "alignak") .'</a></li>';
          echo '</ul>';
          echo '</div>';
          echo '<hr>';

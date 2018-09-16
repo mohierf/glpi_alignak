@@ -36,43 +36,37 @@ include ('../../../inc/includes.php');
 if ($_POST && isset($_POST['save']) && isset($_POST['id'])) {
    // Check that a name has been passed
    if (!isset($_POST['name']) or empty($_POST['name'])) {
-     Html::displayErrorAndDie('Please specified a counter name');
+      Html::displayErrorAndDie('Please specified a counter name');
    }
 
    $counter = new PluginAlignakCounter();
-
    $counter->getFromDB($_POST['id']);
    // Update counter to the DataBase
    if ($counter->update($_POST)) {
-      if( $_POST['templateid'] == '0'){
+      if ($_POST['templateid'] == '0') {
          $_POST['templateid'] = $_POST['template_id'];
          Session::addMessageAfterRedirect(__('The counter has been successfully added!', 'alignak'), true, INFO);
-      }
-      else
+      } else {
          Session::addMessageAfterRedirect(__('The counter has been successfully updated!', 'alignak'), true, INFO);
-         
+      }
    }
- 
+
    // Redirect the user to the Template Page
    $url = explode("?", $_SERVER['HTTP_REFERER']);
- //  echo "REDIR TO: ".$url[0] . "?id=" . $_POST['templateid'];
+   //  echo "REDIR TO: ".$url[0] . "?id=" . $_POST['templateid'];
    Html::redirect($url[0] . "?id=" . $_POST['templateid']);
-}
-
-else if (isset($_POST["delete_counter"])) {
-   // Delete a Counter 
+} else if (isset($_POST["delete_counter"])) {
+   // Delete a Counter
    Session::checkRight("entity", UPDATE);
    $counter = new PluginAlignakCounter();
    $counter->getFromDB($_POST['id']);
    $counter->delete($_POST);
-}
-else {
+} else {
    $counter = new PluginAlignakCounter();
    Html::header(__('Counter'), '', "tools", "pluginalignak", "config");
-  
+
    $_GET['id'] = isset($_GET['id']) ? intval($_GET['id']) : -1;
-   
+
    $counter->display($_GET);
    Html::footer();
 }
-

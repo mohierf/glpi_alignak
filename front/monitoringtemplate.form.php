@@ -28,7 +28,7 @@
  */
 
 // ----------------------------------------------------------------------
-// Original Author of file: Francois Mohier
+// Original Author of file: Frederic Mohier
 // Purpose of file:
 // ----------------------------------------------------------------------
 
@@ -38,14 +38,14 @@
 include ('../../../inc/includes.php');
 
 Html::header(
-   __('Counter templates', 'alignak'),
+   __('Monitoring templates', 'alignak'),
    $_SERVER['PHP_SELF'],
    'admin',
-   'pluginalignakmenu', 'counter_template');
+   'pluginalignakmenu', 'monitoring_template');
 
-$paCounterTemplate = new PluginAlignakCounterTemplate();
+$paCounterTemplate = new PluginAlignakMonitoringTemplate();
 if (isset($_POST["copy"])) {
-   $paCounterTemplate->showForm(-1, -1, [ 'canedit'=>PluginAlignakCounterTemplate::canUpdate(), 'colspan'=>4 ], $_POST);
+   $paCounterTemplate->showForm(-1, -1, [ 'canedit'=>PluginAlignakMonitoringTemplate::canUpdate(), 'colspan'=>4 ], $_POST);
    Html::footer();
    exit;
 } else if (isset ($_POST["add"])) {
@@ -62,40 +62,10 @@ if (isset($_POST["copy"])) {
    Html::back();
 }
 
-//Session::checkRight("config","w");
 if (isset($_GET["id"])) {
-   $paCounterTemplate->showForm($_GET['id'], -1, [ 'canedit'=>PluginAlignakCounterTemplate::canUpdate(), 'colspan'=>4 ]);
+   $paCounterTemplate->showForm($_GET['id'], -1, [ 'canedit'=>PluginAlignakMonitoringTemplate::canUpdate(), 'colspan'=>4 ]);
 } else {
    $paCounterTemplate->showForm();
 }
 
 Html::footer();
-
-/*
-if ($_POST && isset($_POST['save']) && isset($_POST['id'])) {
-   // Check that a link has been passed
-   if (!isset($_POST['name']) or empty($_POST['name'])) {
-     Html::displayErrorAndDie('Please specified a template name');
-   }
-
-   $counterTemplate = new PluginAlignakCounterTemplate();
-
-   $counterTemplate->getFromDB($_POST['id']);
-   // Update counterTemplate to the DataBase
-   if ($counterTemplate->update($_POST)) {
-      Session::addMessageAfterRedirect(__('The template has been successfully updated!', 'alignak'), true, INFO);
-   }
-
-   // Redirect the user to the Template Page
-   $url = explode("?", $_SERVER['HTTP_REFERER']);
-   Html::redirect($url[0] . "?id=" . $_POST['id']);
-} else {
-   $template = new PluginAlignakCounterTemplate();
-   Html::header(__('Template'), '', "tools", "pluginalignak", "config");
-
-   $_GET['id'] = isset($_GET['id']) ? intval($_GET['id']) : -1;
-
-   $template->display($_GET);
-   Html::footer();
-}
-*/

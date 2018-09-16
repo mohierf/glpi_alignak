@@ -27,11 +27,9 @@
 
    @package   Alignak
    @author    Frederic Mohier
-   @co-author David Durieux
    @copyright Copyright (c) 2018 Alignak team
    @license   AGPLv3 or (at your option) any later version
               http://www.gnu.org/licenses/agpl-3.0-standalone.html
-   @link      http://alignak.net/
    @link      http://alignak.net/
    @since     2018
 
@@ -42,10 +40,6 @@
 // Original Author of file: Francois Mohier
 // Purpose of file:
 // ----------------------------------------------------------------------
-
-if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
-}
 
 class PluginAlignakCounter extends CommonDBTM {
 
@@ -62,7 +56,7 @@ class PluginAlignakCounter extends CommonDBTM {
       $table = self::getTable();
 
       if (!$DB->tableExists($table)) {
-         $migration->displayMessage(sprintf(__("Installing %s"), $table));
+//         $migration->displayMessage(sprintf(__("Installing %s"), $table));
 
          $query = "CREATE TABLE `glpi_plugin_alignak_counters` (
                   `id` int(11) NOT NULL auto_increment,
@@ -106,13 +100,10 @@ class PluginAlignakCounter extends CommonDBTM {
 
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
 
-  //    echo "counter displayTabContentForItem".$tabnum.":".$item->getID();
-
       if ($item->getID() > -1) {
          $pmCounter = new PluginAlignakCounter();
-
          $pmCounter->listCounters($item->fields['id']);
-       //  $pmCounter->showForm($item->fields['id']);
+         //  $pmCounter->showForm($item->fields['id']);
       }
       return true;
    }
@@ -134,12 +125,12 @@ class PluginAlignakCounter extends CommonDBTM {
       // echo "TEMPLATE ID:".$template_id;
       $tpl = new PluginAlignakCounterTemplate();
       $tpl->getFromDB($template_id);
-      
-      $token            = Session::getNewCSRFToken();
+
+      $token = Session::getNewCSRFToken();
       echo __('Template Name:'.$tpl->fields['name'], 'alignak');
-      
+
       echo '<table class="tab_cadre_fixe">';
-      foreach(  $counters as $counter) {
+      foreach ($counters as $counter) {
          $i++;
          echo '<tr class="line' . ($i % 2) . '" id="counter_row_' . $counter['id'] . '">';
          echo '<td onclick="editCounter(' . $counter['id'] . ', \'' . $token . '\', ' . $counter['id'] . ', ' . $counter['id'] . ')">';
@@ -148,19 +139,20 @@ class PluginAlignakCounter extends CommonDBTM {
          echo $counter['name'];
          echo "<a>";
          echo '</td>';
-         
+
          echo '<td>';
          echo $counter['type_counter'];
          echo '</td>';
-         
+
          echo '<td>';
          echo $counter['comment'];
          echo '</td>';
          echo '<td>';
-         if( $counter['cumulatif'])
+         if ($counter['cumulatif']) {
             echo '<img src="' . $CFG_GLPI['root_doc'] . '/pics/stats_item.png" title="" /> ';
-         echo '</td>';      
-         
+         }
+         echo '</td>';
+
          echo '<td align="center">';
 
          // avoid quote js error
@@ -172,8 +164,7 @@ class PluginAlignakCounter extends CommonDBTM {
                   onclick="deleteCounter(' . $counter['id'] . ', \'' . $token . '\', ' . $counter['id'] . ')"> ';
          echo "</span>";
          echo '</td>';
-         
-         
+
          echo '</tr>';
       }
       echo '<tr class="line' . (($i + 1) % 2) . '">';
@@ -183,8 +174,8 @@ class PluginAlignakCounter extends CommonDBTM {
                 '.__('Add a counter', 'alignak').'
             </a>';
       echo '</td>';
-      echo '</tr>'; 
-      
+      echo '</tr>';
+
       echo '</table>';
    }
 
@@ -200,7 +191,7 @@ class PluginAlignakCounter extends CommonDBTM {
    function showForm($template_id, $options = []) {
       global $DB,$CFG_GLPI;
 
-     $counters = $this->find("`template_id`='".$template_id."'", "", 1);
+      $counters = $this->find("`template_id`='".$template_id."'", "", 1);
       if (count($counters) == '0') {
          $input = [];
          $input['template_id'] = $template_id;
@@ -211,7 +202,6 @@ class PluginAlignakCounter extends CommonDBTM {
          $this->getFromDB($counter['id']);
       }
 
-      
       $this->initForm($template_id, $options);
       $this->showFormHeader($options);
       echo "<table class='tab_cadre_fixe'";
@@ -224,7 +214,7 @@ class PluginAlignakCounter extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
       echo "<td>".__('Name', 'alignak').'<span style="color:red;">*</span></td>';
-      
+
       echo "<td>";
       echo "<input type='text' name='name' value='".$this->fields["name"]."' size='30'/>";
       echo "</td>";
@@ -250,14 +240,14 @@ class PluginAlignakCounter extends CommonDBTM {
       Dropdown::showYesNo("cumulatif", $this->fields["cumulatif"]);
       echo "</td>";
       echo "</tr>";
-      
+
       echo "<tr class='tab_bg_1'>";
       echo "<td>".__('Template', 'alignak')." :</td>";
       echo "<td>";
       echo $template_id.":";
       echo $this->fields["template_id"].":";
       echo $_GET['form_id'].":";
-      
+
       $templates = new PluginAlignakCounterTemplate();
       $templateList = $templates->getCounterTemplateListForDropdown();
       Dropdown::showFromArray('template_id', $templateList, ['value'=>$this->fields["template_id"]]);
@@ -269,7 +259,7 @@ class PluginAlignakCounter extends CommonDBTM {
       echo "<input type='submit' name='save' value=\"".__('Save')."\" class='submit'>";
       echo "</td>";
       echo "</tr>";
-      
+
       echo "<input type='hidden' name='id' value='".$this->fields['id']."'/>";
       echo "<input type='hidden' name='templateid' value='".$this->fields["template_id"]."'/>";
       echo "</table>";

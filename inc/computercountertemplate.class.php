@@ -53,7 +53,7 @@ class PluginAlignakComputerCounterTemplate extends CommonDBTM {
       $table = self::getTable();
 
       if (!$DB->tableExists($table)) {
-         $migration->displayMessage(sprintf(__("Installing %s"), $table));
+//         $migration->displayMessage(sprintf(__("Installing %s"), $table));
 
          $query = "CREATE TABLE `glpi_plugin_alignak_computercountertemplates` (
                   `id` int(11) NOT NULL auto_increment,
@@ -63,7 +63,6 @@ class PluginAlignakComputerCounterTemplate extends CommonDBTM {
                ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
 
          $DB->query($query) or die("error creating $table". $DB->error());
-         
       }
 
       return true;
@@ -85,23 +84,24 @@ class PluginAlignakComputerCounterTemplate extends CommonDBTM {
 
       $array_ret = [];
       if ($item->getID() > -1) {
-         if (PluginAlignakProfile::haveRight("config", 'r')) {
-            $array_ret[0] = self::createTabEntry(__('Monitoring', 'monitoring'));
-         }
+         $array_ret[] = self::createTabEntry(__('Counters', 'alignak'));
       }
+      // PHP Catchable Fatal Error: Object of class Computer could not be converted to string in /var/www/html/glpi/plugins/alignak/inc/computercountertemplate.class.php at line 95
       return $array_ret;
    }
 
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
 
-      echo "computercountertemplate displayTabContentForItem".$tabnum.":".$item;
+//      echo "computercountertemplate displayTabContentForItem".$tabnum.":".$item;
 
       if ($item->getID() > -1) {
-         $pmCounter = new PluginAlignakComputerCounterTemplate();
-         $pmHostconfig = new PluginAlignakHostconfig();
-
-         $pmHostconfig->showForm($item->getID(), "ComputerCounterTemplate");
-         $pmEntity->showForm($item->fields['id']);
+//         $pmCounter = new PluginAlignakComputerCounterTemplate();
+//         $pmHostconfig = new PluginAlignakHostconfig();
+//
+//         $pmHostconfig->showForm($item->getID(), "ComputerCounterTemplate");
+//         $pmCounter->showForm($item->fields['id']);
+         $pmCounter = new PluginAlignakCounter();
+         $pmCounter->listCounters($item->fields['id']);
       }
       return true;
    }

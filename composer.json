@@ -18,8 +18,15 @@
   },
   "require-dev": {
     "glpi-project/tools": "^0.1.5",
+    "glpi-project/coding-standard": "0.7.1",
     "consolidation/robo": "^1.0",
-    "atoum/atoum": "^3.1"
+    "atoum/atoum": "^3.3",
+    "atoum/stubs": "^2.5"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "GlpiPlugin\\Alignak\\Tests\\": "tests/src/"
+    }
   },
   "config": {
     "optimize-autoloader": true,

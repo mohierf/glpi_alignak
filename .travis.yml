@@ -9,65 +9,63 @@ php:
 
 env:
   global:
-    - DB=mysql
+    # - DB=mysql
+    - GLPI_SOURCE="https://github.com/glpi-project/glpi"
+    - CS=7.2
+    - DBNAME=glpitest
+    - OLDDBNAME=glpiupgradetest
+    - AFTER_SUCCESS_BRANCH=9.3/bugfixes
   matrix:
-#    - GLPI=9.1/bugfixes
-    - GLPI=9.2/bugfixes
-    - GLPI=9.3/bugfixes
-    - GLPI=master
+#    - GLPI_BRANCH=9.1/bugfixes
+    - GLPI_BRANCH=9.2/bugfixes
+    - GLPI_BRANCH=9.3/bugfixes
+    - GLPI_BRANCH=master
 
 cache:
   directories:
     - $HOME/.composer/cache
 
-#addons:
-#  apt:
-#    packages:
-#    - ant
-#    - xsltproc
-#
-#before_install:
-# - cd ..
-# - git clone git://github.com/glpi-project/glpi.git glpi
-# - cd glpi
-# - if [[ $GLPI != 'master' ]]; then git checkout -b $GLPI origin/$GLPI; fi
-# - cd ..
-# # Configure MySQL credentials
-# - mysql -u root -e "SET PASSWORD FOR 'travis'@'localhost' = PASSWORD('travis')"
-# - mysql -u root -e "GRANT ALL PRIVILEGES ON glpi.* TO 'travis'@'localhost';"
-# - mysql -u root -e "FLUSH PRIVILEGES;"
-# # Configure Glpi DB access
-# - echo '<?php class DB extends DBmysql {var $dbhost = "localhost";var $dbuser = "travis";var $dbpassword= "travis";var $dbdefault = "glpi";}' > glpi/config/config_db.php
-# - mv -f fusioninventory-for-glpi glpi/plugins/fusioninventory
-# - composer self-update
-# - ant -Dclearsavepoint='true' -Dbasedir=. -f ./glpi/plugins/fusioninventory/phpunit/build.xml composer
-
 before_script:
-  # Update composer
-  - composer self-update
-  # Dump Mysql version
-  - mysql -u root -e 'select version();'
-  # Get and prepare Glpi application
-  - cd ..
-  - git clone --depth=1 https://github.com/glpi-project/glpi glpi -b $GLPI
-  - cd glpi
-  - pwd
-  - composer install --no-dev
-  - mysql -u root -e 'create database glpi_test;'
-  # Prepare test database
-  - php ./scripts/cliinstall.php --db=glpitest --user=root --tests
-  - php ./scripts/cliupdate.php --config-dir=../tests |grep -q "No migration needed." || (echo "scripts/cliupdate.php FAILED" && exit 1)
-  # Install alignak plugin in Glpi
-  - mv ../glpi_alignak plugins/alignak
-  - cd plugins/alignak
-  - composer install -o
+  - "./tests/before_script.sh"
+#  # Update composer
+#  - composer self-update
+#  # Dump Mysql version
+#  - mysql -u root -e 'select version();'
+#  # Get and prepare Glpi application
+#  - cd ..
+#  - git clone --depth=1 https://github.com/glpi-project/glpi glpi -b $GLPI
+#  - cd glpi
+#  - pwd
+#  - composer install --no-dev
+#  - mysql -u root -e 'create database glpi_test;'
+#  # Prepare test database
+#  - php ./scripts/cliinstall.php --db=glpitest --user=root --tests
+#  - php ./scripts/cliupdate.php --config-dir=../tests |grep -q "No migration needed." || (echo "scripts/cliupdate.php FAILED" && exit 1)
+#  # Install alignak plugin in Glpi
+#  - mv ../glpi_alignak plugins/alignak
+#  - cd plugins/alignak
+#  - composer install -o
 
 script:
-  # PHP coding standards
-  - ./vendor/bin/robo --no-interaction code:cs
   # Plugin unit tests
-#  - ./vendor/bin/atoum --debug -bf tests/bootstrap.php -d tests/units/
-  - ./vendor/bin/atoum --debug -d tests/units/
+  - if [ "${TRAVIS_PHP_VERSION:0:3}" = "$CS" ] && [ "$GLPI_BRANCH" = "$AFTER_SUCCESS_BRANCH" ]; then COVERAGE="--nccfc CommonTreeDropdown CommonDropdown CommonDBTM CommonGLPI"; else COVERAGE="-ncc"; fi
+  - if [ -e ../../scripts/cliinstall.php ] ; then php ../../scripts/cliinstall.php --db=$OLDDBNAME --user=root --tests ; fi
+  - if [ -e ../../tools/cliinstall.php ] ; then php  ../../tools/cliinstall.php --db=$OLDDBNAME --user=root --tests ; fi
+  - mysql -u root $OLDDBNAME < tests/plugin_alignak_empty_1.0.0.sql
+  - mysql -u root $OLDDBNAME < tests/plugin_alignak_config_1.0.0.sql
+  - php scripts/cliinstall.php --tests
+  - rm ../../tests/config_db.php
+  - if [ -e ../../scripts/cliinstall.php ] ; then php ../../scripts/cliinstall.php --db=$DBNAME --user=root --tests ; fi
+  - if [ -e ../../tools/cliinstall.php ] ; then php ../../tools/cliinstall.php --db=$DBNAME --user=root --tests ; fi
+  - vendor/bin/atoum -ft -bf tests/bootstrap.php -d tests/ts-install -ncc
+#  - vendor/bin/atoum -ft -bf tests/bootstrap.php -d tests/suite-integration $COVERAGE
+  - vendor/bin/atoum -ft -bf tests/bootstrap.php -d tests/ts-unit $COVERAGE
+  #  - vendor/bin/atoum -ft -bf tests/bootstrap.php -d tests/suite-uninstall -ncc
+
+  # PHP coding standards
+  #  - ./vendor/bin/robo --no-interaction code:cs
+  - if [ ${TRAVIS_PHP_VERSION:0:3} == "$CS" ] && [ "$GLPI_BRANCH" = "$AFTER_SUCCESS_BRANCH" ]; then vendor/bin/robo --no-interaction code:cs; fi
+  #  - ./vendor/bin/atoum ++verbose --debug -bf tests/bootstrap.php -d tests/ts-unit
 
 matrix:
 #  exclude:

@@ -47,7 +47,7 @@ class PluginAlignakExample extends CommonDBTM {
       $table = self::getTable();
 
       if (! $DB->tableExists($table)) {
-         $migration->displayMessage(sprintf(__("Installing %s"), $table));
+//         $migration->displayMessage(sprintf(__("Installing %s"), $table));
 
          $query = "CREATE TABLE `$table` (
                   `id` int(11) NOT NULL auto_increment,

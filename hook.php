@@ -27,11 +27,9 @@
 
    @package   Alignak
    @author    Frederic Mohier
-   @co-author David Durieux
    @copyright Copyright (c) 2018 Alignak team
    @license   AGPLv3 or (at your option) any later version
               http://www.gnu.org/licenses/agpl-3.0-standalone.html
-   @link      http://alignak.net/
    @link      http://alignak.net/
    @since     2018
 
@@ -58,22 +56,16 @@ function plugin_alignak_install() {
    $plugin_alignak->getFromDBbyDir('alignak');
    $version = $plugin_alignak->fields['version'];
 
+   // todo: what for?
    ProfileRight::addProfileRights(['alignak:read']);
 
    $migration = new Migration($version);
-
    /*
     * Manage profiles
     */
-   $migration->displayMessage("Initializing profiles...");
+   require_once (GLPI_ROOT . "/plugins/alignak/inc/profile.class.php");
    PluginAlignakProfile::initProfile();
-   $migration->displayMessage("Profiles initialized");
 
-   echo "<div>";
-   echo "<table class='tab_cadre_fixe'>";
-   echo "<tr><th>".__("Database tables installation:", "alignak")."<th></tr>";
-
-   $migration->displayMessage("Initializing tables...");
    $classes = [
       'PluginAlignakConfig',
       'PluginAlignakAlignak',
@@ -82,6 +74,8 @@ function plugin_alignak_install() {
       'PluginAlignakComputer',
       'PluginAlignakDashboard',
       'PluginAlignakMailNotification',
+      // Alignak
+      'PluginAlignakMonitoringTemplate',
       // Counters
       'PluginAlignakCounter',
       'PluginAlignakCounterTemplate',
@@ -92,7 +86,6 @@ function plugin_alignak_install() {
       if ($plug = isPluginItemType($class)) {
          $dir  = PLUGIN_ALIGNAK_DIR . "/inc/";
          $item = strtolower($plug['class']);
-         Toolbox::logInFile("init", "Loading $item...\n");
          if (file_exists($dir . $item . ".class.php")) {
             include_once ($dir . $item . ".class.php");
          }
@@ -111,10 +104,6 @@ function plugin_alignak_install() {
          }
       }
    }
-   $migration->displayMessage("Tables initialized");
-
-   echo "</table>";
-   echo "</div>";
 
    // Check class and front files for existing containers and dropdown fields
    plugin_alignak_checkFiles();
@@ -124,14 +113,10 @@ function plugin_alignak_install() {
     */
    $version = rtrim(GLPI_VERSION, '-dev');
    if (version_compare($version, '9.3', '>=')) {
-      $migration->displayMessage("Migrating tables...");
       $tomigrate = $DB->getMyIsamTables();
-      $migration->displayMessage("Tables found: ".count($tomigrate));
 
       while ($table = $tomigrate->next()) {
-         $migration->displayMessage("Migrating {$table['TABLE_NAME']}...");
          $DB->queryOrDie("ALTER TABLE {$table['TABLE_NAME']} ENGINE = InnoDB");
-         $migration->displayMessage(" done.");
       }
    }
 
@@ -181,6 +166,8 @@ function plugin_alignak_uninstall() {
       'PluginAlignakComputer',
       'PluginAlignakDashboard',
       'PluginAlignakMailNotification',
+      // Alignak
+      'PluginAlignakMonitoringTemplate',
       // Counters
       'PluginAlignakCounter',
       'PluginAlignakCounterTemplate',

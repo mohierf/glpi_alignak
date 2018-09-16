@@ -16,7 +16,7 @@ class PluginAlignakDashboard extends CommonDBTM {
 
    static $rightname = 'plugin_alignak_dashboard';
 
-   static function getTypeName($nb=0) {
+   static function getTypeName($nb = 0) {
       return _n('Dashboard configuration', 'Dashboard configurations', $nb, 'alignak');
    }
 
@@ -26,7 +26,7 @@ class PluginAlignakDashboard extends CommonDBTM {
       $table = self::getTable();
 
       if (! $DB->tableExists($table)) {
-         $migration->displayMessage(sprintf(__("Installing %s"), $table));
+//         $migration->displayMessage(sprintf(__("Installing %s"), $table));
 
          $query = "CREATE TABLE `$table` (
                  `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -116,20 +116,8 @@ class PluginAlignakDashboard extends CommonDBTM {
       return true;
    }
 
-//   static function canCreate() {
-//      return PluginKiosksProfile::haveRight("config", 'w');
-//   }
-//
-//   static function canUpdate() {
-//      return PluginKiosksProfile::haveRight("config", 'w');
-//   }
-//
-//   static function canView() {
-//      return PluginKiosksProfile::haveRight("config", 'r');
-//   }
-
    function getSearchOptions() {
-      $tab = array();
+      $tab = [];
       $i = 1;
 
       $tab['common'] = self::getTypeName();
@@ -168,10 +156,10 @@ class PluginAlignakDashboard extends CommonDBTM {
       return $tab;
    }
 
-   static function getSpecificValueToDisplay($field, $values, array $options=array()) {
+   static function getSpecificValueToDisplay($field, $values, array $options = []) {
 
       if (!is_array($values)) {
-         $values = array($field => $values);
+         $values = [$field => $values];
       }
 
       if ($field == 'clients_id') {
@@ -186,17 +174,17 @@ class PluginAlignakDashboard extends CommonDBTM {
       return parent::getSpecificValueToDisplay($field, $values, $options);
    }
 
-   function defineTabs($options=array()){
-      $ong = array();
+   function defineTabs($options = []) {
+      $ong = [];
       return $ong;
    }
 
-   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
       switch ($item->getType()) {
 
          case 'Entity' :
             if (self::canView()) {
-               return array(1 => __('DashKiosk', 'alignak'));
+               return [1 => __('DashKiosk', 'alignak')];
             } else {
                return '';
             }
@@ -208,13 +196,13 @@ class PluginAlignakDashboard extends CommonDBTM {
       return '';
    }
 
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
       switch ($item->getType()) {
 
          case 'Entity' :
             $paDashboard = new PluginAlignakDashboard();
             // Show form from entity Id
-            $paDashboard->showForm(-1, $item->getID(), array( 'canedit'=>self::canUpdate(), 'colspan'=>4 ));
+            $paDashboard->showForm(-1, $item->getID(), ['canedit'=>self::canUpdate(), 'colspan'=>4 ]);
             break;
       }
       return true;
@@ -223,7 +211,7 @@ class PluginAlignakDashboard extends CommonDBTM {
    /**
    * Set default content
    */
-   function setDefaultContent($users_id=-1) {
+   function setDefaultContent($users_id = -1) {
       // $this->fields["id"]             = -1;
       $this->fields["name"]           = "";
 
@@ -338,7 +326,7 @@ class PluginAlignakDashboard extends CommonDBTM {
       return $this->getValueAncestor($name, $clients_id);
    }
 
-   function getFieldHtml ($name, $label, $clients_id=-1, $type='text', $unit='') {
+   function getFieldHtml($name, $label, $clients_id = -1, $type = 'text', $unit = '') {
       echo "<td>";
       $value = $this->fields[$name];
       $inheritedValue = $this->getValueAncestor($name, $clients_id);
@@ -399,7 +387,7 @@ class PluginAlignakDashboard extends CommonDBTM {
       echo "</td>";
    }
 
-   function showForm($items_id=-1, $clients_id=-1, $options=array(), $copy=array()) {
+   function showForm($items_id = -1, $clients_id = -1, $options = [], $copy = []) {
       global $DB,$CFG_GLPI;
 
       // echo "Dashkiosk id: $items_id, for client: $clients_id\n";
@@ -481,9 +469,9 @@ class PluginAlignakDashboard extends CommonDBTM {
       echo "</td></tr>";
 
       echo "<tr>";
-      PluginKiosksDashboard::getFieldHtml ('navbar_config',               __('Application configuration', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('navbar_notif',                __('Support notification', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('navbar_select',               __('Kiosks selection', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('navbar_config', __('Application configuration', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('navbar_notif', __('Support notification', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('navbar_select', __('Kiosks selection', 'alignak'), $clients_id, 'boolean');
       echo "</tr>";
 
       echo "<tr><td colspan=\"8\">";
@@ -496,51 +484,51 @@ class PluginAlignakDashboard extends CommonDBTM {
       echo "</td></tr>";
 
       echo "<tr>";
-      PluginKiosksDashboard::getFieldHtml ('page_counters',               __('Counters page', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_counters_refresh',       __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
-      PluginKiosksDashboard::getFieldHtml ('page_monitoring',             __('Monitoring page', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_monitoring_refresh',     __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_counters', __('Counters page', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_counters_refresh', __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_monitoring', __('Monitoring page', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_monitoring_refresh', __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
       echo "</tr>";
       echo "<tr>";
-      PluginKiosksDashboard::getFieldHtml ('page_map',                    __('Map page', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_map_refresh',            __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
-      PluginKiosksDashboard::getFieldHtml ('page_tree',                   __('Tree page', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_tree_refresh',           __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_map', __('Map page', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_map_refresh', __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_tree', __('Tree page', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_tree_refresh', __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
       echo "</tr>";
       echo "<tr>";
-      PluginKiosksDashboard::getFieldHtml ('page_tickets',                __('Tickets page', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_tickets_refresh',        __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
-      PluginKiosksDashboard::getFieldHtml ('page_groups',                 __('Groups page', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_groups_refresh',         __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_tickets', __('Tickets page', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_tickets_refresh', __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_groups', __('Groups page', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_groups_refresh', __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
       echo "</tr>";
       echo "<tr>";
-      PluginKiosksDashboard::getFieldHtml ('page_alignak',                 __('Kiosks page', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_alignak_refresh',         __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
-      PluginKiosksDashboard::getFieldHtml ('page_services',               __('Services page', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_services_refresh',       __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_alignak', __('Kiosks page', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_alignak_refresh', __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_services', __('Services page', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_services_refresh', __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
       echo "</tr>";
       echo "<tr>";
-      PluginKiosksDashboard::getFieldHtml ('page_daily_counters',         __('Daily counters page', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_daily_counters_refresh', __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
-      PluginKiosksDashboard::getFieldHtml ('page_availability',           __('Availability page', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_availability_refresh',   __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_daily_counters', __('Daily counters page', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_daily_counters_refresh', __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_availability', __('Availability page', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_availability_refresh', __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
       echo "</tr>";
       echo "<tr>";
-      PluginKiosksDashboard::getFieldHtml ('page_easyshare',              __('Easyshare page', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_easyshare_refresh',      __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_easyshare', __('Easyshare page', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_easyshare_refresh', __(', refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
       echo "</tr>";
 
       // Kiosks services pages
       echo "<tr><td colspan=\"4\">";
       echo "<strong>".__('Dashboard menu services pages configuration: ', 'alignak')."</strong>";
       echo "</td></tr>";
-      PluginKiosksDashboard::getFieldHtml (
+      PluginAlignakDashboard::getFieldHtml(
             'page_payments',
             __('Payments page', 'alignak'),
             $clients_id,
             'boolean');
-      // PluginKiosksDashboard::getFieldHtml ('page_printing',       __('Printing page', 'alignak'), $clients_id, 'boolean');
-      // PluginKiosksDashboard::getFieldHtml ('page_rfid',           __('RFID page', 'alignak'), $clients_id, 'boolean');
+      // PluginAlignakDashboard::getFieldHtml('page_printing',       __('Printing page', 'alignak'), $clients_id, 'boolean');
+      // PluginAlignakDashboard::getFieldHtml('page_rfid',           __('RFID page', 'alignak'), $clients_id, 'boolean');
 
       echo "<tr><td colspan=\"8\">";
       echo "<hr/>";
@@ -561,19 +549,19 @@ class PluginAlignakDashboard extends CommonDBTM {
       echo "</td></tr>";
 
       echo "<tr>";
-      PluginKiosksDashboard::getFieldHtml ('page_monitoring_minemap',             __('Minemap', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_monitoring_minemap_collapsed',   __('Panel collapsed', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_monitoring_minemap_refresh',     __('Minemap refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_monitoring_minemap', __('Minemap', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_monitoring_minemap_collapsed', __('Panel collapsed', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_monitoring_minemap_refresh', __('Minemap refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
       echo "</tr>";
       echo "<tr>";
-      PluginKiosksDashboard::getFieldHtml ('page_monitoring_alignak',              __('Kiosks', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_monitoring_alignak_collapsed',    __('Panel collapsed', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_monitoring_alignak_refresh',      __('Kiosks refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_monitoring_alignak', __('Kiosks', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_monitoring_alignak_collapsed', __('Panel collapsed', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_monitoring_alignak_refresh', __('Kiosks refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
       echo "</tr>";
       echo "<tr>";
-      PluginKiosksDashboard::getFieldHtml ('page_monitoring_services',            __('Services', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_monitoring_services_collapsed',  __('Panel collapsed', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_monitoring_services_refresh',    __('Services refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_monitoring_services', __('Services', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_monitoring_services_collapsed', __('Panel collapsed', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_monitoring_services_refresh', __('Services refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
       echo "</tr>";
 
       // Main counters page
@@ -582,28 +570,27 @@ class PluginAlignakDashboard extends CommonDBTM {
       echo "</td></tr>";
 
       echo "<tr>";
-      PluginKiosksDashboard::getFieldHtml ('page_counters_main',                __('Main counters', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_counters_main_collapsed',      __('Panel collapsed', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_counters_main_refresh',        __('Main counters refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_counters_main', __('Main counters', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_counters_main_collapsed', __('Panel collapsed', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_counters_main_refresh', __('Main counters refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
       echo "</tr>";
       echo "<tr>";
-      PluginKiosksDashboard::getFieldHtml ('page_counters_barcharts',           __('Barcharts', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_counters_barcharts_collapsed', __('Panel collapsed', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_counters_barcharts_refresh',   __('Barcharts refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_counters_barcharts', __('Barcharts', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_counters_barcharts_collapsed', __('Panel collapsed', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_counters_barcharts_refresh', __('Barcharts refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
       echo "</tr>";
       echo "<tr>";
-      PluginKiosksDashboard::getFieldHtml ('page_counters_helpdesk',            __('Helpdesk', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_counters_helpdesk_collapsed',  __('Panel collapsed', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_counters_helpdesk_refresh',    __('Helpdesk refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_counters_helpdesk', __('Helpdesk', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_counters_helpdesk_collapsed', __('Panel collapsed', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_counters_helpdesk_refresh', __('Helpdesk refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
       echo "</tr>";
       echo "<tr>";
-      PluginKiosksDashboard::getFieldHtml ('page_counters_geotraffic',          __('Geotraffic', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_counters_geotraffic_collapsed',__('Panel collapsed', 'alignak'), $clients_id, 'boolean');
-      PluginKiosksDashboard::getFieldHtml ('page_counters_geotraffic_refresh',  __('Geotraffic refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
+      PluginAlignakDashboard::getFieldHtml('page_counters_geotraffic', __('Geotraffic', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_counters_geotraffic_collapsed', __('Panel collapsed', 'alignak'), $clients_id, 'boolean');
+      PluginAlignakDashboard::getFieldHtml('page_counters_geotraffic_refresh', __('Geotraffic refresh period', 'alignak'), $clients_id, 'integer', __('seconds', 'alignak'));
       echo "</tr>";
 
-
-/*
+      /*
       echo "<tr><td colspan=\"8\">";
       echo "<strong>".__('Main counters page components: ', 'alignak')."</strong>";
       echo "</td></tr>";
@@ -643,15 +630,14 @@ class PluginAlignakDashboard extends CommonDBTM {
       echo "<td>";
       echo "</td>";
       echo "</tr>";
-*/
+      */
 
       $this->showFormButtons($options);
 
       Html::closeForm();
 
-
       // Dashboard counters
-      $pkDashboardCounters = new PluginKiosksDashboardCounter();
+      $pkDashboardCounters = new PluginAlignakDashboardCounter();
       // $pkDashboardCounters->showCounters($items_id, $options);
       $pkDashboardCounters->showForm(-1, $items_id, $options);
 
@@ -659,7 +645,7 @@ class PluginAlignakDashboard extends CommonDBTM {
    }
 
    function convertPostdata($data) {
-      $a_arguments = array();
+      $a_arguments = [];
       foreach ($data as $name=>$value) {
          if (strstr($name, "argument_")) {
             $name = str_replace("argument_", "", $name);
@@ -672,7 +658,7 @@ class PluginAlignakDashboard extends CommonDBTM {
       if (isset($data['id'])) {
          $where .= " AND `id` != '".$data['id']."'";
       }
-      $num_com = countElementsInTable(PluginKiosksDashboard::getTable(), $where);
+      $num_com = countElementsInTable(PluginAlignakDashboard::getTable(), $where);
       if ($num_com > 0) {
          $data['counter_name'] = $data['counter_name'].mt_rand();
       }

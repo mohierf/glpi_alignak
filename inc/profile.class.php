@@ -27,11 +27,9 @@
 
    @package   Alignak
    @author    Frederic Mohier
-   @co-author David Durieux
    @copyright Copyright (c) 2018 Alignak team
    @license   AGPLv3 or (at your option) any later version
               http://www.gnu.org/licenses/agpl-3.0-standalone.html
-   @link      http://alignak.net/
    @link      http://alignak.net/
    @since     2018
 
@@ -64,7 +62,6 @@ class PluginAlignakProfile extends Profile
       return '';
    }
 
-
     /**
      * Display the content of the tab
      *
@@ -75,13 +72,12 @@ class PluginAlignakProfile extends Profile
      */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
       if ($item->getType() == 'Profile') {
-       $paProfile = new self();
-       $self_service = ($item->fields['interface'] != 'central');
-       $paProfile->showForm($item->getID(), true, true, $self_service);
+         $paProfile = new self();
+         $self_service = ($item->fields['interface'] != 'central');
+         $paProfile->showForm($item->getID(), true, true, $self_service);
       }
-       return true;
+      return true;
    }
-
 
     /**
      * Display profile form
@@ -106,18 +102,18 @@ class PluginAlignakProfile extends Profile
       $rights = $this->getRightsGeneral($self_service);
       if (! empty($rights)) {
          $profile->displayRightsChoiceMatrix(
-             $rights, ['canedit' => $canedit,
-             'default_class' => 'tab_bg_2',
-             'title' => __('General', 'alignak')]
+            $rights, ['canedit' => $canedit,
+            'default_class' => 'tab_bg_2',
+            'title' => __('General', 'alignak')]
           );
       }
 
       $rights = $this->getRightsAlignak($self_service);
       if (! empty($rights)) {
          $profile->displayRightsChoiceMatrix(
-             $rights, ['canedit' => $canedit,
-             'default_class' => 'tab_bg_2',
-             'title' => __('Alignak', 'alignak')]
+            $rights, ['canedit' => $canedit,
+            'default_class' => 'tab_bg_2',
+            'title' => __('Alignak', 'alignak')]
           );
       }
 
@@ -134,7 +130,6 @@ class PluginAlignakProfile extends Profile
       return true;
    }
 
-
    /**
     * Delete profiles
     */
@@ -145,7 +140,6 @@ class PluginAlignakProfile extends Profile
          ProfileRight::deleteProfileRights([$data['field']]);
       }
    }
-
 
     /**
      * Get all rights
@@ -160,7 +154,6 @@ class PluginAlignakProfile extends Profile
       $a_rights = array_merge($a_rights, $this->getRightsAlignak($self_service));
       return $a_rights;
    }
-
 
     /**
      * Get rights for the plugin monitoring features
@@ -179,7 +172,6 @@ class PluginAlignakProfile extends Profile
        return $rights;
    }
 
-
     /**
      * Get general rights
      * - plugin_alignak_central: display Alignak information on the central page
@@ -192,7 +184,6 @@ class PluginAlignakProfile extends Profile
             'label'     => __('Central page', 'alignak'),
             'field'     => 'plugin_alignak_central'],
       ];
-      echo "Self: $self_service";
       if (! $self_service) {
          // Add a menu in the Administration menu
          $rights[] = [
@@ -206,6 +197,12 @@ class PluginAlignakProfile extends Profile
             'itemtype'  => 'PluginAlignakConfig',
             'label'     => __('XxX - Configuration', 'alignak'),
             'field'     => 'plugin_alignak_configuration'
+         ];
+
+         $rights[] = [
+            'itemtype'  => 'PluginAlignakMonitoringTemplate',
+            'label'     => __('Monitoring', 'alignak'),
+            'field'     => 'plugin_alignak_monitoring'
          ];
 
          $rights[] = [
@@ -230,7 +227,6 @@ class PluginAlignakProfile extends Profile
       return $rights;
    }
 
-
     /**
      * Add the default profile
      *
@@ -240,9 +236,7 @@ class PluginAlignakProfile extends Profile
    static function addDefaultProfileInfos($profiles_id, $rights) {
       $profileRight = new ProfileRight();
       foreach ($rights as $right => $value) {
-         if (!countElementsInTable(
-            'glpi_profilerights',
-            "`profiles_id`='$profiles_id' AND `name`='$right'")) {
+         if (! countElementsInTable('glpi_profilerights', ['profiles_id' => $profiles_id, 'name' => $right])) {
             $myright['profiles_id'] = $profiles_id;
             $myright['name']        = $right;
             $myright['rights']      = $value;
@@ -253,7 +247,6 @@ class PluginAlignakProfile extends Profile
          }
       }
    }
-
 
     /**
      * Create first access (so default profile)
@@ -267,7 +260,6 @@ class PluginAlignakProfile extends Profile
           self::addDefaultProfileInfos($profiles_id, [$right['field'] => ALLSTANDARDRIGHT]);
       }
    }
-
 
     /**
      * Delete rights  stored in session
@@ -290,7 +282,6 @@ class PluginAlignakProfile extends Profile
       }
    }
 
-
     /**
      * Init profiles during installation:
      * - add rights in profile table for the current user's profile
@@ -301,18 +292,19 @@ class PluginAlignakProfile extends Profile
       $profile   = new Profile();
       $a_rights  = $pfProfile->getAllRights();
 
-      // Toolbox::logInFile("init", "initProfile...\n");
+//       Toolbox::logInFile("pa-init", "initProfile...\n");
       foreach ($a_rights as $data) {
-         if (countElementsInTable("glpi_profilerights", "`name` = '".$data['field']."'") == 0) {
+         if (countElementsInTable("glpi_profilerights", ['name' => $data['field']]) == 0) {
+         // if (countElementsInTable("glpi_profilerights", "`name` = '".$data['field']."'") == 0) {
             Toolbox::logInFile("init", "Set right {$data['field']}\n");
             ProfileRight::addProfileRights([$data['field']]);
             $_SESSION['glpiactiveprofile'][$data['field']] = 0;
          }
       }
 
-      // Add all rights to current profile of the user
-      if (isset($_SESSION['glpiactiveprofile'])) {
-         $dataprofile       = [];
+      // Add all rights to the current user profile
+      if (isset($_SESSION['glpiactiveprofile']) && isset($_SESSION['glpiactiveprofile']['id'])) {
+         $dataprofile = [];
          $dataprofile['id'] = $_SESSION['glpiactiveprofile']['id'];
          $profile->getFromDB($_SESSION['glpiactiveprofile']['id']);
          foreach ($a_rights as $info) {

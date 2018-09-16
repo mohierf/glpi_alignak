@@ -22,7 +22,7 @@ class PluginAlignakMailNotification extends CommonDBTM
       $table = self::getTable();
 
       if (!$DB->tableExists($table)) {
-         $migration->displayMessage(sprintf(__("Installing %s"), $table));
+//         $migration->displayMessage(sprintf(__("Installing %s"), $table));
 
          $query = "CREATE TABLE `$table` (
                   `id` int(11) NOT NULL auto_increment,
@@ -286,7 +286,6 @@ class PluginAlignakMailNotification extends CommonDBTM
       echo '</td>';
       echo '</tr>';
 
-
       echo '<tr>';
       echo '<td>'.__('Recipient', "alignak").'</td>';
       echo '<td colspan="5">';
@@ -310,7 +309,6 @@ class PluginAlignakMailNotification extends CommonDBTM
       }
       echo '</td>';
       echo '</tr>';
-
 
       echo '<tr>';
       echo '<td>'.__('Mail notification name', "alignak").'</td>';
@@ -373,7 +371,6 @@ class PluginAlignakMailNotification extends CommonDBTM
       echo '</td>';
       echo '</tr>';
 
-
       // Mail copies
       echo '<td colspan="8">';
       echo '<strong>'.__('Send copies to: ', 'alignak').'</strong>';
@@ -434,7 +431,6 @@ class PluginAlignakMailNotification extends CommonDBTM
       echo '<td colspan="8">';
       echo "<hr/>";
       echo '</td></tr>';
-
 
       // Mail notifications
       echo '<td colspan="8">';
