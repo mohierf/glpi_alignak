@@ -26,8 +26,6 @@ class PluginAlignakDashboard extends CommonDBTM {
       $table = self::getTable();
 
       if (! $DB->tableExists($table)) {
-//         $migration->displayMessage(sprintf(__("Installing %s"), $table));
-
          $query = "CREATE TABLE `$table` (
                  `id` int(11) NOT NULL AUTO_INCREMENT,
                  `is_active` tinyint(1) DEFAULT '0',

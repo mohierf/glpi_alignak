@@ -41,12 +41,13 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-// Class of the defined type
-
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
+/*
+ * Class used to manage the relation between a computer and the plugin data
+ */
 class PluginAlignakComputer extends CommonDBTM
 {
 
@@ -54,11 +55,8 @@ class PluginAlignakComputer extends CommonDBTM
        global $DB;
 
        $table = self::getTable();
-
       if (!$DB->tableExists($table)) {
-//          $migration->displayMessage(sprintf(__("Installing %s"), $table));
-
-          $query = "CREATE TABLE `$table` (
+         $query = "CREATE TABLE `$table` (
                   `id` int(11) NOT NULL auto_increment,
                   `entities_id` int(11) NOT NULL DEFAULT 0,
                   `itemtype` varchar(255) collate utf8_unicode_ci DEFAULT NULL,
@@ -67,14 +65,13 @@ class PluginAlignakComputer extends CommonDBTM
                   `comment` text collate utf8_unicode_ci,
                 PRIMARY KEY  (`id`),
                 KEY `computer` (`itemtype`, `items_id`)
-               ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+             ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
 
-          $DB->query($query) or die("error creating $table". $DB->error());
+         $DB->query($query) or die("error creating $table". $DB->error());
       }
 
-         return true;
+      return true;
    }
-
 
    static function uninstall() {
        global $DB;
@@ -83,7 +80,6 @@ class PluginAlignakComputer extends CommonDBTM
 
        return true;
    }
-
 
     /**
      * Check if an item is monitored
@@ -96,14 +92,13 @@ class PluginAlignakComputer extends CommonDBTM
      * @return true/false
      **/
    function exists(CommonGLPI $item) {
-       $pmHost = new PluginAlignakComputer();
-       PluginAlignakToolbox::logIfDebug("Check if monitored: " . $item->getType() . " / "  . $item->getName());
-       return $pmHost->getFromDBByCrit(['itemtype' => 'computer', 'items_id' => $item->getID()]);
+      $pmHost = new PluginAlignakComputer();
+      PluginAlignakToolbox::logIfDebug("Check if monitored: " . $item->getType() . " / "  . $item->getName());
+      return $pmHost->getFromDBByCrit(['itemtype' => 'computer', 'items_id' => $item->getID()]);
    }
 
-
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-       $array_ret = [];
+      $array_ret = [];
       if ($item->getID() > -1) {
          if (Session::haveRight('config', READ)) {
             array_push($array_ret, self::createTabEntry(__('Monitoring configuration', 'monitoring')));
@@ -116,14 +111,12 @@ class PluginAlignakComputer extends CommonDBTM
              array_push($array_ret, self::createTabEntry(__('Monitoring history', 'monitoring')));
          }
       }
-         return $array_ret;
+      return $array_ret;
    }
 
-
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-
-       $pmHost = new PluginAlignakComputer();
-       $pmHost->exists($item);
+      $pmHost = new PluginAlignakComputer();
+      $pmHost->exists($item);
       switch ($tabnum) {
          case 1:
             $pmHost->showInfo();
@@ -137,7 +130,6 @@ class PluginAlignakComputer extends CommonDBTM
       }
          return true;
    }
-
 
    function showInfo() {
 
@@ -155,8 +147,7 @@ class PluginAlignakComputer extends CommonDBTM
        echo '</table>';
    }
 
-
-    /**
+   /**
      * Display the live state of a computer
      *
      * @param $items_id integer ID of the entity
@@ -210,8 +201,7 @@ class PluginAlignakComputer extends CommonDBTM
          return true;
    }
 
-
-    /**
+   /**
      * Display form for computer configuration
      *
      * @param $items_id integer ID
@@ -269,7 +259,6 @@ class PluginAlignakComputer extends CommonDBTM
 
        return true;
    }
-
 
    static function add_default_where($in) {
 

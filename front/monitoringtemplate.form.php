@@ -43,29 +43,29 @@ Html::header(
    'admin',
    'pluginalignakmenu', 'monitoring_template');
 
-$paCounterTemplate = new PluginAlignakMonitoringTemplate();
+$paMonitoringTemplate = new PluginAlignakMonitoringTemplate();
 if (isset($_POST["copy"])) {
-   $paCounterTemplate->showForm(-1, -1, [ 'canedit'=>PluginAlignakMonitoringTemplate::canUpdate(), 'colspan'=>4 ], $_POST);
+   $paMonitoringTemplate->showForm(-1, -1, [ 'canedit'=>PluginAlignakMonitoringTemplate::canUpdate(), 'colspan'=>4 ], $_POST);
    Html::footer();
    exit;
 } else if (isset ($_POST["add"])) {
-   $paCounterTemplate->add($_POST);
+   $paMonitoringTemplate->add($_POST);
    Html::back();
 } else if (isset ($_POST["update"])) {
-   $paCounterTemplate->update($_POST);
+   $paMonitoringTemplate->update($_POST);
    Html::back();
 } else if (isset ($_POST["delete"])) {
-   $paCounterTemplate->delete($_POST);
-   $paCounterTemplate->redirectToList();
+   $paMonitoringTemplate->delete($_POST);
+   $paMonitoringTemplate->redirectToList();
 } else if (isset ($_POST["send"])) {
    Session::crongetCSVDailyCounters($_POST['id']);
    Html::back();
 }
 
 if (isset($_GET["id"])) {
-   $paCounterTemplate->showForm($_GET['id'], -1, [ 'canedit'=>PluginAlignakMonitoringTemplate::canUpdate(), 'colspan'=>4 ]);
+   $paMonitoringTemplate->showForm($_GET['id'], -1, [ 'canedit'=>PluginAlignakMonitoringTemplate::canUpdate(), 'colspan'=>4 ]);
 } else {
-   $paCounterTemplate->showForm();
+   $paMonitoringTemplate->showForm();
 }
 
 Html::footer();

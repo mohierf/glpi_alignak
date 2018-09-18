@@ -162,10 +162,6 @@ function plugin_init_alignak() {
       Plugin::registerClass('PluginAlignakConfig',
          ['addtabon' => 'Config']);
 
-      // Plugin Alignak - Example class
-      Plugin::registerClass('PluginAlignakExample',
-         ['addtabon' => ['Entity', 'Computer', 'User']]);
-
       // Plugin Alignak - Dashboard class
       Plugin::registerClass('PluginAlignakDashboard',
          ['addtabon' => ['Entity']]);
@@ -174,32 +170,14 @@ function plugin_init_alignak() {
       Plugin::registerClass('PluginAlignakCounter',
          ['addtabon' => ['Computer']]);
       // todo: to be registered ?
-      Plugin::registerClass('PluginAlignakCounterTemplate',
-         ['addtabon' => ['Entity', 'Computer']]);
+      Plugin::registerClass('PluginAlignakCountersTemplate');
       // todo: to be registered ?
-      Plugin::registerClass('PluginAlignakComputerCounterTemplate',
+      Plugin::registerClass('PluginAlignakComputerCountersTemplate',
          ['addtabon' => ['Computer']]);
 
       // Plugin Mail notification class
       Plugin::registerClass('PluginAlignakMailNotification',
          ['addtabon' => 'User']);
-
-      // Params : plugin name - string type - ID - Array of attributes
-      Plugin::registerClass('PluginAlignakDropdown');
-
-      //      // Add forms tab on several classes
-      //      $types = [
-      //         'Central', 'Computer', 'Preference', 'Profile', 'Entity'
-      //      ];
-      //      Plugin::registerClass("PluginAlignakAlignak", [
-      //         'notificationtemplates_types' => true, 'addtabon' => $types, 'link_types' => true
-      //      ]);
-      //      foreach ($types as $type) {
-      //         Plugin::registerClass("PluginAlignak$type", ['addtabon' => $type]);
-      //      }
-
-      //   Plugin::registerClass('PluginAlignakRuleTestCollection',
-      //                         ['rulecollections_types' => true]);
 
       // Load the plugin configuration
       PluginAlignakConfig::loadConfiguration();
@@ -310,9 +288,10 @@ function plugin_init_alignak() {
       //      $PLUGIN_HOOKS['add_javascript']['alignak'] = 'js/alignak.js';
       //      $PLUGIN_HOOKS['add_css']['alignak'] = 'css/alignak.css';
       if (strpos(filter_input(INPUT_SERVER, "SCRIPT_NAME"), "plugins/alignak") != false) {
-         //$PLUGIN_HOOKS['add_css']['alignak'][] = "css/views.css";
-
          $PLUGIN_HOOKS['add_javascript']['alignak'][] = 'js/alignak-copyright.js';
+      }
+      if (strpos(filter_input(INPUT_SERVER, "SCRIPT_NAME"), "plugins/alignak/front/counters") != false) {
+         $PLUGIN_HOOKS['add_javascript']['alignak'][] = 'js/scripts.js.php';
       }
       /*
       // request more attributes from ldap

@@ -56,20 +56,11 @@ function plugin_alignak_install() {
    $plugin_alignak->getFromDBbyDir('alignak');
    $version = $plugin_alignak->fields['version'];
 
-   // todo: what for?
-   ProfileRight::addProfileRights(['alignak:read']);
-
    $migration = new Migration($version);
-   /*
-    * Manage profiles
-    */
-   require_once (GLPI_ROOT . "/plugins/alignak/inc/profile.class.php");
-   PluginAlignakProfile::initProfile();
 
    $classes = [
       'PluginAlignakConfig',
       'PluginAlignakAlignak',
-      'PluginAlignakExample',
       'PluginAlignakEntity',
       'PluginAlignakComputer',
       'PluginAlignakDashboard',
@@ -78,8 +69,8 @@ function plugin_alignak_install() {
       'PluginAlignakMonitoringTemplate',
       // Counters
       'PluginAlignakCounter',
-      'PluginAlignakCounterTemplate',
-      'PluginAlignakComputerCounterTemplate'
+      'PluginAlignakCountersTemplate',
+      'PluginAlignakComputerCountersTemplate'
    ];
    // Load classes
    foreach ($classes as $class) {
@@ -95,9 +86,10 @@ function plugin_alignak_install() {
    // Call installation method
    foreach ($classes as $class) {
       if ($plug = isPluginItemType($class)) {
-         $dir  = PLUGIN_ALIGNAK_DIR . "/inc/";
-         $item =strtolower($plug['class']);
+         $dir = PLUGIN_ALIGNAK_DIR . "/inc/";
+         $item = strtolower($plug['class']);
          if (file_exists($dir . $item . ".class.php")) {
+            Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Installing $class\n");
             if (! call_user_func([$class, 'install'], $migration, $version)) {
                return false;
             }
@@ -120,8 +112,15 @@ function plugin_alignak_install() {
       }
    }
 
-   //Create first access to the current profile is needed
+   /*
+    * Manage profiles
+    */
+   require_once (GLPI_ROOT . "/plugins/alignak/inc/profile.class.php");
+   PluginAlignakProfile::initProfile();
+
+   // Create first access to the current profile is needed
    if (isset($_SESSION['glpiactiveprofile'])) {
+      Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Active profile: ". serialize($_SESSION['glpiactiveprofile']));
       PluginAlignakProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
    }
 
@@ -139,8 +138,6 @@ function plugin_alignak_install() {
  */
 function plugin_alignak_uninstall() {
    global $DB;
-
-   ProfileRight::deleteProfileRights(['alignak:read']);
 
    if (!class_exists('PluginAlignakProfile')) {
       Session::addMessageAfterRedirect(
@@ -161,7 +158,6 @@ function plugin_alignak_uninstall() {
    $classes = [
       'PluginAlignakConfig',
       'PluginAlignakAlignak',
-      'PluginAlignakExample',
       'PluginAlignakEntity',
       'PluginAlignakComputer',
       'PluginAlignakDashboard',
@@ -170,8 +166,8 @@ function plugin_alignak_uninstall() {
       'PluginAlignakMonitoringTemplate',
       // Counters
       'PluginAlignakCounter',
-      'PluginAlignakCounterTemplate',
-      'PluginAlignakComputerCounterTemplate'
+      'PluginAlignakCountersTemplate',
+      'PluginAlignakComputerCountersTemplate'
    ];
    foreach ($classes as $class) {
       if ($plug = isPluginItemType($class)) {
@@ -181,6 +177,7 @@ function plugin_alignak_uninstall() {
 
          if (file_exists($dir . $item . ".class.php")) {
             include_once ($dir . $item . ".class.php");
+            Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Uninstalling $class\n");
             if (! call_user_func([$class, 'uninstall'])) {
                return false;
             }
@@ -238,7 +235,7 @@ function plugin_alignak_getDatabaseRelations() {
 // Define Dropdown tables to be managed in GLPI :
 function plugin_alignak_getDropdown() {
    // Table => Name
-   return ['PluginAlignakDropdown' => __("Plugin Alignak Dropdown", 'alignak')];
+   //   return ['PluginAlignakDropdown' => __("Plugin Alignak Dropdown", 'alignak')];
 }
 
 

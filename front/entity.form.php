@@ -28,22 +28,23 @@
  */
 
 // ----------------------------------------------------------------------
-// Original Author of file:
+// Original Author of file: Frederic Mohier
 // Purpose of file:
 // ----------------------------------------------------------------------
 
 include ('../../../inc/includes.php');
 
-if ($_SESSION["glpiactiveprofile"]["interface"] == "central") {
-   Html::header("Example", $_SERVER['PHP_SELF'],
-      "admin", "pluginalignakmenu", "example");
-} else {
-   Html::helpHeader("Example", $_SERVER['PHP_SELF']);
+Html::header(
+   __('Entity', 'alignak'),
+   $_SERVER['PHP_SELF'],
+   'admin',
+   'pluginalignakmenu', 'entity');
+
+if (isset ($_POST["update"])) {
+   $paEntity = new PluginAlignakEntity();
+   $cr = $paEntity->update($_POST);
+   PluginAlignakToolbox::log("Updating an entity relation: ". serialize($_POST) .", cr: ". serialize($cr));
+   Html::back();
 }
-
-
-//checkTypeRight('PluginExampleExample',"r");
-
-Search::show('PluginAlignakExample');
 
 Html::footer();

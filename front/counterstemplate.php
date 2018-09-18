@@ -41,6 +41,7 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
+
 include ('../../../inc/includes.php');
 
 // Check if plugin is activated...
@@ -52,17 +53,12 @@ if (!$plugin->isInstalled('alignak') || !$plugin->isActivated('alignak')) {
 // Check if current user have the appropriate right
 Session::checkRight("plugin_alignak_counters", UPDATE);
 
-// Check for ACLs
-if (PluginAlignakMailNotification::canView()) {
-   // View is granted: display the list.
+Html::header(
+   __('Counters templates', 'alignak'),
+   $_SERVER['PHP_SELF'],
+   'admin',
+   'pluginalignakmenu', 'counters_template');
 
-   Html::header(
-      __('Alignak - computers counters templates', 'alignak'),
-      $_SERVER['PHP_SELF'],
-      'admin',
-      'pluginalignakmenu', 'computercountertemplate');
+Search::show('PluginAlignakCountersTemplate');
 
-   Search::show('PluginAlignakComputerCounterTemplate');
-
-   Html::footer();
-}
+Html::footer();

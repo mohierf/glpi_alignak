@@ -32,7 +32,7 @@
  */
 
 include ('../../../inc/includes.php');
-Session::checkRight("entity", UPDATE);
+/*Session::checkRight("entity", UPDATE);
 
 $counter = new PluginAlignakCounter();
 if (empty($_REQUEST['counter_id'])) {
@@ -42,4 +42,22 @@ if (empty($_REQUEST['counter_id'])) {
    $counter_id = intval($_REQUEST['counter_id']);
    $counter->getFromDB($counter_id);
 }
-$counter->showForm($counter_id);
+$counter->showForm($counter_id); */
+// Check if plugin is activated...
+$plugin = new Plugin();
+if (!$plugin->isInstalled('alignak') || !$plugin->isActivated('alignak')) {
+   Html::displayNotFoundError();
+}
+
+// Check if current user have the appropriate right
+Session::checkRight("plugin_alignak_counters", UPDATE);
+
+Html::header(
+   __('Counter templates', 'alignak'),
+   $_SERVER['PHP_SELF'],
+   'admin',
+   'pluginalignakmenu', 'counter');
+
+Search::show('PluginAlignakCounter');
+
+Html::footer();

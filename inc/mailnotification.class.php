@@ -22,8 +22,6 @@ class PluginAlignakMailNotification extends CommonDBTM
       $table = self::getTable();
 
       if (!$DB->tableExists($table)) {
-//         $migration->displayMessage(sprintf(__("Installing %s"), $table));
-
          $query = "CREATE TABLE `$table` (
                   `id` int(11) NOT NULL auto_increment,
                   `entities_id` int(11) NOT NULL DEFAULT 0,
@@ -335,35 +333,35 @@ class PluginAlignakMailNotification extends CommonDBTM
 
       echo '<td colspan="1">';
       Dropdown::show(
-        "PluginAlignakCounterTemplate",
+        "PluginAlignakCountersTemplate",
         ['name'=>'component_1',
         'value'=>$this->fields['component_1']]);
       echo '</td>';
 
       echo '<td colspan="1">';
       Dropdown::show(
-         "PluginAlignakCounterTemplate",
+         "PluginAlignakCountersTemplate",
          ['name'=>'component_2',
          'value'=>$this->fields['component_2']]);
       echo '</td>';
 
       echo '<td colspan="1">';
       Dropdown::show(
-         "PluginAlignakCounterTemplate",
+         "PluginAlignakCountersTemplate",
          ['name'=>'component_3',
          'value'=>$this->fields['component_3']]);
       echo '</td>';
 
       echo '<td colspan="1">';
       Dropdown::show(
-         "PluginAlignakCounterTemplate",
+         "PluginAlignakCountersTemplate",
          ['name'=>'component_4',
          'value'=>$this->fields['component_4']]);
       echo '</td>';
 
       echo '<td colspan="1">';
       Dropdown::show(
-         "PluginAlignakCounterTemplate",
+         "PluginAlignakCountersTemplate",
          ['name'=>'component_5',
          'value'=>$this->fields['component_5']]);
       echo '</td>';

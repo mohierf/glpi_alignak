@@ -50,31 +50,28 @@ class PluginAlignakConfig extends CommonDBTM
      * @return bool
      */
    static function install(Migration $migration) {
-       global $DB;
+      global $DB;
 
-       $table = self::getTable();
+      $table = self::getTable();
       if (!$DB->tableExists($table)) {
-//          $migration->displayMessage(sprintf(__("Installing %s"), $table));
-
-          $query = "CREATE TABLE `$table` (
+         $query = "CREATE TABLE `$table` (
                   `id` int(11) NOT NULL auto_increment,
                   `extra_debug` int(1) NOT NULL DEFAULT 0,
                   `log_retention` int(2) NOT NULL DEFAULT 30,
                 PRIMARY KEY  (`id`)
-               ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+             ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
 
-          $DB->query($query) or die("error creating $table". $DB->error());
+         $DB->query($query) or die("error creating $table". $DB->error());
       }
 
-         // Initialize the table
-         $pmConfig = new PluginAlignakConfig();
-         $pmConfig->fields['extra_debug'] = '0';
-         $pmConfig->fields['log_retention'] = 30;
-         $pmConfig->addToDB();
+      // Initialize the table
+      $pmConfig = new PluginAlignakConfig();
+      $pmConfig->fields['extra_debug'] = '0';
+      $pmConfig->fields['log_retention'] = 30;
+      $pmConfig->addToDB();
 
-         return true;
+      return true;
    }
-
 
    static function uninstall() {
        global $DB;
@@ -84,7 +81,6 @@ class PluginAlignakConfig extends CommonDBTM
        return true;
    }
 
-
    /**
      * Get name of this type
      *
@@ -93,7 +89,6 @@ class PluginAlignakConfig extends CommonDBTM
    static function getTypeName($nb = 0) {
       return _n('Configuration', 'Configurations', $nb, 'alignak');
    }
-
 
    /**
      * Load the plugin configuration in a global variable $PA_CONFIG
@@ -121,8 +116,7 @@ class PluginAlignakConfig extends CommonDBTM
       }
    }
 
-
-    /**
+   /**
      * Get a configuration value
      *
      * @global array $PA_CONFIG
@@ -143,8 +137,7 @@ class PluginAlignakConfig extends CommonDBTM
       return null;
    }
 
-
-    /**
+   /**
      * Update a configuration value
      *
      * @param  string $name  name of configuration
@@ -171,7 +164,6 @@ class PluginAlignakConfig extends CommonDBTM
 
       return $result;
    }
-
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
       if (!$withtemplate) {
@@ -223,5 +215,4 @@ class PluginAlignakConfig extends CommonDBTM
          $config->showConfigurationForm();
       }
    }
-
 }

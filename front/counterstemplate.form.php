@@ -28,20 +28,38 @@
  */
 
 // ----------------------------------------------------------------------
-// Original Author of file:
+// Original Author of file: Francois Mohier
 // Purpose of file:
 // ----------------------------------------------------------------------
 
 include ('../../../inc/includes.php');
 
-if ($_SESSION["glpiactiveprofile"]["interface"] == "central") {
-   Html::header("Example", $_SERVER['PHP_SELF'],
-      "admin", "pluginalignakmenu", "example");
-} else {
-   Html::helpHeader("TITRE", $_SERVER['PHP_SELF']);
+Html::header(
+   __('Counter templates', 'alignak'),
+   $_SERVER['PHP_SELF'],
+   'admin',
+   'pluginalignakmenu', 'counter_template');
+
+PluginAlignakToolbox::log("Counters template form: ". serialize($_POST));
+
+$paCountersTemplate = new PluginAlignakCountersTemplate();
+if (isset ($_POST["update"])) {
+   if ($paCountersTemplate->getFromDB($_POST['id'])) {
+      $paCountersTemplate->update($_POST);
+      Html::back();
+   } else {
+      $paCountersTemplate->add($_POST);
+      $paCountersTemplate->redirectToList();
+   }
+} else if (isset ($_POST["purge"])) {
+   $paCountersTemplate->delete($_POST);
+   $paCountersTemplate->redirectToList();
 }
 
-$example = new PluginAlignakExample();
-$example->display($_GET);
+if (isset($_GET["id"])) {
+   $paCountersTemplate->showForm($_GET['id'], -1, [ 'canedit'=>PluginAlignakCountersTemplate::canUpdate(), 'colspan'=>4 ]);
+} else {
+   $paCountersTemplate->showForm();
+}
 
 Html::footer();

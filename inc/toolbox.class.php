@@ -52,24 +52,31 @@ global $PLUGIN_ALIGNAK_LOG;
 class PluginAlignakToolbox
 {
 
-    /**
-     * Log when extra-debug is activated
-     */
+   /**
+    * Log when extra-debug is activated
+    *
+    * @param $message string or array
+    */
    static function log($message) {
-       /*
-       * Call the Glpi base file logging function:
-       * - base filename
-       * - log message
-       * - force file logging - not set ti use the default Glpi configuration (use_log_in_files)
-       */
-       Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, $message . "\n");
+      /*
+      * Call the Glpi base file logging function:
+      * - base filename
+      * - log message
+      * - force file logging - not set to use the default Glpi configuration (use_log_in_files)
+      */
+      if (is_array($message)) {
+         $message = print_r($message, true);
+      }
+      Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, $message . "\n");
    }
 
-    /**
-     * Log when extra-debug is activated
-     */
+   /**
+    * Log when extra-debug is activated
+    *
+    * @param $message string or array
+    */
    static function logIfDebug($message) {
-       $config = new PluginAlignakConfig();
+      $config = new PluginAlignakConfig();
       if ($config->getValue('extra_debug')) {
          if (is_array($message)) {
             $message = print_r($message, true);

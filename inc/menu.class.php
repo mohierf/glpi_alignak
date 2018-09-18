@@ -32,11 +32,10 @@ class PluginAlignakMenu extends CommonGLPI
 
       $elements = [
          'config' => 'PluginAlignakConfig',
-         'example' => 'PluginAlignakExample',
          'alignak' => 'PluginAlignakAlignak',
          'mail_notification' => 'PluginAlignakMailNotification',
          'monitoring_template' => 'PluginAlignakMonitoringTemplate',
-         'counter_template' => 'PluginAlignakCounterTemplate',
+         'counters_template' => 'PluginAlignakCountersTemplate',
          'counter' => 'PluginAlignakCounter'
       ];
       // List of the elements which must have some breadcrumb items
@@ -143,17 +142,6 @@ class PluginAlignakMenu extends CommonGLPI
 
       if (Session::haveRight("config", READ)) {
          echo '<div style="margin-top: 5px;">';
-         echo '<strong>'. __("Example - only for having an example object!", "alignak") .'</strong><br/>';
-         echo '<small><em>'. __("Examples", "alignak") .'</em></small><br/>';
-         echo '<ul style="margin-left: 5px;">';
-         echo '<li><a href="example.php">'.  __("Examples", "alignak") .'</a></li>';
-         echo '</ul>';
-         echo '</div>';
-         echo '<hr>';
-      }
-
-      if (Session::haveRight("config", READ)) {
-         echo '<div style="margin-top: 5px;">';
          echo '<strong>'. __("Dashboard!", "alignak") .'</strong><br/>';
          echo '<small><em>'. __("Dashboards", "alignak") .'</em></small><br/>';
          echo '<ul style="margin-left: 5px;">';
@@ -179,7 +167,7 @@ class PluginAlignakMenu extends CommonGLPI
          echo '<strong>'. __("Counters", "alignak") .'</strong><br/>';
          echo '<small><em>'. __("Configure counters and counters templates", "alignak") .'</em></small><br/>';
          echo '<ul style="margin-left: 5px;">';
-         echo '<li><a href="countertemplate.php">'.  __("Counters templates", "alignak") .'</a></li>';
+         echo '<li><a href="counterstemplate.php">'.  __("Counters templates", "alignak") .'</a></li>';
          echo '<li><a href="counter.php">'.  __("Counters", "alignak") .'</a></li>';
          echo '</ul>';
          echo '</div>';

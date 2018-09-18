@@ -38,23 +38,28 @@ if ($_POST && isset($_POST['save']) && isset($_POST['id'])) {
    if (!isset($_POST['name']) or empty($_POST['name'])) {
       Html::displayErrorAndDie('Please specified a counter name');
    }
+   if (!isset($_POST['template_id']) or empty($_POST['template_id']) or $_POST['template_id'] == -1) {
+      Html::displayErrorAndDie('Please specify a template for that counter');
+   }
 
    $counter = new PluginAlignakCounter();
-   $counter->getFromDB($_POST['id']);
-   // Update counter to the DataBase
-   if ($counter->update($_POST)) {
-      if ($_POST['templateid'] == '0') {
-         $_POST['templateid'] = $_POST['template_id'];
+   $ret = $counter->getFromDB($_POST['id']);
+   if (! $ret) { // Save the new counter to the DataBase
+      if ($counter->add($_POST)) {
          Session::addMessageAfterRedirect(__('The counter has been successfully added!', 'alignak'), true, INFO);
       } else {
+         Session::addMessageAfterRedirect(__('An error occured adding a counter!', 'alignak'), true, ERROR);
+      }
+   } else {    // Update counter to the DataBase
+      if ($counter->update($_POST)) {
          Session::addMessageAfterRedirect(__('The counter has been successfully updated!', 'alignak'), true, INFO);
+      } else {
+         Session::addMessageAfterRedirect(__('An error occured Updating a counter!', 'alignak'), true, ERROR);
       }
    }
 
-   // Redirect the user to the Template Page
-   $url = explode("?", $_SERVER['HTTP_REFERER']);
-   //  echo "REDIR TO: ".$url[0] . "?id=" . $_POST['templateid'];
-   Html::redirect($url[0] . "?id=" . $_POST['templateid']);
+   // Redirect the user to the Counters Page
+   Html::redirect( $CFG_GLPI['root_doc']."/plugins/alignak/front/counter.php");
 } else if (isset($_POST["delete_counter"])) {
    // Delete a Counter
    Session::checkRight("entity", UPDATE);

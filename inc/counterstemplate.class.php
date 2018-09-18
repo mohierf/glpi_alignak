@@ -33,8 +33,8 @@
 // ----------------------------------------------------------------------
 
 
-/// Class PluginAlignakCounterTemplate
-class PluginAlignakCounterTemplate extends CommonDBTM {
+/// Class PluginAlignakCountersTemplate
+class PluginAlignakCountersTemplate extends CommonDBTM {
    /**
     * The right name for this class
     *
@@ -52,11 +52,10 @@ class PluginAlignakCounterTemplate extends CommonDBTM {
       $table = self::getTable();
 
       if (!$DB->tableExists($table)) {
-//         $migration->displayMessage(sprintf(__("Installing %s"), $table));
-
-         $query = "CREATE TABLE `glpi_plugin_alignak_countertemplates` (
+         $query = "CREATE TABLE `$table` (
                   `id` int(11) NOT NULL auto_increment,
                   `name` varchar(25) collate utf8_unicode_ci NOT NULL,
+                  `comment` text DEFAULT NULL,
                   `entities_id` int(11),
                 PRIMARY KEY  (`id`)
                ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
@@ -75,53 +74,6 @@ class PluginAlignakCounterTemplate extends CommonDBTM {
       return true;
    }
 
-   /*
-   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-
-      $array_ret = [];
-      if ($item->getID() > -1) {
-         if (PluginAlignakProfile::haveRight("config", 'r')) {
-            $array_ret[0] = self::createTabEntry(__('Monitoring', 'monitoring'));
-         }
-      }
-      return $array_ret;
-   }
-   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
-
-      $ong = array();
-      $ong[1] = 'titre de mon premier onglet';
-      $ong[2] = 'titre de mon second onglet';
-      return $ong;
-   }
-   */
-
-   /*
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-      echo "DISPLAY SOMETING".$item->getID();
-      if ($item->getID() > -1) {
-         $pmCounter = new PluginAlignakCounterTemplate();
-         $pmHostconfig = new PluginAlignakHostconfig();
-
-         $pmHostconfig->showForm($item->getID(), "CounterTemplate");
-         $pmEntity->showForm($item->fields['id']);
-      }
-      return true;
-   }
-
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
-      echo "countertemplate displayTabContentForItem".$tabnum.":".$item;
-
-      return true;
-   }
-
-   public function defineTabs($options=[]) {
-      $ong = [];
-      $this->addDefaultFormTab($ong);
-      $this->addStandardTab('PluginAlignakCounter', $ong, $options);
-      return $ong;
-   }
-   */
-
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
       switch ($item->getType()) {
 
@@ -136,71 +88,15 @@ class PluginAlignakCounterTemplate extends CommonDBTM {
 
          case 'Entity' :
             // Call the show form for the current entity
-            $paTemplate = new PluginAlignakCounterTemplate();
+            $paTemplate = new PluginAlignakCountersTemplate();
             $paTemplate->showForm(-1, $item->getID(), ['canedit'=>self::canUpdate(), 'colspan'=>4 ]);
             break;
       }
       return true;
    }
 
-   /**
-   * Display form for counter template tag
-   *
-   * @param $items_id integer ID of the counter
-   * @param $options array
-   *
-   *@return bool true if form is ok
-   *
-   **/
-   /* Commented out - Fred - Replaced with another function showForm
-   function showForm($template_id, $options = []) {
-      global $DB,$CFG_GLPI;
-
-      $counters = $this->find("`id`='".$template_id."'", "", 1);
-      $counter = current($counters);
-      $this->getFromDB($counter['id']);
-
-      // echo "<form name='form' method='post'
-      //action='".$CFG_GLPI['root_doc']."/plugins/alignak/front/counter_template.form.php'>";
-
-      $this->initForm($template_id, $options);
-      $this->showFormHeader($options);
-
-      echo "<table class='tab_cadre_fixe'";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<th colspan='2'>";
-      echo __('Set the counter template', 'alignak');
-      echo "</th>";
-      echo "</tr>";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>".__('Template Name', 'alignak').'<span style="color:red;">*</span></td>';
-      echo "<td>";
-      echo "<input type='text' name='name' value='".$this->fields["name"]."' size='30'/>";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>".__('Entity', 'alignak')." :</td>";
-      echo "<td>";
-      echo "<input type='text' name='entities_id' value='".$this->fields["entities_id"]."' size='30'/>";
-
-      echo "</td>";
-      echo "</tr>";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td colspan='2' align='center'>";
-      echo "<input type='hidden' name='id' value='".$this->fields['id']."'/>";
-      echo "<input type='submit' name='save' value=\"".__('Save')."\" class='submit'>";
-      echo "</td>";
-      echo "</tr>";
-
-      echo "</table>";
-      Html::closeForm();
-
-      return true;
-   }
-
-   function getCounterTemplateListForDropdown($entities_id = '') {
+   /*
+   function getCountersTemplateListForDropdown($template_id = '') {
       global $DB;
 
       $output = [];
@@ -211,13 +107,14 @@ class PluginAlignakCounterTemplate extends CommonDBTM {
       }
 
       $result = $DB->query($query);
+      $output[-1] = __('Select one....','alignak');
       while ($data=$DB->fetch_array($result)) {
          $output[$data['id']] = $data['name'];
       }
       return $output;
    }
 
-   function getCounterTemplateList($entities_id = '') {
+   function getCountersTemplateList($entities_id = '') {
       global $DB;
 
       $output = [];
@@ -236,6 +133,7 @@ class PluginAlignakCounterTemplate extends CommonDBTM {
       return $output;
    }
    */
+
    function showForm($ID = -1, $entities_id = -1, $options = [], $copy = []) {
       global $DB,$CFG_GLPI;
 
@@ -282,6 +180,13 @@ class PluginAlignakCounterTemplate extends CommonDBTM {
       $this->initForm($ID, $options);
       $this->showFormHeader($options);
 
+      $canedit = $this->canEdit($this->getID());
+      echo "<div class='spaced'>";
+      if ($canedit) {
+         echo "<form method='post' name=form action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
+      }
+      echo '<table class="tab_cadre_fixe"';
+
       /*
       @fred - For future idea
       echo '<tr>';
@@ -313,7 +218,7 @@ class PluginAlignakCounterTemplate extends CommonDBTM {
       echo '</tr>';
 
       echo '<tr>';
-      echo '<td>'.__('Computer template name', "alignak").'</td>';
+      echo '<td>'.__('Name', "alignak").'</td>';
       echo '<td colspan="7">';
       if (! empty($this->fields["name"])) {
          echo '<input type="text" name="name" value="'. $this->fields["name"] .'" size="20"/>';
@@ -323,13 +228,41 @@ class PluginAlignakCounterTemplate extends CommonDBTM {
       echo '</td>';
       echo '</tr>';
 
-      echo '<tr><td colspan="8">';
-      echo '<hr/>';
-      echo '</td></tr>';
+      $rowspan = 1;
+      echo '<tr>';
+      echo "<td rowspan='$rowspan'><label for='comment'>".__('Comments')."</label></td>";
+      echo "<td rowspan='$rowspan' class='middle'>";
 
-      $this->showFormButtons($options);
+      echo "<textarea cols='45' rows='".($rowspan+3)."' id='comment' name='comment' >". $this->fields["comment"];
+      echo "</textarea></td></tr>";
+      echo '</tr>';
 
-      Html::closeForm();
+      if ($this->getID()) {
+         $this->listCounters($this->getID());
+      } else {
+         echo '<tr class="tab_bg_1">';
+         echo '<th colspan="2">';
+         echo '<strong>';
+         echo __('When you will save this new template, you will be able to add some counters.', 'alignak');
+         echo '</strong>';
+         echo '</th>';
+         echo '</tr>';
+      }
+
+      if ($canedit) {
+         echo '<tr>';
+         echo '<td class="tab_bg_2 center" colspan="4">';
+         echo Html::hidden('id', ['value' => $this->fields['id']]);
+         echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
+         echo '</td>';
+         echo '</tr>';
+         echo '</table>';
+         Html::closeForm();
+      } else {
+         echo '</table>';
+      }
+
+      echo '</div>';
 
       return true;
    }
@@ -388,4 +321,85 @@ class PluginAlignakCounterTemplate extends CommonDBTM {
       return $tab;
    }
 
+   /**
+   * listCounters for the counters template
+   *
+   * @param $template_id integer ID of the template
+   * @param $options array
+   *
+   *@return bool true if form is ok
+   *
+   **/
+   function listCounters($template_id, $options = []) {
+      // todo: why not using self rather than $template_id ?
+      global $DB,$CFG_GLPI;
+
+      $paCounters = new PluginAlignakCounter();
+      $counters = $paCounters->find("`plugin_alignak_counters_template_id`='".$template_id."'", "", "");
+
+      echo "TEMPLATE ID: $template_id-";
+      $tpl = new PluginAlignakCountersTemplate();
+      $found = $tpl->getFromDB($template_id);
+
+      $token = Session::getNewCSRFToken();
+
+      // If it still exists...
+      if ($found) {
+         echo '<table class="tab_cadre_fixe">';
+         echo '<tr>';
+         echo '<td class="tab_bg_2 center" colspan="4">';
+         echo __('Template Name:'.$tpl->fields['name'], 'alignak');
+         echo '</td>';
+         echo '</tr>';
+      }
+
+      $i = 0;
+      foreach ($counters as $counter) {
+         $i++;
+         echo '<tr class="line' . ($i % 2) . '" id="counter_row_' . $counter['id'] . '">';
+         echo '<td onclick="editCounter(' . $counter['id'] . ', \'' . $token . '\', ' . $counter['id'] . ', ' . $counter['id'] . ')">';
+         echo "<a href='#'>";
+         echo '<img src="' . $CFG_GLPI['root_doc'] . '/pics/edit.png" title="" /> ';
+         echo $counter['name'];
+         echo "<a>";
+         echo '</td>';
+
+         echo '<td>';
+         echo $counter['type_counter'];
+         echo '</td>';
+
+         echo '<td>';
+         echo $counter['comment'];
+         echo '</td>';
+         echo '<td>';
+         if ($counter['cumulatif']) {
+            echo '<img src="' . $CFG_GLPI['root_doc'] . '/pics/stats_item.png" title="" /> ';
+         }
+         echo '</td>';
+
+         echo '<td align="center">';
+
+         // avoid quote js error
+         $counter['name'] = htmlspecialchars_decode($counter['name'], ENT_QUOTES);
+
+         echo "<span class='form_control pointer'>";
+         echo '<img src="' . $CFG_GLPI['root_doc'] . '/pics/delete.png"
+                  title="' . __('Delete', 'alignak') . '"
+                  onclick="deleteCounter(' . $counter['id'] . ', \'' . $token . '\', ' . $counter['id'] . ')"> ';
+         echo "</span>";
+         echo '</td>';
+
+         echo '</tr>';
+      }
+      echo '<tr class="line' . (($i + 1) % 2) . '">';
+      echo '<td colspan="6" id="add_counter_td_1" class="add_counter_tds">';
+      echo '<a href="javascript:addCounter(' . $template_id . ', \'' . $token . '\', ' . $template_id . ');">
+                <img src="'.$CFG_GLPI['root_doc'].'/pics/menu_add.png" alt="+"/>
+                '.__('Add a counter', 'alignak').'
+            </a>';
+      echo '</td>';
+      echo '</tr>';
+
+      echo '</table>';
+   }
 }

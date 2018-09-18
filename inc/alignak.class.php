@@ -51,34 +51,23 @@ class PluginAlignakAlignak extends CommonDBTM
    static $rightname = 'plugin_alignak_alignak';
 
    static function install(Migration $migration) {
-       global $DB;
+      global $DB;
 
-       $table = self::getTable();
+      $table = self::getTable();
 
       if (! $DB->tableExists($table)) {
-//          $migration->displayMessage(sprintf(__("Installing %s"), $table));
-
-          $query = "CREATE TABLE `$table` (
+         $query = "CREATE TABLE `$table` (
                   `id` int(11) NOT NULL auto_increment,
                   `name` varchar(255) collate utf8_unicode_ci default NULL,
                   `comment` text collate utf8_unicode_ci,
                 PRIMARY KEY  (`id`),
                 KEY `name` (`name`)
-               ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+             ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
 
-          $DB->query($query) or die("error creating $table". $DB->error());
-
-          /* Populate data
-          $query = "INSERT INTO `glpi_plugin_alignak_alignaks`
-                        (`id`, `name`, `comment`)
-                 VALUES (1, 'dp 1', 'comment 1'),
-                        (2, 'dp2', 'comment 2')";
-
-          $DB->query($query) or die("error populate glpi_plugin_alignak_dropdowns". $DB->error());
-          */
+         $DB->query($query) or die("error creating $table". $DB->error());
       }
 
-         return true;
+      return true;
    }
 
    static function uninstall() {

@@ -254,10 +254,10 @@ class PluginAlignakProfile extends Profile
      * @param integer $profiles_id id of profile
      */
    static function createFirstAccess($profiles_id) {
-      // include_once GLPI_ROOT."/plugins/alignak/inc/profile.class.php";
+      include_once GLPI_ROOT."/plugins/alignak/inc/profile.class.php";
       $profile = new self();
       foreach ($profile->getAllRights() as $right) {
-          self::addDefaultProfileInfos($profiles_id, [$right['field'] => ALLSTANDARDRIGHT]);
+         self::addDefaultProfileInfos($profiles_id, [$right['field'] => ALLSTANDARDRIGHT]);
       }
    }
 
@@ -292,11 +292,10 @@ class PluginAlignakProfile extends Profile
       $profile   = new Profile();
       $a_rights  = $pfProfile->getAllRights();
 
-//       Toolbox::logInFile("pa-init", "initProfile...\n");
+      Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "initProfile...\n");
       foreach ($a_rights as $data) {
          if (countElementsInTable("glpi_profilerights", ['name' => $data['field']]) == 0) {
-         // if (countElementsInTable("glpi_profilerights", "`name` = '".$data['field']."'") == 0) {
-            Toolbox::logInFile("init", "Set right {$data['field']}\n");
+            Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Set right {$data['field']}\n");
             ProfileRight::addProfileRights([$data['field']]);
             $_SESSION['glpiactiveprofile'][$data['field']] = 0;
          }

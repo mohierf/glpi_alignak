@@ -51,12 +51,10 @@ class PluginAlignakMonitoringTemplate extends CommonDBTM {
       $table = self::getTable();
 
       if (!$DB->tableExists($table)) {
-//         $migration->displayMessage(sprintf(__("Installing %s"), $table));
-
-         $query = "CREATE TABLE `glpi_plugin_alignak_monitoringtemplates` (
+         $query = "CREATE TABLE `$table` (
                   `id` int(11) NOT NULL auto_increment,
-                  `name` varchar(25) collate utf8_unicode_ci NOT NULL,
-                  `entities_id` int(11),
+                  `entities_id` int(11) NOT NULL DEFAULT '0',
+                  `name` varchar(255) collate utf8_unicode_ci default NULL,
                 PRIMARY KEY  (`id`)
                ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
 
