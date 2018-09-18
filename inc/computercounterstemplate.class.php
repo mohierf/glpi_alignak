@@ -46,34 +46,6 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
     */
    static $rightname = 'plugin_alignak_counters';
 
-   static function install(Migration $migration) {
-      global $DB;
-
-      $table = self::getTable();
-
-      if (!$DB->tableExists($table)) {
-         $query = "CREATE TABLE `$table` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `itemtype` varchar(100) DEFAULT NULL,
-                  `items_id` int(11) NOT NULL DEFAULT '0',
-                  `plugin_alignak_counters_template_id` int(11) NOT NULL,
-                PRIMARY KEY  (`id`)
-             ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-
-         $DB->query($query) or die("error creating $table". $DB->error());
-      }
-
-      return true;
-   }
-
-   static function uninstall() {
-      global $DB;
-
-      $DB->query("DROP TABLE IF EXISTS `".self::getTable()."`");
-
-      return true;
-   }
-
    static function getTypeName($nb = 0) {
       return _n('Computer counters template', 'Computer counters templates', $nb, 'alignak');
    }
@@ -97,7 +69,7 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
    }
 
    /**
-   * Display form for the computer counters tempalte and the counters
+   * Display form for the computer counters template and the counters
    *
    * @param $item Computer
    *

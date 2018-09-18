@@ -195,7 +195,7 @@ class PluginAlignakProfile extends Profile
          $rights[] = [
             'rights'    => [READ => __('Read'), UPDATE => __('Update')],
             'itemtype'  => 'PluginAlignakConfig',
-            'label'     => __('XxX - Configuration', 'alignak'),
+            'label'     => __('Configuration', 'alignak'),
             'field'     => 'plugin_alignak_configuration'
          ];
 
@@ -267,7 +267,6 @@ class PluginAlignakProfile extends Profile
    static function removeRightsFromSession() {
       $profile = new self();
       foreach ($profile->getAllRights() as $right) {
-         echo "Removing: " . serialize($right) . "<br>";
          if (isset($_SESSION['glpiactiveprofile'][$right['field']])) {
             unset($_SESSION['glpiactiveprofile'][$right['field']]);
          }
@@ -303,22 +302,26 @@ class PluginAlignakProfile extends Profile
 
       // Add all rights to the current user profile
       if (isset($_SESSION['glpiactiveprofile']) && isset($_SESSION['glpiactiveprofile']['id'])) {
-         $dataprofile = [];
-         $dataprofile['id'] = $_SESSION['glpiactiveprofile']['id'];
+         $dataprofile = [
+            "id" => $_SESSION['glpiactiveprofile']['id']
+         ];
          $profile->getFromDB($_SESSION['glpiactiveprofile']['id']);
          foreach ($a_rights as $info) {
+            Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Profile right: ". serialize($info) ."\n");
             if (is_array($info)
-               && ((!empty($info['itemtype'])) || (!empty($info['rights'])))
-               && (!empty($info['label'])) && (!empty($info['field']))) {
+               && ((! empty($info['itemtype'])) || (! empty($info['rights'])))
+               && (! empty($info['label'])) && (! empty($info['field']))) {
 
                if (isset($info['rights'])) {
-                    $rights = $info['rights'];
+                  $rights = $info['rights'];
                } else {
                   $rights = $profile->getRightsFor($info['itemtype']);
                }
-               foreach ($rights as $right => $label) {
-                  $dataprofile['_'.$info['field']][$right] = 1;
-                  $_SESSION['glpiactiveprofile'][$data['field']] = $right;
+               Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "- rights:". serialize($rights) ."\n");
+               foreach ($rights as $binary_right => $text_right) {
+                  Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "- right: $binary_right\n");
+                  $dataprofile['_'.$info['field']][$binary_right] = 1;
+                  $_SESSION['glpiactiveprofile'][$info['field']] = $binary_right;
                }
             }
          }

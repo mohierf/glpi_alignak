@@ -33,28 +33,35 @@
 // ----------------------------------------------------------------------
 include ('../../../inc/includes.php');
 
-if ($_POST && isset($_POST['save']) && isset($_POST['id'])) {
-   // Check that a name has been passed
-   if (!isset($_POST['name']) or empty($_POST['name'])) {
-      Html::displayErrorAndDie('Please specified a counter name');
-   }
-   if (!isset($_POST['template_id']) or empty($_POST['template_id']) or $_POST['template_id'] == -1) {
-      Html::displayErrorAndDie('Please specify a template for that counter');
-   }
+PluginAlignakToolbox::log("Counter form: ". serialize($_POST));
 
-   $counter = new PluginAlignakCounter();
-   $ret = $counter->getFromDB($_POST['id']);
-   if (! $ret) { // Save the new counter to the DataBase
-      if ($counter->add($_POST)) {
-         Session::addMessageAfterRedirect(__('The counter has been successfully added!', 'alignak'), true, INFO);
-      } else {
-         Session::addMessageAfterRedirect(__('An error occured adding a counter!', 'alignak'), true, ERROR);
-      }
-   } else {    // Update counter to the DataBase
-      if ($counter->update($_POST)) {
-         Session::addMessageAfterRedirect(__('The counter has been successfully updated!', 'alignak'), true, INFO);
-      } else {
-         Session::addMessageAfterRedirect(__('An error occured Updating a counter!', 'alignak'), true, ERROR);
+if ($_POST && isset($_POST['save']) && isset($_POST['id'])) {
+   $error = false;
+   // Check that a name has been provided
+   if (! isset($_POST['name'])
+      || empty($_POST['name'])) {
+      Session::addMessageAfterRedirect(__('Please provide a counter name', 'alignak'), true, ERROR);
+      Html::back();
+   } else if (! isset($_POST['plugin_alignak_counters_template_id'])
+      || empty($_POST['plugin_alignak_counters_template_id'])
+      || $_POST['plugin_alignak_counters_template_id'] == -1) {
+      Session::addMessageAfterRedirect(__('Please provide a counters template', 'alignak'), true, ERROR);
+      Html::back();
+   } else {
+      $counter = new PluginAlignakCounter();
+      $ret = $counter->getFromDB($_POST['id']);
+      if (! $ret) { // Save the new counter to the DataBase
+         if ($counter->add($_POST)) {
+            Session::addMessageAfterRedirect(__('The counter has been successfully added!', 'alignak'), true, INFO);
+         } else {
+            Session::addMessageAfterRedirect(__('An error occured while adding a counter!', 'alignak'), true, ERROR);
+         }
+      } else {    // Update counter to the DataBase
+         if ($counter->update($_POST)) {
+            Session::addMessageAfterRedirect(__('The counter has been successfully updated!', 'alignak'), true, INFO);
+         } else {
+            Session::addMessageAfterRedirect(__('An error occured while updating a counter!', 'alignak'), true, ERROR);
+         }
       }
    }
 
@@ -66,12 +73,17 @@ if ($_POST && isset($_POST['save']) && isset($_POST['id'])) {
    $counter = new PluginAlignakCounter();
    $counter->getFromDB($_POST['id']);
    $counter->delete($_POST);
-} else {
-   $counter = new PluginAlignakCounter();
-   Html::header(__('Counter'), '', "tools", "pluginalignak", "config");
-
-   $_GET['id'] = isset($_GET['id']) ? intval($_GET['id']) : -1;
-
-   $counter->display($_GET);
-   Html::footer();
 }
+
+Html::header(
+   __('Counter', 'alignak'),
+   $_SERVER['PHP_SELF'],
+   'admin',
+   'pluginalignakmenu', 'counter');
+
+$counter = new PluginAlignakCounter();
+
+$_GET['id'] = isset($_GET['id']) ? intval($_GET['id']) : -1;
+
+$counter->display($_GET);
+Html::footer();

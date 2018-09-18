@@ -55,7 +55,7 @@ $paDashboard = new PluginAlignakDashboard();
 Session::checkRight("plugin_alignak_dashboard", READ);
 
 if (isset($_GET["id"])) {
-   $paDashboard->showForm($_GET['id'], -1, ['canedit'=>PluginKiosksDashboard::canUpdate(), 'colspan'=>4]);
+   $paDashboard->showForm($_GET['id'], -1, ['canedit'=>PluginAlignakDashboard::canUpdate(), 'colspan'=>4]);
 } else {
    $paDashboard->showForm(-1);
 }

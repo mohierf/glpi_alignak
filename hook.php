@@ -44,166 +44,29 @@
 /**
  * Plugin install process
  *
- * @return boolean
+ * @return boolean True if success
  */
 function plugin_alignak_install() {
-   global $DB;
+//   spl_autoload_register('plugin_alignak_autoload');
 
-   set_time_limit(900);
-   ini_set('memory_limit', '2048M');
-
-   $plugin_alignak = new Plugin;
-   $plugin_alignak->getFromDBbyDir('alignak');
-   $version = $plugin_alignak->fields['version'];
-
-   $migration = new Migration($version);
-
-   $classes = [
-      'PluginAlignakConfig',
-      'PluginAlignakAlignak',
-      'PluginAlignakEntity',
-      'PluginAlignakComputer',
-      'PluginAlignakDashboard',
-      'PluginAlignakMailNotification',
-      // Alignak
-      'PluginAlignakMonitoringTemplate',
-      // Counters
-      'PluginAlignakCounter',
-      'PluginAlignakCountersTemplate',
-      'PluginAlignakComputerCountersTemplate'
-   ];
-   // Load classes
-   foreach ($classes as $class) {
-      if ($plug = isPluginItemType($class)) {
-         $dir  = PLUGIN_ALIGNAK_DIR . "/inc/";
-         $item = strtolower($plug['class']);
-         if (file_exists($dir . $item . ".class.php")) {
-            include_once ($dir . $item . ".class.php");
-         }
-      }
+   $version   = plugin_version_alignak();
+   $migration = new Migration($version['version']);
+   require_once(__DIR__ . '/install/install.php');
+   $install = new PluginAlignakInstall();
+   if (! $install->isPluginInstalled()) {
+      return $install->install($migration);
    }
-
-   // Call installation method
-   foreach ($classes as $class) {
-      if ($plug = isPluginItemType($class)) {
-         $dir = PLUGIN_ALIGNAK_DIR . "/inc/";
-         $item = strtolower($plug['class']);
-         if (file_exists($dir . $item . ".class.php")) {
-            Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Installing $class\n");
-            if (! call_user_func([$class, 'install'], $migration, $version)) {
-               return false;
-            }
-         }
-      }
-   }
-
-   // Check class and front files for existing containers and dropdown fields
-   plugin_alignak_checkFiles();
-
-   /*
-    * Migrate tables to InnoDB engine if Glpi > 9.3
-    */
-   $version = rtrim(GLPI_VERSION, '-dev');
-   if (version_compare($version, '9.3', '>=')) {
-      $tomigrate = $DB->getMyIsamTables();
-
-      while ($table = $tomigrate->next()) {
-         $DB->queryOrDie("ALTER TABLE {$table['TABLE_NAME']} ENGINE = InnoDB");
-      }
-   }
-
-   /*
-    * Manage profiles
-    */
-   require_once (GLPI_ROOT . "/plugins/alignak/inc/profile.class.php");
-   PluginAlignakProfile::initProfile();
-
-   // Create first access to the current profile is needed
-   if (isset($_SESSION['glpiactiveprofile'])) {
-      Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Active profile: ". serialize($_SESSION['glpiactiveprofile']));
-      PluginAlignakProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
-   }
-
-   // To be called for each task the plugin manage
-   // task in class
-   CronTask::Register('PluginAlignakAlignak', 'AlignakBuild', DAY_TIMESTAMP, ['param' => 50]);
-   return true;
+   return $install->upgrade($migration);
 }
 
 
 /**
  * Plugin uninstall process
- *
- * @return boolean
  */
 function plugin_alignak_uninstall() {
-   global $DB;
-
-   if (!class_exists('PluginAlignakProfile')) {
-      Session::addMessageAfterRedirect(
-         __("The plugin can't be uninstalled when it is disabled", 'alignak'),
-         true, WARNING, true);
-      return false;
-   }
-
-   $_SESSION['uninstall_alignak'] = true;
-
-   echo "<div>";
-   echo "<table class='tab_cadre_fixe'>";
-   echo "<tr><th>".__("MySQL tables uninstallation", "fields")."<th></tr>";
-
-   echo "<tr class='tab_bg_1'>";
-   echo "<td align='center'>";
-
-   $classes = [
-      'PluginAlignakConfig',
-      'PluginAlignakAlignak',
-      'PluginAlignakEntity',
-      'PluginAlignakComputer',
-      'PluginAlignakDashboard',
-      'PluginAlignakMailNotification',
-      // Alignak
-      'PluginAlignakMonitoringTemplate',
-      // Counters
-      'PluginAlignakCounter',
-      'PluginAlignakCountersTemplate',
-      'PluginAlignakComputerCountersTemplate'
-   ];
-   foreach ($classes as $class) {
-      if ($plug = isPluginItemType($class)) {
-
-         $dir  = PLUGIN_ALIGNAK_DIR . "/inc/";
-         $item = strtolower($plug['class']);
-
-         if (file_exists($dir . $item . ".class.php")) {
-            include_once ($dir . $item . ".class.php");
-            Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Uninstalling $class\n");
-            if (! call_user_func([$class, 'uninstall'])) {
-               return false;
-            }
-         }
-      }
-   }
-
-   echo "</td>";
-   echo "</tr>";
-   echo "</table>";
-   echo "</div>";
-
-   unset($_SESSION['uninstall_alignak']);
-
-   // clean display preferences
-   $pref = new DisplayPreference;
-   $pref->deleteByCriteria([
-      'itemtype' => ['LIKE' , 'PluginAlignak%']
-   ]);
-
-   // Remove informations related to profiles from the session (to clean menu and breadcrumb)
-   PluginAlignakProfile::removeRightsFromSession();
-   // Remove profiles rights
-   PluginAlignakProfile::uninstallProfile();
-
-   return true;
+   require_once(__DIR__ . '/install/install.php');
+   $install = new PluginAlignakInstall();
+   $install->uninstall(true);
 }
 
 

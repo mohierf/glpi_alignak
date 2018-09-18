@@ -16,52 +16,6 @@ class PluginAlignakMailNotification extends CommonDBTM
 
    static $rightname = 'plugin_alignak_mailnotification';
 
-   static function install(Migration $migration) {
-      global $DB;
-
-      $table = self::getTable();
-
-      if (!$DB->tableExists($table)) {
-         $query = "CREATE TABLE `$table` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `entities_id` int(11) NOT NULL DEFAULT 0,
-                  `is_active` tinyint(1) NOT NULL DEFAULT '1',
-                  `name` varchar(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-                  `user_to_id` int(11) NOT NULL DEFAULT '-1',
-                  `user_cc_1_id` int(11) NOT NULL DEFAULT '-1',
-                  `user_cc_2_id` int(11) NOT NULL DEFAULT '-1',
-                  `user_cc_3_id` int(11) NOT NULL DEFAULT '-1',
-                  `user_bcc_id` int(11) NOT NULL DEFAULT '-1',
-                  `daily_mail` tinyint(1) NOT NULL DEFAULT '0',
-                  `daily_subject_template` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Compteurs quotidiens (#date#)',
-                  `weekly_mail` tinyint(1) NOT NULL DEFAULT '0',
-                  `weekly_subject_template` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Compteurs hebdomadaires (#date#)',
-                  `weekly_mail_day` int(11) NOT NULL DEFAULT '1',
-                  `monthly_mail` tinyint(1) NOT NULL DEFAULT '0',
-                  `monthly_subject_template` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Compteurs mensuels (#date#)',
-                  `monthly_mail_day` int(11) NOT NULL DEFAULT '1',
-                  `component_1` int(11) NOT NULL DEFAULT '-1',
-                  `component_2` int(11) NOT NULL DEFAULT '-1',
-                  `component_3` int(11) NOT NULL DEFAULT '-1',
-                  `component_4` int(11) NOT NULL DEFAULT '-1',
-                  `component_5` int(11) NOT NULL DEFAULT '-1',
-                  PRIMARY KEY (`id`)
-               ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-
-         $DB->query($query) or die("error creating $table". $DB->error());
-      }
-
-      return true;
-   }
-
-   static function uninstall() {
-      global $DB;
-
-      $DB->query("DROP TABLE IF EXISTS `".self::getTable()."`");
-
-      return true;
-   }
-
    static function getTypeName($nb = 0) {
       return _n('Mail notification', 'Mail notifications', $nb, 'alignak');
    }

@@ -45,33 +45,6 @@ class PluginAlignakMonitoringTemplate extends CommonDBTM {
       return _n('Monitoring template', 'Monitoring templates', $nb, 'alignak');
    }
 
-   static function install(Migration $migration) {
-      global $DB;
-
-      $table = self::getTable();
-
-      if (!$DB->tableExists($table)) {
-         $query = "CREATE TABLE `$table` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `entities_id` int(11) NOT NULL DEFAULT '0',
-                  `name` varchar(255) collate utf8_unicode_ci default NULL,
-                PRIMARY KEY  (`id`)
-               ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-
-         $DB->query($query) or die("error creating $table". $DB->error());
-      }
-
-      return true;
-   }
-
-   static function uninstall() {
-      global $DB;
-
-      $DB->query("DROP TABLE IF EXISTS `".self::getTable()."`");
-
-      return true;
-   }
-
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
       $array_ret = [];
       if ($item->getID() > -1) {
@@ -200,6 +173,13 @@ class PluginAlignakMonitoringTemplate extends CommonDBTM {
       } else {
          echo '<input type="text" name="name" value="'. __("Template ", "alignak") . $user->fields["name"] .'" size="20"/>';
       }
+      echo '</td>';
+      echo '</tr>';
+
+      echo '<tr class="tab_bg_1">';
+      echo '<td>'.__('Comment', 'alignak')." :</td>";
+      echo '<td>';
+      echo '<textarea name="comment" cols="124" rows="3">' . $this->fields["comment"] . '</textarea>';
       echo '</td>';
       echo '</tr>';
 

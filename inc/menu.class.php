@@ -1,7 +1,7 @@
 <?php
 class PluginAlignakMenu extends CommonGLPI
 {
-   static $rightname = 'plugin_alignak_config';
+   static $rightname = 'plugin_alignak_configuration';
 
    /**
     * Get menu name

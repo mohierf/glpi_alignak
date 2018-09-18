@@ -44,43 +44,6 @@
 class PluginAlignakConfig extends CommonDBTM
 {
 
-    /**
-     *
-     * @param  Migration $migration
-     * @return bool
-     */
-   static function install(Migration $migration) {
-      global $DB;
-
-      $table = self::getTable();
-      if (!$DB->tableExists($table)) {
-         $query = "CREATE TABLE `$table` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `extra_debug` int(1) NOT NULL DEFAULT 0,
-                  `log_retention` int(2) NOT NULL DEFAULT 30,
-                PRIMARY KEY  (`id`)
-             ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-
-         $DB->query($query) or die("error creating $table". $DB->error());
-      }
-
-      // Initialize the table
-      $pmConfig = new PluginAlignakConfig();
-      $pmConfig->fields['extra_debug'] = '0';
-      $pmConfig->fields['log_retention'] = 30;
-      $pmConfig->addToDB();
-
-      return true;
-   }
-
-   static function uninstall() {
-       global $DB;
-
-       $DB->query("DROP TABLE IF EXISTS `".self::getTable()."`");
-
-       return true;
-   }
-
    /**
      * Get name of this type
      *

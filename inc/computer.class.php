@@ -51,36 +51,6 @@ if (!defined('GLPI_ROOT')) {
 class PluginAlignakComputer extends CommonDBTM
 {
 
-   static function install(Migration $migration) {
-       global $DB;
-
-       $table = self::getTable();
-      if (!$DB->tableExists($table)) {
-         $query = "CREATE TABLE `$table` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `entities_id` int(11) NOT NULL DEFAULT 0,
-                  `itemtype` varchar(255) collate utf8_unicode_ci DEFAULT NULL,
-                  `items_id` int(11) NOT NULL,
-                  `name` varchar(255) collate utf8_unicode_ci DEFAULT NULL,
-                  `comment` text collate utf8_unicode_ci,
-                PRIMARY KEY  (`id`),
-                KEY `computer` (`itemtype`, `items_id`)
-             ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-
-         $DB->query($query) or die("error creating $table". $DB->error());
-      }
-
-      return true;
-   }
-
-   static function uninstall() {
-       global $DB;
-
-       $DB->query("DROP TABLE IF EXISTS `".self::getTable()."`");
-
-       return true;
-   }
-
     /**
      * Check if an item is monitored
      *
@@ -94,13 +64,14 @@ class PluginAlignakComputer extends CommonDBTM
    function exists(CommonGLPI $item) {
       $pmHost = new PluginAlignakComputer();
       PluginAlignakToolbox::logIfDebug("Check if monitored: " . $item->getType() . " / "  . $item->getName());
-      return $pmHost->getFromDBByCrit(['itemtype' => 'computer', 'items_id' => $item->getID()]);
+      return true;
+//      return $pmHost->getFromDBByCrit(['itemtype' => 'computer', 'items_id' => $item->getID()]);
    }
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
       $array_ret = [];
       if ($item->getID() > -1) {
-         if (Session::haveRight('config', READ)) {
+         if (Session::haveRight('plugin_alignak_configuration', READ)) {
             array_push($array_ret, self::createTabEntry(__('Monitoring configuration', 'monitoring')));
          }
 
@@ -119,7 +90,7 @@ class PluginAlignakComputer extends CommonDBTM
       $pmHost->exists($item);
       switch ($tabnum) {
          case 1:
-            $pmHost->showInfo();
+            $pmHost->showForm($item);
             break;
          case 2:
             $pmHost->showLiveState();
@@ -209,10 +180,10 @@ class PluginAlignakComputer extends CommonDBTM
      *
      * @return bool true if form is ok
      **/
-   function showForm($items_id, $options = []) {
+   function showForm($item, $options = []) {
        global $DB,$CFG_GLPI;
 
-       PluginAlignakToolbox::logIfDebug("Show form for: " . $items_id);
+       PluginAlignakToolbox::logIfDebug("Show form for: " . $item->getName());
        /*
        if ($items_id!='') {
         $this->getFromDB($items_id);

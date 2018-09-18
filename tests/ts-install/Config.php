@@ -79,7 +79,7 @@ class Config extends CommonTestCase {
       $this->given(self::setupGLPIFramework())
            ->and($this->boolean($DB->connected)->isTrue());
 
-      //Drop plugin configuration if exists
+      //Drop plugin configuration if it exists
       $config = $this->newTestedInstance();
       $config->deleteByCriteria(['context' => $pluginname]);
 

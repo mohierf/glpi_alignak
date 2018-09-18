@@ -50,70 +50,16 @@ class PluginAlignakAlignak extends CommonDBTM
 
    static $rightname = 'plugin_alignak_alignak';
 
-   static function install(Migration $migration) {
-      global $DB;
-
-      $table = self::getTable();
-
-      if (! $DB->tableExists($table)) {
-         $query = "CREATE TABLE `$table` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `name` varchar(255) collate utf8_unicode_ci default NULL,
-                  `comment` text collate utf8_unicode_ci,
-                PRIMARY KEY  (`id`),
-                KEY `name` (`name`)
-             ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-
-         $DB->query($query) or die("error creating $table". $DB->error());
-      }
-
-      return true;
-   }
-
-   static function uninstall() {
-       global $DB;
-
-       $DB->query("DROP TABLE IF EXISTS `".self::getTable()."`");
-
-       return true;
-   }
-
    static function getTypeName($nb = 0) {
       return _n('Alignak instance', 'Alignak instances', $nb, 'alignak');
    }
 
    /**
     * @see CommonGLPI::getMenuName()
-    **/
    static function getMenuName() {
       return __('Alignak PluginAlignakAlignak - Alignak class');
    }
-
-   /**
-    * @see CommonGLPI::getAdditionalMenuLinks()
-   static function getAdditionalMenuLinks() {
-      global $CFG_GLPI;
-      $links = [];
-
-      $links['config'] = '/plugins/alignak/index.php';
-      $links["<img  src='".$CFG_GLPI["root_doc"]."/pics/menu_showall.png' title='".__s('Show all')."' alt='".__s('Show all')."'>"] = '/plugins/alignak/index.php';
-      $links[__s('Test link 123', 'example')] = '/plugins/alignak/index.php';
-
-      return $links;
-   }
-
-   static function getMenuContent() {
-      global $CFG_GLPI;
-
-      $menu  = parent::getMenuContent();
-      PluginAlignakToolbox::log("Alignak Menu content");
-      $menu['links']['search']          = PluginAlignakAlignak::getSearchURL(false);
-      $menu['links']['config']          = PluginAlignakAlignak::getSearchURL(false);
-
-      return $menu;
-   }
-   **/
-
+    **/
 
    function defineTabs($options = []) {
 
@@ -125,21 +71,66 @@ class PluginAlignakAlignak extends CommonDBTM
    }
 
    function showForm($ID, $options = []) {
-       global $CFG_GLPI;
+      global $CFG_GLPI;
 
-       $this->initForm($ID, $options);
-       $this->showFormHeader($options);
+      $this->initForm($ID, $options);
+      $this->showFormHeader($options);
 
-       echo "<tr class='tab_bg_1'>";
+      echo '<tr class="tab_bg_1">';
+      echo '<th colspan="2">';
+      echo __('Set the tag value to link this entity with a specific Alignak server', 'alignak');
+      echo '</th>';
+      echo '</tr>';
 
-       echo "<td>" . __('ID') . "</td>";
-       echo "<td>";
-       echo $ID;
-       echo "</td>";
+      echo '<tr class="tab_bg_1">';
+      echo '<td>';
+      echo __('Tag', 'alignak');
+      echo '</td>';
+      echo '<td>';
+      if ($this->canUpdateItem()) {
+         echo '<input type="text" name="tag" value="' . $this->fields["tag"] . '" size="30"/>';
+      } else {
+         echo '<span>' . $this->fields["tag"] . '</span>';
+      }
+      echo '</td>';
+      echo '</tr>';
 
-       $this->showFormButtons($options);
+      echo '<tr class="tab_bg_1">';
+      echo '<th colspan="2">';
+      echo __('Set the Alignak configuration for this entity', 'alignak');
+      echo '</th>';
+      echo '</tr>';
 
-       return true;
+      echo '<tr class="tab_bg_1">';
+      echo '<td>';
+      echo __('Alignak address', 'monitoring');
+      echo '</td>';
+      echo '<td>';
+      echo "<input type='text' name='address' value='".$this->fields["address"]."' size='30'/>";
+      echo '</td>';
+      echo '</tr>';
+
+      echo '<tr class="tab_bg_1">';
+      echo '<td>';
+      echo __('Alignak username', 'monitoring');
+      echo '</td>';
+      echo '<td>';
+      echo "<input type='text' name='username' value='".$this->fields["username"]."' size='30'/>";
+      echo '</td>';
+      echo '</tr>';
+
+      echo '<tr class="tab_bg_1">';
+      echo '<td>';
+      echo __('Alignak password', 'monitoring');
+      echo '</td>';
+      echo '<td>';
+      echo "<input type='text' name='password' value='".$this->fields["password"]."' size='30'/>";
+      echo '</td>';
+      echo '</tr>';
+
+      $this->showFormButtons($options);
+
+      return true;
    }
 
    function rawSearchOptions() {
@@ -186,7 +177,7 @@ class PluginAlignakAlignak extends CommonDBTM
        return $tab;
    }
 
-    /**
+   /**
      * Give localized information about 1 task
      *
      * @param $name of the task
@@ -203,8 +194,8 @@ class PluginAlignakAlignak extends CommonDBTM
          return [];
    }
 
-    /**
-     * Execute 1 task manage by the plugin
+   /**
+     * Execute 1 task managed by the plugin
      *
      * @param $task Object of CronTask class for log / stat
      *
@@ -215,12 +206,12 @@ class PluginAlignakAlignak extends CommonDBTM
      */
    static function cronAlignakBuild($task) {
 
-       $task->log("Example log message from class");
-       $r = mt_rand(0, $task->fields['param']);
-       usleep(1000000+$r*1000);
-       $task->setVolume($r);
+      $task->log("Example log message from class");
+      $r = mt_rand(0, $task->fields['param']);
+      usleep(1000000+$r*1000);
+      $task->setVolume($r);
 
-       return 1;
+      return 1;
    }
 
    // Hook done on before add item case (data from form, not altered)
@@ -342,69 +333,7 @@ class PluginAlignakAlignak extends CommonDBTM
          return '';
    }
 
-    /*
-    // Parm contains begin, end and who
-    // Create data to be displayed in the planning of $parm["who"] or $parm["who_group"] between $parm["begin"] and $parm["end"]
-    static function populatePlanning($parm) {
-
-      // Add items in the output array
-      // Items need to have an unique index beginning by the begin date of the item to display
-      // needed to be correcly displayed
-      $output = [];
-      $key = $parm["begin"]."$$$"."plugin_alignak1";
-      $output[$key]["begin"]  = date("Y-m-d 17:00:00");
-      $output[$key]["end"]    = date("Y-m-d 18:00:00");
-      $output[$key]["name"]   = __("test planning alignak 1", 'alignak');
-      // Specify the itemtype to be able to use specific display system
-      $output[$key]["itemtype"] = "PluginAlignakAlignak";
-      // Set the ID using the ID of the item in the database to have unique ID
-      $output[$key][getForeignKeyFieldForItemType('PluginAlignakAlignak')] = 1;
-      return $output;
-    }
-    */
-
-    /**
-     * Display a Planning Item
-     *
-     * @param $val Array of the item to display
-     * @param $who ID of the user (0 if all)
-     * @param $type position of the item in the time block (in, through, begin or end)
-     * @param $complete complete display (more details)
-     *
-     * @return Nothing (display function)
-     **/
-    /*
-    static function displayPlanningItem(array $val, $who, $type = "", $complete = 0) {
-
-      // $parm["type"] say begin end in or from type
-      // Add items in the items fields of the parm array
-      switch ($type) {
-         case "in" :
-            //TRANS: %1$s is the start time of a planned item, %2$s is the end
-            printf(__('From %1$s to %2$s :'),
-                   date("H:i", strtotime($val["begin"])), date("H:i", strtotime($val["end"])));
-            break;
-
-         case "through" :
-            echo Html::resume_text($val["name"], 80);
-            break;
-
-         case "begin" :
-            //TRANS: %s is the start time of a planned item
-            printf(__('Start at %s:'), date("H:i", strtotime($val["begin"])));
-            break;
-
-         case "end" :
-            //TRANS: %s is the end time of a planned item
-            printf(__('End at %s:'), date("H:i", strtotime($val["end"])));
-         break;
-      }
-      echo "<br>";
-      echo Html::resume_text($val["name"], 80);
-    }
-    */
-
-    /**
+   /**
      * Get an history entry message
      *
      * @param $data Array from glpi_logs table
@@ -441,7 +370,7 @@ class PluginAlignakAlignak extends CommonDBTM
        return $actions;
    }
 
-    /**
+   /**
      *
      * @since version 0.85
      *
@@ -463,7 +392,7 @@ class PluginAlignakAlignak extends CommonDBTM
          return parent::showMassiveActionsSubForm($ma);
    }
 
-    /**
+   /**
      *
      * @since version 0.85
      *
@@ -522,7 +451,7 @@ class PluginAlignakAlignak extends CommonDBTM
             }
             Return;
       }
-         parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
+      parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
    }
 
    static function generateLinkContents($link, CommonDBTM $item) {

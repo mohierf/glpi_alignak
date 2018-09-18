@@ -46,34 +46,6 @@ class PluginAlignakCountersTemplate extends CommonDBTM {
       return _n('Counters template', 'Counters templates', $nb, 'alignak');
    }
 
-   static function install(Migration $migration) {
-      global $DB;
-
-      $table = self::getTable();
-
-      if (!$DB->tableExists($table)) {
-         $query = "CREATE TABLE `$table` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `name` varchar(25) collate utf8_unicode_ci NOT NULL,
-                  `comment` text DEFAULT NULL,
-                  `entities_id` int(11),
-                PRIMARY KEY  (`id`)
-               ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-
-         $DB->query($query) or die("error creating $table". $DB->error());
-      }
-
-      return true;
-   }
-
-   static function uninstall() {
-      global $DB;
-
-      $DB->query("DROP TABLE IF EXISTS `".self::getTable()."`");
-
-      return true;
-   }
-
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
       switch ($item->getType()) {
 
@@ -94,45 +66,6 @@ class PluginAlignakCountersTemplate extends CommonDBTM {
       }
       return true;
    }
-
-   /*
-   function getCountersTemplateListForDropdown($template_id = '') {
-      global $DB;
-
-      $output = [];
-      $query = "SELECT * FROM `".$this->getTable()."` ";
-
-      if ($template_id != '') {
-        $query .= " WHERE `template_id`='".$template_id."'";
-      }
-
-      $result = $DB->query($query);
-      $output[-1] = __('Select one....','alignak');
-      while ($data=$DB->fetch_array($result)) {
-         $output[$data['id']] = $data['name'];
-      }
-      return $output;
-   }
-
-   function getCountersTemplateList($entities_id = '') {
-      global $DB;
-
-      $output = [];
-      $query = "SELECT * FROM `".$this->getTable()."` ";
-
-      if ($template_id != '') {
-        $query .= " WHERE `template_id`='".$template_id."'";
-      }
-
-      $result = $DB->query($query);
-      while ($data=$DB->fetch_array($result)) {
-         $output[$data['id']] = $data['id'];
-         $output[$data['name']] = $data['name'];
-         $output[$data['entities_id']] = $data['entities_id'];
-      }
-      return $output;
-   }
-   */
 
    function showForm($ID = -1, $entities_id = -1, $options = [], $copy = []) {
       global $DB,$CFG_GLPI;

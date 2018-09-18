@@ -94,10 +94,10 @@ require_once 'vendor/autoload.php';
    optimizations integer
       A flag that indicates which optimizations to apply (default to -1 -- all optimizations are enabled;
       set it to 0 to disable).
- */
 define("PLUGIN_ALIGNAK_TPL_AUTO_RELOAD", true);
 define("PLUGIN_ALIGNAK_TPL_CACHE", PLUGIN_ALIGNAK_DOC_DIR . '/templates_cache');
 define("PLUGIN_ALIGNAK_TPL_RAISE_ERRORS", true);
+ */
 
 $filename = 'host.cfg';
 try {

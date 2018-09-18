@@ -20,100 +20,6 @@ class PluginAlignakDashboard extends CommonDBTM {
       return _n('Dashboard configuration', 'Dashboard configurations', $nb, 'alignak');
    }
 
-   static function install(Migration $migration) {
-      global $DB;
-
-      $table = self::getTable();
-
-      if (! $DB->tableExists($table)) {
-         $query = "CREATE TABLE `$table` (
-                 `id` int(11) NOT NULL AUTO_INCREMENT,
-                 `is_active` tinyint(1) DEFAULT '0',
-                 `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-                 `clients_id` int(11) DEFAULT '-1',
-                 `plugin_alignak_mail_notifications_id` int(11) DEFAULT '-1',
-                 `page_counters` tinyint(1) DEFAULT '1',
-                 `page_counters_refresh` int(4) DEFAULT '0',
-                 `page_monitoring` tinyint(1) DEFAULT '1',
-                 `page_monitoring_refresh` int(4) DEFAULT '0',
-                 `page_map` tinyint(1) DEFAULT '1',
-                 `page_map_refresh` int(4) DEFAULT '0',
-                 `page_tree` tinyint(1) DEFAULT '1',
-                 `page_tree_refresh` int(4) DEFAULT '0',
-                 `page_tickets` tinyint(1) DEFAULT '1',
-                 `page_tickets_refresh` int(4) DEFAULT '0',
-                 `page_groups` tinyint(1) DEFAULT '1',
-                 `page_groups_refresh` int(4) DEFAULT '0',
-                 `page_kiosks` tinyint(1) DEFAULT '1',
-                 `page_kiosks_refresh` int(4) DEFAULT '0',
-                 `page_services` tinyint(1) DEFAULT '1',
-                 `page_services_refresh` int(4) DEFAULT '0',
-                 `page_daily_counters` tinyint(1) DEFAULT '1',
-                 `page_daily_counters_refresh` int(4) DEFAULT '0',
-                 `page_availability` tinyint(1) DEFAULT '1',
-                 `page_availability_refresh` int(4) DEFAULT '0',
-                 `page_payments` tinyint(1) DEFAULT '1',
-                 `page_payments_refresh` int(4) DEFAULT '0',
-                 `page_printing` tinyint(1) DEFAULT '1',
-                 `page_printing_refresh` int(4) DEFAULT '0',
-                 `page_rfid` tinyint(1) DEFAULT '1',
-                 `page_rfid_refresh` int(4) DEFAULT '0',
-                 `page_counters_main` tinyint(1) DEFAULT '1',
-                 `page_counters_main_refresh` int(4) DEFAULT '10',
-                 `page_counters_main_collapsed` tinyint(1) DEFAULT '0',
-                 `page_counters_barcharts` tinyint(1) DEFAULT '1',
-                 `page_counters_barcharts_refresh` int(4) DEFAULT '10',
-                 `page_counters_barcharts_collapsed` tinyint(1) DEFAULT '0',
-                 `page_counters_helpdesk` tinyint(1) DEFAULT '1',
-                 `page_counters_helpdesk_refresh` int(4) DEFAULT '10',
-                 `page_counters_helpdesk_collapsed` tinyint(1) DEFAULT '0',
-                 `page_counters_geotraffic` tinyint(1) DEFAULT '1',
-                 `page_counters_geotraffic_refresh` int(4) DEFAULT '10',
-                 `page_counters_geotraffic_collapsed` tinyint(1) DEFAULT '0',
-                 `component_1` int(11) DEFAULT '-1',
-                 `component_2` int(11) DEFAULT '-1',
-                 `component_3` int(11) DEFAULT '-1',
-                 `component_4` int(11) DEFAULT '-1',
-                 `component_5` int(11) DEFAULT '-1',
-                 `page_monitoring_minemap` tinyint(1) DEFAULT '1',
-                 `page_monitoring_minemap_refresh` int(4) DEFAULT '10',
-                 `page_monitoring_minemap_collapsed` tinyint(1) DEFAULT '0',
-                 `page_monitoring_kiosks` tinyint(1) DEFAULT '1',
-                 `page_monitoring_kiosks_refresh` int(4) DEFAULT '10',
-                 `page_monitoring_kiosks_collapsed` tinyint(1) DEFAULT '0',
-                 `page_monitoring_services` tinyint(1) DEFAULT '1',
-                 `page_monitoring_services_refresh` int(4) DEFAULT '10',
-                 `page_monitoring_services_collapsed` tinyint(1) DEFAULT '0',
-                 `navbar_config` tinyint(1) NOT NULL DEFAULT '0',
-                 `navbar_notif` tinyint(1) NOT NULL DEFAULT '0',
-                 `navbar_select` tinyint(1) NOT NULL DEFAULT '0',
-                 PRIMARY KEY (`id`),
-                 KEY `name` (`clients_id`)
-               ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
-
-         $DB->query($query) or die("error creating $table". $DB->error());
-
-         /* Populate data
-         $query = "INSERT INTO `glpi_plugin_alignak_alignak`
-                       (`id`, `name`, `comment`)
-                VALUES (1, 'dp 1', 'comment 1'),
-                       (2, 'dp2', 'comment 2')";
-
-         $DB->query($query) or die("error populate glpi_plugin_alignak_dropdowns". $DB->error());
-         */
-      }
-
-      return true;
-   }
-
-   static function uninstall() {
-      global $DB;
-
-      $DB->query("DROP TABLE IF EXISTS `".self::getTable()."`");
-
-      return true;
-   }
-
    function getSearchOptions() {
       $tab = [];
       $i = 1;
@@ -456,6 +362,14 @@ class PluginAlignakDashboard extends CommonDBTM {
       }
       echo "</td>";
       echo "</tr>";
+
+      echo '<tr class="tab_bg_1">';
+      echo '<td>'.__('Comment', 'alignak')." :</td>";
+      echo '<td>';
+      echo '<textarea name="comment" cols="124" rows="3">' . $this->fields["comment"] . '</textarea>';
+      echo '</td>';
+      echo '</tr>';
+
 
       echo "<tr><td colspan=\"8\">";
       echo "<hr/>";

@@ -1,11 +1,13 @@
 <?php
 
 namespace tests\units;
+use GlpiPlugin\Alignak\Tests\CommonTestCase;
 
-class PluginAlignakConfig extends \AlignakDbTestCase {
+class PluginAlignakConfig extends CommonTestCase {
 
    public function testGetTypeName() {
-      $this->string(\PluginAlignakConfig::getTypeName())->isIdenticalTo('Configuration');
+      $this->string(\PluginAlignakConfig::getTypeName(0))->isIdenticalTo('Configuration');
+      $this->string(\PluginAlignakConfig::getTypeName(2))->isIdenticalTo('Configurations');
    }
 
    /*

@@ -81,14 +81,30 @@ if (isset($_POST['add'])) {
    // Redirect to objects list
    Html::redirect("{$CFG_GLPI['root_doc']}/plugins/front/alignak.php");
 } else {
+   Html::header(
+      __('Alignak - dashboards', 'alignak'),
+      $_SERVER['PHP_SELF'],
+      'admin',
+      'pluginalignakmenu', 'alignak');
+
    // Default is to display the object
-   $withtemplate = (isset($_GET['withtemplate']) ? $_GET['withtemplate'] : 0);
-   $object->display(
-      [
-         'id'           => $_GET['id'],
-         'withtemplate' => $withtemplate
-      ]
-   );
+   $with_template = (isset($_GET['withtemplate']) ? $_GET['withtemplate'] : 0);
+//   $object->display(
+//      [
+//         'id'           => $_GET['id'],
+//         'withtemplate' => $with_template
+//      ]
+//   );
+
+   if (isset($_GET["id"])) {
+      $object->showForm($_GET['id'], -1, [
+         'canedit' => PluginAlignakAlignak::canUpdate(),
+         'colspan' => 4,
+         'withtemplate' => $with_template]);
+   } else {
+      $object->showForm(-1);
+   }
+
 }
 
 Html::footer();

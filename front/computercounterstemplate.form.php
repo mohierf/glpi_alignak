@@ -36,16 +36,14 @@ include ('../../../inc/includes.php');
 
 $paComputerCountersTemplate = new PluginAlignakComputerCountersTemplate();
 
-/*
 // Check if current user have the appropriate right
 Session::checkRight("plugin_alignak_counters", READ);
 
 if (isset($_GET["id"])) {
-   $paComputerCountersTemplate->showForm($_GET['id'], -1, ['canedit'=>PluginKiosksDashboard::canUpdate(), 'colspan'=>4]);
+   $paComputerCountersTemplate->showForm($_GET['id'], -1, ['canedit'=>PluginAlignakComputerCountersTemplate::canUpdate(), 'colspan'=>4]);
 } else {
    $paComputerCountersTemplate->showForm(-1);
 }
-*/
 
 // Check if current user have the appropriate right
 Session::checkRight("plugin_alignak_counters", UPDATE);
@@ -76,37 +74,3 @@ if (isset ($_POST["delete"])) {
 }
 
 Html::footer();
-
-/*
-if ($_POST && isset($_POST['_glpi_csrf_token']) && isset($_POST['items_id'])) {
-   // Check that a template identifier has been provided
-   if (!isset($_POST['template_id']) or empty($_POST['template_id']) or $_POST['template_id'] == -1) {
-      Html::displayErrorAndDie('Please specify a template');
-   }
-
-   // Load the Computer that need association with that given template
-   # todo: ? what for ?
-   $computerCountersTemplate = new PluginAlignakComputerCountersTemplate();
-   if (! $this->getFromDBByCrit(["itemtype" => 'Computer', "items_id" => $item->fields['id']])) {
-
-   $ret = $computerCountersTemplate->find( "items_id = ".$_POST['computer_id']);
-   $computerCountersTemplate->fields['computer_id'] = $_POST['computer_id'];
-   $computerCountersTemplate->fields['template_id'] = $_POST['template_id'];
-   foreach ($ret as $r) {
-      $id = $r['id'];
-   }
-
-   if ($ret != null) {
-      $computerCountersTemplate->fields['id'] = $id;
-      $updates = ['template_id'];
-      $computerCountersTemplate->updateInDB( $updates);
-   } else {
-      // Save the new computerCounterTemplate to the DataBase
-      $computerCountersTemplate->addToDB();
-   }
-
-   // Redirect the user to the Computer Page
-   $url = explode("?", $_SERVER['HTTP_REFERER']);
-   Html::redirect($url[0] . "?id=" . $_POST['computer_id']);
-}
-*/

@@ -48,38 +48,6 @@ if (!defined('GLPI_ROOT')) {
 class PluginAlignakEntity extends CommonDBTM
 {
 
-   static function install(Migration $migration) {
-       global $DB;
-
-       $table = self::getTable();
-
-      if (!$DB->tableExists($table)) {
-         $query = "CREATE TABLE `$table` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `entities_id` int(11) NOT NULL DEFAULT '0',
-                  `name` varchar(255) collate utf8_unicode_ci default NULL,
-                  `comment` text collate utf8_unicode_ci default NULL,
-                  `tag` varchar(255) collate utf8_unicode_ci default NULL,
-                  `plugin_alignak_monitoring_template_id` int(11) NOT NULL DEFAULT '0',
-                  `plugin_alignak_counters_template_id` int(11) NOT NULL DEFAULT '0',
-                PRIMARY KEY  (`id`),
-                KEY `name` (`name`)
-             ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-
-         $DB->query($query) or die("error creating $table". $DB->error());
-      }
-
-      return true;
-   }
-
-   static function uninstall() {
-       global $DB;
-
-       $DB->query("DROP TABLE IF EXISTS `".self::getTable()."`");
-
-       return true;
-   }
-
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       $array_ret = [];
@@ -131,30 +99,47 @@ class PluginAlignakEntity extends CommonDBTM
          PluginAlignakToolbox::log("Existing entity relation: ". serialize($this->fields));
       }
 
-      $canedit = $entity->canUpdateItem();
       echo "<div class='spaced'>";
-      if ($canedit) {
+      if ($entity->canUpdateItem()) {
          echo "<form method='post' name=form action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
       }
 
       echo '<table class="tab_cadre_fixe"';
 
+      echo '<tr class="tab_bg_1">';
+      echo '<td>'.__('Comment', 'alignak')." :</td>";
+      echo '<td>';
+      echo '<textarea name="comment" cols="124" rows="3">' . $this->fields["comment"] . '</textarea>';
+      echo '</td>';
+      echo '</tr>';
+
       if (Session::haveRight('plugin_alignak_alignak', READ)) {
          echo '<tr class="tab_bg_1">';
          echo '<th colspan="2">';
-         echo __('Set the tag value to link this entity with a specific Alignak server', 'alignak');
+         echo __('Set the Alignak instance monitoring the computers of this entity', 'alignak');
          echo '</th>';
          echo '</tr>';
 
          echo '<tr class="tab_bg_1">';
          echo '<td>';
-         echo __('Tag', 'alignak');
+         echo __('Alignak instance', 'alignak');
          echo '</td>';
          echo '<td>';
-         if ($canedit) {
-            echo '<input type="text" name="tag" value="' . $this->fields["tag"] . '" size="30"/>';
+         if ($entity->canUpdateItem()) {
+            Dropdown::show('PluginAlignakAlignak',
+               ['name' => 'plugin_alignak_alignak_id',
+                  'value' => $this->fields["plugin_alignak_alignak_id"],
+                  'comments' => false]);
          } else {
-            echo '<span>' . $this->fields["tag"] . '</span>';
+            $paObject = new PluginAlignakAlignak();
+            $paObject->getFromDB($this->fields["plugin_alignak_alignak_id"]);
+            echo '<span>' . $paObject->getName() . '</span>';
+         }
+         // Link to the object
+         if ($this->fields["plugin_alignak_alignak_id"] != 0) {
+            $paObject = new PluginAlignakAlignak();
+            $paObject->getFromDB($this->fields["plugin_alignak_alignak_id"]);
+            echo $paObject->getLink();
          }
          echo '</td>';
          echo '</tr>';
@@ -170,7 +155,7 @@ class PluginAlignakEntity extends CommonDBTM
          echo __('Monitoring template', 'alignak');
          echo '</td>';
          echo '<td>';
-         if ($canedit) {
+         if ($entity->canUpdateItem()) {
             Dropdown::show('PluginAlignakMonitoringTemplate',
                ['name' => 'plugin_alignak_monitoring_template_id',
                   'value' => $this->fields["plugin_alignak_monitoring_template_id"],
@@ -202,7 +187,7 @@ class PluginAlignakEntity extends CommonDBTM
          echo __('Monitoring counters template', 'alignak');
          echo '</td>';
          echo '<td>';
-         if ($canedit) {
+         if ($entity->canUpdateItem()) {
             Dropdown::show('PluginAlignakCountersTemplate',
                ['name' => 'plugin_alignak_counters_template_id',
                   'value' => $this->fields["plugin_alignak_counters_template_id"],
@@ -233,7 +218,7 @@ class PluginAlignakEntity extends CommonDBTM
       echo '</td>';
        */
 
-      if ($canedit) {
+      if ($entity->canUpdateItem()) {
          echo '<tr>';
          echo '<td class="tab_bg_2 center" colspan="4">';
          echo '<input type="hidden" name="id" value="'. $this->fields['id'] .'">';

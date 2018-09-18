@@ -45,7 +45,7 @@
  * Plugin global configuration variables
  */
 define ("PLUGIN_ALIGNAK_OFFICIAL_RELEASE", "0");
-define ('PLUGIN_ALIGNAK_VERSION', '9.3 + 0.1');
+define ('PLUGIN_ALIGNAK_VERSION', '9.3+0.1');
 define ('PLUGIN_ALIGNAK_PHP_MIN_VERSION', '5.6');
 define ('PLUGIN_ALIGNAK_GLPI_MIN_VERSION', '9.2');
 define ('PLUGIN_ALIGNAK_NAME', 'Alignak monitoring plugin');
@@ -157,6 +157,8 @@ function plugin_init_alignak() {
          ['addtabon' => ['Profile']]);
       Plugin::registerClass('PluginAlignakMonitoringTemplate',
          ['addtabon' => ['Entity', 'Computer']]);
+      Plugin::registerClass('PluginAlignakComputer',
+         ['addtabon' => ['Computer']]);
 
       // Plugin configuration class
       Plugin::registerClass('PluginAlignakConfig',
@@ -167,11 +169,10 @@ function plugin_init_alignak() {
          ['addtabon' => ['Entity']]);
 
       // Plugin Alignak - Counters related classes
-      Plugin::registerClass('PluginAlignakCounter',
-         ['addtabon' => ['Computer']]);
-      // todo: to be registered ?
+      Plugin::registerClass('PluginAlignakCounter');
+      //      Plugin::registerClass('PluginAlignakCounter',
+      //         ['addtabon' => ['Computer']]);
       Plugin::registerClass('PluginAlignakCountersTemplate');
-      // todo: to be registered ?
       Plugin::registerClass('PluginAlignakComputerCountersTemplate',
          ['addtabon' => ['Computer']]);
 
@@ -290,22 +291,17 @@ function plugin_init_alignak() {
       if (strpos(filter_input(INPUT_SERVER, "SCRIPT_NAME"), "plugins/alignak") != false) {
          $PLUGIN_HOOKS['add_javascript']['alignak'][] = 'js/alignak-copyright.js';
       }
-      if (strpos(filter_input(INPUT_SERVER, "SCRIPT_NAME"), "plugins/alignak/front/counters") != false) {
+      // Specific Javascript file for the counters edition form
+      if (strpos($_SERVER['REQUEST_URI'], "plugins/alignak/front/counterstemplate.form.php") !== false) {
          $PLUGIN_HOOKS['add_javascript']['alignak'][] = 'js/scripts.js.php';
       }
-      /*
-      // request more attributes from ldap
-      //$PLUGIN_HOOKS['retrieve_more_field_from_ldap']['alignak']="plugin_retrieve_more_field_from_ldap_alignak";
 
-      // Retrieve others datas from LDAP
-      //$PLUGIN_HOOKS['retrieve_more_data_from_ldap']['alignak']="plugin_retrieve_more_data_from_ldap_alignak";
-      */
-
-      /*   // Reports
-      $PLUGIN_HOOKS['reports']['alignak'] = [
-         'report.php' => 'New Report',
-         'report.php?other' => 'New Report 2'];
-      */
+         /*
+         // Reports
+         $PLUGIN_HOOKS['reports']['alignak'] = [
+            'report.php' => 'New Report',
+            'report.php?other' => 'New Report 2'];
+         */
       /*
       // Stats
       $PLUGIN_HOOKS['stats']['alignak'] = ['stat.php'       => 'New stat',
@@ -332,14 +328,6 @@ function plugin_init_alignak() {
 
       $PLUGIN_HOOKS['pre_item_form']['alignak']    = ['PluginAlignakItemForm', 'preItemForm'];
       $PLUGIN_HOOKS['post_item_form']['alignak']   = ['PluginAlignakItemForm', 'postItemForm'];
-      */
-
-      /* declare this plugin as an import plugin for Computer itemtype
-      $PLUGIN_HOOKS['import_item']['exemple'] = ['Computer' => ['Plugin']];
-
-      // add additional informations on Computer::showForm
-      $PLUGIN_HOOKS['autoinventory_information']['exemple'] =  [
-         'Computer' =>  ['PluginAlignakComputer', 'showInfo']];
       */
    }
 }
@@ -446,26 +434,4 @@ function plugin_alignak_check_config($verbose = false) {
       echo __('Installed / not configured', 'alignak');
    }
    return false;
-}
-
-
-/**
- * Add the Alignak footer in GLPI interface
- *
- * @param string $baseroot
- */
-function plugin_alignak_footer($baseroot) {
-
-   echo "<div id='footer'>";
-   echo "<table width='100%'>";
-   echo "<tr>";
-   echo "<td class='right'>";
-   echo "<a href='http://alignak.net/'>";
-   echo "<span class='copyright'>Glpi Alignak plugin ".PLUGIN_ALIGNAK_VERSION." | copyleft " .
-      "<img src='".$baseroot."/plugins/alignak/pics/copyleft.png'/> " . " 2018 Alignak Team." . "</span>";
-   echo "</a>";
-   echo "</td>";
-   echo "</tr>";
-   echo "</table>";
-   echo "</div>";
 }
