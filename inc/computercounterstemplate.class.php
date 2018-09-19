@@ -93,7 +93,7 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
          // Searching for an entity / counters template relation in the computer entity
          PluginAlignakToolbox::log("Computer entity: ". $item->fields['entities_id']);
          if (! $paCountersTemplate->getFromDBByCrit(["entities_id" => $item->fields['entities_id']])) {
-            // Searching for an entity / counters template relation in the computer entity ancestors
+             // Searching for an entity / counters template relation in the computer entity ancestors
             $ancestors = getAncestorsOf('glpi_entities', $item->fields['entities_id']);
             PluginAlignakToolbox::log("Entity ancestors: ". serialize($ancestors));
             $entity = new Entity();
@@ -111,6 +111,8 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
             // Found a relation in the computer entity
             PluginAlignakToolbox::log("Computer entity relation: ". serialize($paCountersTemplate->fields));
             $entity_relation = true;
+            $ID = $this->fields['id'];
+            
          }
       } else {
          PluginAlignakToolbox::log("Existing relation: ". serialize($this->fields));
@@ -124,11 +126,11 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
       // $entity_relation is set if an indirect relation exists through an entity counters template
       // $paCountersTemplate if the found counters template object
 
+      $this->initForm($ID, $options);
+      $this->showFormHeader($options);
+
       $canedit = $this->canEdit($this->getID());
       echo "<div class='spaced'>";
-      if ($canedit) {
-         echo "<form method='post' name=form action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
-      }
       echo '<table class="tab_cadre_fixe"';
 
       echo '<tr class="tab_bg_1">';
@@ -206,16 +208,17 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
 
       echo '<tr class="tab_bg_1">';
       echo '<th colspan="2">';
-      echo __('Computer counters', 'alignak');
+      echo __('Computer counters template', 'alignak');
       echo '</th>';
       echo '</tr>';
 
       if ($canedit) {
          echo '<tr>';
          echo '<td class="tab_bg_2 center" colspan="4">';
-         echo '<input type="hidden" name="id" value="'. $this->fields['id'] .'">';
-         echo '<input type="hidden" name="entities_id" value="'. $this->fields['entities_id'] .'">';
-         echo '<input type="submit" name="update" value="'. _sx('button', 'Save'). '" class="submit">';
+         echo '<input type="hidden" name="items_id" value="'. $item->fields['id'] .'">';
+         echo '<input type="hidden" name="itemtype" value="computer">';
+         $this->showFormButtons($options);
+         // echo '<input type="submit" name="update" value="'. _sx('button', 'Save'). '" class="submit">';
          echo '</td>';
          echo '</tr>';
          echo '</table>';
@@ -227,5 +230,42 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
       echo '</div>';
 
       return true;
+   }
+   
+      /**
+     * Give localized information about 1 task
+     *
+     * @param $name of the task
+     *
+     * @return array of strings
+     */
+   static function cronInfo($name) {
+
+      switch ($name) {
+         case 'AlignakComputerTemplate' :
+            return ['description' => __('Cron Email des compteurs alignak', 'alignak'),
+                  'parameter'   => __('Cron parameter Email des compteurs alignak', 'alignak')];
+      }
+         return [];
+   }
+
+   /**
+     * Execute 1 task managed by the plugin
+     *
+     * @param $task Object of CronTask class for log / stat
+     *
+     * @return interger
+     *    >0 : done
+     *    <0 : to be run again (not finished)
+     *     0 : nothing to do
+     */
+   static function cronAlignakComputerTemplate($task) {
+
+      $task->log("cronAlignakComputerTemplate log message from class");
+      $r = mt_rand(0, $task->fields['param']);
+      usleep(1000000+$r*1000);
+      $task->setVolume($r);
+
+      return 1;
    }
 }
