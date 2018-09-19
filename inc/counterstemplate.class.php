@@ -278,20 +278,35 @@ class PluginAlignakCountersTemplate extends CommonDBTM {
       $paCounters = new PluginAlignakCounter();
       $counters = $paCounters->find("`plugin_alignak_counters_template_id`='".$template_id."'", "", "");
 
-      echo "TEMPLATE ID: $template_id-";
-      $tpl = new PluginAlignakCountersTemplate();
-      $found = $tpl->getFromDB($template_id);
-
       $token = Session::getNewCSRFToken();
 
-      // If it still exists...
-      if ($found) {
-         echo '<table class="tab_cadre_fixe">';
-         echo '<tr>';
-         echo '<td class="tab_bg_2 center" colspan="4">';
-         echo __('Template Name:'.$tpl->fields['name'], 'alignak');
-         echo '</td>';
-         echo '</tr>';
+      // If counters exist for that template...
+      if (count($counters)) {
+         $tpl = new PluginAlignakCountersTemplate();
+         $found = $tpl->getFromDB($template_id);
+         if( $found) {
+            echo '<table class="tab_cadre_fixe">';
+            echo '<tr>';
+            echo '<td class="tab_bg_2 center" colspan="4">';
+            echo __('Template Name:'.$tpl->fields['name'], 'alignak');
+            echo '</td>';
+            echo '</tr>';
+            
+            echo '<tr>';
+            echo '<td>';
+            echo __('Name:', 'alignak');
+            echo '</td>';
+            echo '<td>';
+            echo __('Type:', 'alignak');
+            echo '</td>';
+            echo '<td>';
+            echo __('Description:', 'alignak');
+            echo '</td>';
+            echo '<td>';
+            echo __('Cumulated:', 'alignak');
+            echo '</td>';
+            echo '</tr>';
+         }
       }
 
       $i = 0;

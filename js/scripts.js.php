@@ -91,6 +91,9 @@ function deleteCounter(items_id, token, counter_id) {
    }
 }
 
+function reloadTab() {
+   location.reload();
+}
 
 
 
