@@ -155,8 +155,8 @@ class PluginAlignakMonitoringTemplate extends CommonDBTM {
       echo '<td>'.__('Entity', "alignak").'</td>';
       echo '<td colspan="5">';
       // Select an entity in the database
-      $entity->dropdown([
-         'name'=>'entities_id',
+      Dropdown::show('Entity',
+         ['name'=>'entities_id',
          'value'=>$this->fields['entities_id'],
          'right'=>'all',
          'comments'=>true,

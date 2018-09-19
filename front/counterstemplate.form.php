@@ -38,19 +38,21 @@ Html::header(
    __('Counter templates', 'alignak'),
    $_SERVER['PHP_SELF'],
    'admin',
-   'pluginalignakmenu', 'counter_template');
+   'pluginalignakmenu', 'counters_template');
 
 PluginAlignakToolbox::log("Counters template form: ". serialize($_POST));
 
 $paCountersTemplate = new PluginAlignakCountersTemplate();
-if (isset ($_POST["update"])) {
-   if ($paCountersTemplate->getFromDB($_POST['id'])) {
-      $paCountersTemplate->update($_POST);
-      Html::back();
+if (isset ($_POST["add"])) {
+   if ($paCountersTemplate->alreadyExistCountersTemplateForThatEntity($_POST['entities_id'])) {
+      Html::displayErrorAndDie('A counters template for that entity already exists');
    } else {
       $paCountersTemplate->add($_POST);
       $paCountersTemplate->redirectToList();
    }
+} else if (isset ($_POST["update"])) {
+   $paCountersTemplate->update($_POST);
+   Html::back();
 } else if (isset ($_POST["purge"])) {
    $paCountersTemplate->delete($_POST);
    $paCountersTemplate->redirectToList();

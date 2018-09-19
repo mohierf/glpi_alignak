@@ -68,7 +68,6 @@ class PluginAlignakCountersTemplate extends CommonDBTM {
    }
 
    function showForm($ID = -1, $entities_id = -1, $options = [], $copy = []) {
-      global $DB,$CFG_GLPI;
 
       if ($ID != -1) {
          // We still know which object if to be edited...
@@ -107,17 +106,17 @@ class PluginAlignakCountersTemplate extends CommonDBTM {
       $entity = new Entity();
       $entity->getFromDB($this->fields["entities_id"]);
       $entities_id = $this->fields["entities_id"];
-      echo '<input type="hidden" name="id" value="' . $this->fields['id'] . '"/>';
-      echo '<input type="hidden" name="entities_id" value="' . $entities_id . '"/>';
+//      echo '<input type="hidden" name="id" value="' . $this->fields['id'] . '"/>';
+//      echo '<input type="hidden" name="entities_id" value="' . $entities_id . '"/>';
 
       $this->initForm($ID, $options);
       $this->showFormHeader($options);
 
       $canedit = $this->canEdit($this->getID());
       echo "<div class='spaced'>";
-      if ($canedit) {
-         echo "<form method='post' name=form action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
-      }
+//      if ($canedit) {
+//         echo "<form method='post' name=form action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
+//      }
       echo '<table class="tab_cadre_fixe"';
 
       /*
@@ -140,8 +139,8 @@ class PluginAlignakCountersTemplate extends CommonDBTM {
       echo '<td>'.__('Entity', "alignak").'</td>';
       echo '<td colspan="5">';
       // Select an entity in the database
-      $entity->dropdown([
-         'name'=>'entities_id',
+      Dropdown::show('Entity',
+         ['name'=>'entities_id',
          'value'=>$this->fields['entities_id'],
          'right'=>'all',
          'comments'=>true,
@@ -182,22 +181,29 @@ class PluginAlignakCountersTemplate extends CommonDBTM {
          echo '</tr>';
       }
 
-      if ($canedit) {
-         echo '<tr>';
-         echo '<td class="tab_bg_2 center" colspan="4">';
-         echo Html::hidden('id', ['value' => $this->fields['id']]);
-         echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
-         echo '</td>';
-         echo '</tr>';
-         echo '</table>';
-         Html::closeForm();
-      } else {
-         echo '</table>';
-      }
+      $this->showFormButtons($options);
+      Html::closeForm();
+//      if ($canedit) {
+//         echo '<tr>';
+//         echo '<td class="tab_bg_2 center" colspan="4">';
+//         echo Html::hidden('id', ['value' => $this->fields['id']]);
+//         echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
+//         echo '</td>';
+//         echo '</tr>';
+//         echo '</table>';
+//         Html::closeForm();
+//      } else {
+//         echo '</table>';
+//      }
 
       echo '</div>';
 
       return true;
+   }
+
+   function alreadyExistCountersTemplateForThatEntity($entity_id){
+      $countersTemplate = new self();
+      return($countersTemplate->find( "entities_id = ".$entity_id));
    }
 
    /**
@@ -218,15 +224,6 @@ class PluginAlignakCountersTemplate extends CommonDBTM {
       ];
 
       $tab[] = [
-         'id'                 => '2',
-         'table'              => $this->getTable(),
-         'field'              => 'id',
-         'name'               => __('ID'),
-         'searchtype'         => 'contains',
-         'massiveaction'      => false
-      ];
-
-      $tab[] = [
          'id'                 => '1',
          'table'              => $this->getTable(),
          'field'              => 'name',
@@ -236,15 +233,26 @@ class PluginAlignakCountersTemplate extends CommonDBTM {
       ];
 
       $tab[] = [
+         'id'                 => '2',
+         'table'              => $this->getTable(),
+         'field'              => 'id',
+         'name'               => __('ID'),
+         'searchtype'         => 'contains',
+         'massiveaction'      => false
+      ];
+
+      /*
+      $tab[] = [
          'id'                 => '4',
          'table'              => $this->getTable(),
          'field'              => 'entities_id',
          'name'               => __('Entity'),
          'massiveaction'      => false
       ];
+      */
 
       $tab[] = [
-         'id'                 => '5',
+         'id'                 => '3',
          'table'              => 'glpi_entities',
          'field'              => 'completename',
          'name'               => __('Entity'),
