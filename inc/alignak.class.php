@@ -76,6 +76,20 @@ class PluginAlignakAlignak extends CommonDBTM
       $this->initForm($ID, $options);
       $this->showFormHeader($options);
 
+      echo '<tr>';
+      echo '<td>'.__('Alignak instance name', "alignak").'</td>';
+      echo '<td>';
+      echo '<input type="text" name="name" value="'. $this->fields["name"] .'" size="20"/>';
+      echo '</td>';
+      echo '</tr>';
+
+      echo '<tr class="tab_bg_1">';
+      echo '<td>'.__('Comment', 'alignak')." :</td>";
+      echo '<td>';
+      echo '<textarea name="comment" cols="124" rows="3">' . $this->fields["comment"] . '</textarea>';
+      echo '</td>';
+      echo '</tr>';
+
       echo '<tr class="tab_bg_1">';
       echo '<th colspan="2">';
       echo __('Set the tag value to link this entity with a specific Alignak server', 'alignak');
@@ -133,46 +147,69 @@ class PluginAlignakAlignak extends CommonDBTM
       return true;
    }
 
+   /*
+    * Search options, see: https://glpi-developer-documentation.readthedocs.io/en/master/devapi/search.html#search-options
+    */
+   public function getSearchOptionsNew() {
+      return $this->rawSearchOptions();
+   }
+
    function rawSearchOptions() {
 
-       $tab = [];
+      $tab = [];
 
-       $tab[] = [
-        'id'                 => 'common',
-        'name'               => __('Header Needed')
-       ];
+      $tab[] = [
+         'id'                 => 'common',
+         'name'               => __('Alignak instance')
+      ];
 
-       $tab[] = [
-        'id'                 => '1',
-        'table'              => 'glpi_plugin_alignak_alignaks',
-        'field'              => 'name',
-        'name'               => __('Name'),
-       ];
+      $tab[] = [
+         'id'                 => '1',
+         'table'              => $this->getTable(),
+         'field'              => 'name',
+         'name'               => __('Name'),
+      ];
 
-       $tab[] = [
-        'id'                 => '2',
-        'table'              => 'glpi_plugin_alignak_dropdowns',
-        'field'              => 'name',
-        'name'               => __('Dropdown'),
-       ];
+      $tab[] = [
+         'id'                 => '2',
+         'table'              => $this->getTable(),
+         'field'              => 'comment',
+         'name'               => __('Comment'),
+      ];
 
-       $tab[] = [
-        'id'                 => '3',
-        'table'              => 'glpi_plugin_alignak_alignaks',
-        'field'              => 'serial',
-        'name'               => __('Serial number'),
-        'usehaving'          => true,
-        'searchtype'         => 'equals',
-       ];
+      $tab[] = [
+         'id'                 => '3',
+         'table'              => $this->getTable(),
+         'field'              => 'tag',
+         'name'               => __('Tag', 'alignak'),
+      ];
 
-       $tab[] = [
-        'id'                 => '30',
-        'table'              => 'glpi_plugin_alignak_alignaks',
-        'field'              => 'id',
-        'name'               => __('ID'),
-        'usehaving'          => true,
-        'searchtype'         => 'equals',
-       ];
+      $tab[] = [
+         'id'                 => '4',
+         'table'              => $this->getTable(),
+         'field'              => 'address',
+         'name'               => __('Address', 'alignak'),
+      ];
+
+      $tab[] = [
+         'id'                 => '5',
+         'table'              => $this->getTable(),
+         'field'              => 'username',
+         'name'               => __('Username', 'alignak'),
+      ];
+
+      /*
+       * Include other fields here
+       */
+
+      $tab[] = [
+         'id'                 => '30',
+         'table'              => $this->getTable(),
+         'field'              => 'id',
+         'name'               => __('ID'),
+         'usehaving'          => true,
+         'searchtype'         => 'equals',
+      ];
 
        return $tab;
    }
@@ -327,8 +364,8 @@ class PluginAlignakAlignak extends CommonDBTM
           $values = [$field => $values];
       }
       switch ($field) {
-         case 'serial' :
-          return "S/N: ".$values[$field];
+         case 'tag' :
+          return "tag: ".$values[$field];
       }
          return '';
    }

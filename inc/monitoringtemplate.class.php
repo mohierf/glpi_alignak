@@ -166,7 +166,7 @@ class PluginAlignakMonitoringTemplate extends CommonDBTM {
       echo '</tr>';
 
       echo '<tr>';
-      echo '<td>'.__('Computer template name', "alignak").'</td>';
+      echo '<td>'.__('Monitoring template name', "alignak").'</td>';
       echo '<td colspan="7">';
       if (! empty($this->fields["name"])) {
          echo '<input type="text" name="name" value="'. $this->fields["name"] .'" size="20"/>';
@@ -228,6 +228,7 @@ class PluginAlignakMonitoringTemplate extends CommonDBTM {
     * Define search options for forms
     *
     * @return Array Array of fields to show in search engine and options for each fields
+    */
    public function getSearchOptionsNew() {
       return $this->rawSearchOptions();
    }
@@ -237,16 +238,7 @@ class PluginAlignakMonitoringTemplate extends CommonDBTM {
 
       $tab[] = [
          'id'                 => 'common',
-         'name'               => __('Characteristics')
-      ];
-
-      $tab[] = [
-         'id'                 => '2',
-         'table'              => $this->getTable(),
-         'field'              => 'id',
-         'name'               => __('ID'),
-         'searchtype'         => 'contains',
-         'massiveaction'      => false
+         'name'               => __('Alignak monitoring template')
       ];
 
       $tab[] = [
@@ -259,23 +251,33 @@ class PluginAlignakMonitoringTemplate extends CommonDBTM {
       ];
 
       $tab[] = [
-         'id'                 => '4',
+         'id'                 => '2',
          'table'              => $this->getTable(),
-         'field'              => 'entities_id',
-         'name'               => __('Entity'),
-         'massiveaction'      => false
+         'field'              => 'comment',
+         'name'               => __('Comment'),
       ];
 
       $tab[] = [
-         'id'                 => '5',
+         'id'                 => '3',
          'table'              => 'glpi_entities',
          'field'              => 'completename',
          'name'               => __('Entity'),
          'datatype'           => 'dropdown',
          'massiveaction'      => false
       ];
+
+      /*
+       * Include other fields here
+       */
+
+      $tab[] = [
+         'id'                 => '30',
+         'table'              => $this->getTable(),
+         'field'              => 'id',
+         'name'               => __('ID'),
+         'usehaving'          => true,
+         'searchtype'         => 'equals',
+      ];
       return $tab;
    }
-    */
-
 }

@@ -370,7 +370,6 @@ class PluginAlignakDashboard extends CommonDBTM {
       echo '</td>';
       echo '</tr>';
 
-
       echo "<tr><td colspan=\"8\">";
       echo "<hr/>";
       echo "</td></tr>";

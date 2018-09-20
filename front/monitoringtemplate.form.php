@@ -37,35 +37,41 @@
 
 include ('../../../inc/includes.php');
 
+// Check if plugin is activated...
+$plugin = new Plugin();
+if (!$plugin->isInstalled('alignak') || !$plugin->isActivated('alignak')) {
+   Html::displayNotFoundError();
+}
+
+
+$object = new PluginAlignakMonitoringTemplate();
+if (isset($_POST["copy"])) {
+   $object->showForm(-1, -1, [ 'canedit'=>PluginAlignakMonitoringTemplate::canUpdate(), 'colspan'=>4 ], $_POST);
+   Html::footer();
+   exit;
+} else if (isset ($_POST["add"])) {
+   $object->add($_POST);
+   Html::redirectToList();
+} else if (isset ($_POST["update"])) {
+   $object->update($_POST);
+   Html::back();
+} else if (isset ($_POST["delete"])) {
+   $object->delete($_POST);
+   $object->redirectToList();
+}
+
 Html::header(
    __('Monitoring templates', 'alignak'),
    $_SERVER['PHP_SELF'],
    'admin',
    'pluginalignakmenu', 'monitoring_template');
 
-$paMonitoringTemplate = new PluginAlignakMonitoringTemplate();
-if (isset($_POST["copy"])) {
-   $paMonitoringTemplate->showForm(-1, -1, [ 'canedit'=>PluginAlignakMonitoringTemplate::canUpdate(), 'colspan'=>4 ], $_POST);
-   Html::footer();
-   exit;
-} else if (isset ($_POST["add"])) {
-   $paMonitoringTemplate->add($_POST);
-   Html::back();
-} else if (isset ($_POST["update"])) {
-   $paMonitoringTemplate->update($_POST);
-   Html::back();
-} else if (isset ($_POST["delete"])) {
-   $paMonitoringTemplate->delete($_POST);
-   $paMonitoringTemplate->redirectToList();
-} else if (isset ($_POST["send"])) {
-   Session::crongetCSVDailyCounters($_POST['id']);
-   Html::back();
-}
-
 if (isset($_GET["id"])) {
-   $paMonitoringTemplate->showForm($_GET['id'], -1, [ 'canedit'=>PluginAlignakMonitoringTemplate::canUpdate(), 'colspan'=>4 ]);
+   $object->display([
+      'id' => $_GET['id'],
+      'canedit' => PluginAlignakMonitoringTemplate::canUpdate()]);
 } else {
-   $paMonitoringTemplate->showForm();
+   $object->showForm();
 }
 
 Html::footer();

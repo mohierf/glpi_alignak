@@ -47,7 +47,7 @@
  * @return boolean True if success
  */
 function plugin_alignak_install() {
-//   spl_autoload_register('plugin_alignak_autoload');
+   spl_autoload_register('plugin_alignak_autoload');
 
    $version   = plugin_version_alignak();
    $migration = new Migration($version['version']);
@@ -356,7 +356,7 @@ function plugin_alignak_MassiveActionsFieldsDisplay($options = []) {
       // Table fields
       switch ($table.".".$field) {
          case 'glpi_plugin_alignak_alignaks.serial' :
-            echo __("Not really specific - Just for example", 'alignak');
+            echo __("Not really specific - Just for example !", 'alignak');
             //Html::autocompletionTextField($linkfield,$table,$field);
             // Dropdown::showYesNo($linkfield);
             // Need to return true if specific display
@@ -367,7 +367,7 @@ function plugin_alignak_MassiveActionsFieldsDisplay($options = []) {
       // Linked Fields
       switch ($table.".".$field) {
          case "glpi_plugin_alignak_dropdowns.name" :
-            echo __("Not really specific - Just for example", 'alignak');
+            echo __("Not really specific - Just for example !!!", 'alignak');
             // Need to return true if specific display
             return true;
       }

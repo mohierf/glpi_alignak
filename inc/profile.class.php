@@ -135,8 +135,8 @@ class PluginAlignakProfile extends Profile
     */
    static function uninstallProfile() {
       $pfProfile = new self();
-      $a_rights = $pfProfile->getAllRights();
-      foreach ($a_rights as $data) {
+      Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Removing plugin rights from the database\n");
+      foreach ($pfProfile->getAllRights() as $data) {
          ProfileRight::deleteProfileRights([$data['field']]);
       }
    }
@@ -227,32 +227,54 @@ class PluginAlignakProfile extends Profile
       return $rights;
    }
 
-    /**
-     * Add the default profile
-     *
-     * @param integer $profiles_id
-     * @param array   $rights
+   /**
+     * Delete rights stored in the session
      */
-   static function addDefaultProfileInfos($profiles_id, $rights) {
-      $profileRight = new ProfileRight();
-      foreach ($rights as $right => $value) {
-         if (! countElementsInTable('glpi_profilerights', ['profiles_id' => $profiles_id, 'name' => $right])) {
-            $myright['profiles_id'] = $profiles_id;
-            $myright['name']        = $right;
-            $myright['rights']      = $value;
-            $profileRight->add($myright);
-
-            //Add right to the current session
-            $_SESSION['glpiactiveprofile'][$right] = $value;
+   static function removeRightsFromSession() {
+      // Get current profile
+      $profile = new self();
+      Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Removing plugin rights from the session\n");
+      foreach ($profile->getAllRights() as $right) {
+         if (isset($_SESSION['glpiactiveprofile'][$right['field']])) {
+            unset($_SESSION['glpiactiveprofile'][$right['field']]);
          }
       }
    }
 
-    /**
-     * Create first access (so default profile)
-     *
-     * @param integer $profiles_id id of profile
+   /**
+     * Init profiles during installation:
+     * - add rights in profile table for the current user's profile
+     * - current profile has all rights on the plugin
      */
+   static function initProfile() {
+      $paProfile = new self();
+      $dbu = new DbUtils();
+
+      Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Initializing plugin profile rights:\n");
+      $a_rights  = $paProfile->getAllRights();
+      foreach ($a_rights as $data) {
+         Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "- set right {$data['field']}\n");
+         if ($dbu->countElementsInTable("glpi_profilerights", ['name' => $data['field']]) == 0) {
+            ProfileRight::addProfileRights([$data['field']]);
+            $_SESSION['glpiactiveprofile'][$data['field']] = 1;
+         }
+      }
+
+      // Add all plugin rights to the current user profile
+      if (isset($_SESSION['glpiactiveprofile']) && isset($_SESSION['glpiactiveprofile']['id'])) {
+         // Set the plugin profile rights for the currently used profile
+         self::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
+      } else {
+         // No current profile!
+         Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "No current profile in the session!\n");
+      }
+   }
+
+   /**
+    * Create first access (so default profile)
+    *
+    * @param integer $profiles_id id of the profile
+    */
    static function createFirstAccess($profiles_id) {
       include_once GLPI_ROOT."/plugins/alignak/inc/profile.class.php";
       $profile = new self();
@@ -261,78 +283,38 @@ class PluginAlignakProfile extends Profile
       }
    }
 
-    /**
-     * Delete rights  stored in session
-     */
-   static function removeRightsFromSession() {
-      $profile = new self();
-      foreach ($profile->getAllRights() as $right) {
-         if (isset($_SESSION['glpiactiveprofile'][$right['field']])) {
-            unset($_SESSION['glpiactiveprofile'][$right['field']]);
-         }
-//         ProfileRight::deleteProfileRights([$right['field']]);
-      }
-   }
-
-    /**
-     * Init profiles during installation:
-     * - add rights in profile table for the current user's profile
-     * - current profile has all rights on the plugin
-     */
-   static function initProfile() {
-      global $DB;
-
-      $pfProfile = new self();
+   /**
+    * Add the default profile rights
+    *
+    * @param integer $profiles_id
+    * @param array   $rights
+    */
+   static function addDefaultProfileInfos($profiles_id, $rights) {
       $dbu = new DbUtils();
-      $profile   = new Profile();
+      $profileRight = new ProfileRight();
 
-      Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Initialize profile:\n");
-      $a_rights  = $pfProfile->getAllRights();
-      foreach ($a_rights as $data) {
-         if ($dbu->countElementsInTable("glpi_profilerights", ['name' => $data['field']]) == 0) {
-            Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "- set right {$data['field']}\n");
-            ProfileRight::addProfileRights([$data['field']]);
-            $_SESSION['glpiactiveprofile'][$data['field']] = 0;
+      // Get current profile
+      $profile = new Profile();
+      $profile->getFromDB($profiles_id);
+      Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Add default rights for the profile: {$profile->getName()}\n");
+
+      foreach ($rights as $right => $value) {
+         Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "- right: $right = $value\n");
+         // If it does not yet exists...
+         if ($dbu->countElementsInTable('glpi_profilerights',
+               ["WHERE" => "`profiles_id`='$profiles_id' AND `name`='$right'"]) == 0) {
+            // Create the profile right
+            $myright['profiles_id'] = $profiles_id;
+            $myright['name']        = $right;
+            $myright['rights']      = $value;
+            $profileRight->add($myright);
+
+            //Add right to the current session
+            Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "- adding: $right = $value\n");
+            $_SESSION['glpiactiveprofile'][$right] = $value;
+         } else {
+            Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "- still existing: $right = $value\n");
          }
       }
-
-      // Add all plugin rights to the current user profile
-      if (isset($_SESSION['glpiactiveprofile']) && isset($_SESSION['glpiactiveprofile']['id'])) {
-         Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Session profile:\n");
-         foreach ($DB->request("SELECT * FROM `glpi_profilerights` 
-                                          WHERE `profiles_id`='" . $_SESSION['glpiactiveprofile']['id'] . "' 
-                                          AND `name` LIKE '%plugin_manufacturersimports%'") as $prof) {
-            $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
-            Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "- set right: ". $prof['name'] ."=". $prof['rights'] ."\n");
-         }
-      }
-      /*
-      if (isset($_SESSION['glpiactiveprofile']) && isset($_SESSION['glpiactiveprofile']['id'])) {
-         $dataprofile = [
-            "id" => $_SESSION['glpiactiveprofile']['id']
-         ];
-         $profile->getFromDB($_SESSION['glpiactiveprofile']['id']);
-         foreach ($a_rights as $info) {
-            Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Profile right: ". serialize($info) ."\n");
-            if (is_array($info)
-               && ((! empty($info['itemtype'])) || (! empty($info['rights'])))
-               && (! empty($info['label'])) && (! empty($info['field']))) {
-
-               if (isset($info['rights'])) {
-                  $rights = $info['rights'];
-               } else {
-                  $rights = $profile->getRightsFor($info['itemtype']);
-               }
-               Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "- rights:". serialize($rights) ."\n");
-               foreach ($rights as $binary_right => $text_right) {
-                  Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "- right: $binary_right\n");
-                  $dataprofile['_'.$info['field']][$binary_right] = 1;
-                  $_SESSION['glpiactiveprofile'][$info['field']] = $binary_right;
-               }
-            }
-         }
-         $profile->update($dataprofile);
-      }
-      */
    }
 }

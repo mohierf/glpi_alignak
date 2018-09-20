@@ -45,7 +45,7 @@
  * Plugin global configuration variables
  */
 define ("PLUGIN_ALIGNAK_OFFICIAL_RELEASE", "0");
-define ('PLUGIN_ALIGNAK_VERSION', '9.3+0.1');
+define ('PLUGIN_ALIGNAK_VERSION', '1.0');
 define ('PLUGIN_ALIGNAK_PHP_MIN_VERSION', '5.6');
 define ('PLUGIN_ALIGNAK_GLPI_MIN_VERSION', '9.2');
 define ('PLUGIN_ALIGNAK_NAME', 'Alignak monitoring plugin');
@@ -126,11 +126,13 @@ define("PLUGIN_ALIGNAK_TPL_RAISE_ERRORS", true);
 function plugin_init_alignak() {
    global $PLUGIN_HOOKS;
 
-   // manage autoload of plugin custom classes
-   include_once(PLUGIN_ALIGNAK_DIR . "/vendor/autoload.php");
-   include_once(PLUGIN_ALIGNAK_DIR . "/inc/autoload.php");
-   $pluginfields_autoloader = new PluginAlignakAutoloader([PLUGIN_ALIGNAK_CLASS_PATH]);
-   $pluginfields_autoloader->register();
+   spl_autoload_register('plugin_alignak_autoload');
+
+//   // manage autoload of plugin custom classes
+//   include_once(PLUGIN_ALIGNAK_DIR . "/vendor/autoload.php");
+//   include_once(PLUGIN_ALIGNAK_DIR . "/inc/autoload.php");
+//   $pluginfields_autoloader = new PluginAlignakAutoloader([PLUGIN_ALIGNAK_CLASS_PATH]);
+//   $pluginfields_autoloader->register();
 
    // CSRF compliance : All actions must be done via POST and forms closed by Html::closeForm();
    $PLUGIN_HOOKS['csrf_compliant']['alignak'] = true;
@@ -140,6 +142,8 @@ function plugin_init_alignak() {
       && $plugin->isActivated('alignak')
       && Session::getLoginUserID() ) {
 
+//      spl_autoload_register('plugin_alignak_autoload');
+//
       // Params : plugin name - string type - ID - Array of attributes
       // No specific information passed so not needed
       // Plugin::registerClass('PluginAlignakAlignak', ['classname' => 'PluginAlignakAlignak']);
@@ -435,3 +439,40 @@ function plugin_alignak_check_config($verbose = false) {
    }
    return false;
 }
+
+/**
+ * Autoloader
+ * @param unknown $classname
+ */
+function plugin_alignak_autoload($classname) {
+   if (strpos($classname, 'PluginAlignak') === 0) {
+      /*
+      // Search first for field clases
+      $filename = __DIR__ . '/inc/fields/' . strtolower(str_replace('PluginAlignak', '', $classname)) . '.class.php';
+      if (is_readable($filename) && is_file($filename)) {
+         include_once($filename);
+         return true;
+      }*/
+
+      // useful only for installer GLPi autoloader already handles inc/ folder
+      $filename = __DIR__ . '/inc/' . strtolower(str_replace('PluginAlignak', '', $classname)). '.class.php';
+      if (is_readable($filename) && is_file($filename)) {
+         include_once($filename);
+         return true;
+      }
+   }
+}
+
+
+/**
+ * Show the last SQL error, logs its backtrace and dies
+ * @param Migration $migration
+ */
+function plugin_alignak_upgrade_error(Migration $migration) {
+   global $DB;
+
+   $error = $DB->error();
+   $migration->log($error . "\n" . Toolbox::backtrace(false, '', ['Toolbox::backtrace()']), false);
+   die($error . "<br><br> Please, check the migration log");
+}
+

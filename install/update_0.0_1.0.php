@@ -57,10 +57,10 @@ function plugin_alignak_updateTable_1_0(Migration $migration) {
    global $DB;
 
    /*
-   // Legacy upgrade of Answers
+   // Legacy upgrade of a table...
    $migration->displayMessage("Upgrade glpi_plugin_alignak_tables");
    // Update field type from previous version (Need answer to be text since text can be WYSIWING).
-   $query = "ALTER TABLE  `glpi_plugin_alignak_answers` CHANGE  `answer` `answer` text;";
+   $query = "ALTER TABLE  `glpi_plugin_alignak_alignaks` CHANGE  `comment` `comment` text;";
    $DB->query($query) or plugin_alignak_upgrade_error($migration);
    */
 

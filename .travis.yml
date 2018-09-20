@@ -59,7 +59,7 @@ script:
   - if [ -e ../../tools/cliinstall.php ] ; then php ../../tools/cliinstall.php --db=$DBNAME --user=root --tests ; fi
   - vendor/bin/atoum --debug -ft -bf tests/bootstrap.php -d tests/ts-install -ncc
 #  - vendor/bin/atoum -ft -bf tests/bootstrap.php -d tests/suite-integration $COVERAGE
-  - vendor/bin/atoum -ft -bf tests/bootstrap.php -d tests/ts-unit $COVERAGE
+#  - vendor/bin/atoum -ft -bf tests/bootstrap.php -d tests/ts-unit $COVERAGE
   #  - vendor/bin/atoum -ft -bf tests/bootstrap.php -d tests/suite-uninstall -ncc
 
   # PHP coding standards
