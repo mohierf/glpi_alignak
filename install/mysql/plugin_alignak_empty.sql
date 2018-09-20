@@ -15,11 +15,11 @@ CREATE TABLE `glpi_plugin_alignak_alignaks` (
 # DROP TABLE IF EXISTS `glpi_plugin_alignak_computers`;
 CREATE TABLE `glpi_plugin_alignak_computers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `entities_id` int(11) NOT NULL DEFAULT '0',
-  `itemtype` varchar(255) DEFAULT NULL,
+  `entities_id` int(11) NOT NULL DEFAULT 0,
+  `itemtype` varchar(255) collate utf8_unicode_ci DEFAULT NULL,
   `items_id` int(11) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `comment` text,
+  `name` varchar(255) collate utf8_unicode_ci DEFAULT NULL,
+  `comment` text collate utf8_unicode_ci,
   PRIMARY KEY  (`id`),
   KEY `computer` (`itemtype`, `items_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -40,9 +40,10 @@ CREATE TABLE `glpi_plugin_alignak_counters` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `comment` text,
-  `type_counter` enum('INTEGER', 'FLOAT', 'POURCENTAGE', 'OCTETS') NOT NULL,
-  `cumulatif` tinyint(1) NOT NULL DEFAULT '0',
+  `type_counter` ENUM( 'INTEGER', 'FLOAT', 'POURCENTAGE', 'OCTETS') NOT NULL,
+  `cumulatif` BOOLEAN NOT NULL DEFAULT FALSE,
   `plugin_alignak_counters_template_id` int(11) NOT NULL,
+  `graphite_name` varchar(255) DEFAULT NULL,
   PRIMARY KEY  (`id`),
   KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -53,7 +54,7 @@ CREATE TABLE `glpi_plugin_alignak_counterstemplates` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `comment` text DEFAULT NULL,
-  `entities_id` int(11) DEFAULT NULL,
+  `entities_id` int(11),
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -143,21 +144,21 @@ CREATE TABLE `glpi_plugin_alignak_entities` (
 # DROP TABLE IF EXISTS `glpi_plugin_alignak_mailnotifications`;
 CREATE TABLE `glpi_plugin_alignak_mailnotifications` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `entities_id` int(11) NOT NULL DEFAULT '0',
+  `entities_id` int(11) NOT NULL DEFAULT 0,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `name` varchar(64) NOT NULL DEFAULT '',
+  `name` varchar(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `user_to_id` int(11) NOT NULL DEFAULT '-1',
   `user_cc_1_id` int(11) NOT NULL DEFAULT '-1',
   `user_cc_2_id` int(11) NOT NULL DEFAULT '-1',
   `user_cc_3_id` int(11) NOT NULL DEFAULT '-1',
   `user_bcc_id` int(11) NOT NULL DEFAULT '-1',
   `daily_mail` tinyint(1) NOT NULL DEFAULT '0',
-  `daily_subject_template` varchar(255) NOT NULL DEFAULT 'Daily counters (#date#)',
+  `daily_subject_template` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Compteurs quotidiens (#date#)',
   `weekly_mail` tinyint(1) NOT NULL DEFAULT '0',
-  `weekly_subject_template` varchar(255) NOT NULL DEFAULT 'Weekly counters (#date#)',
+  `weekly_subject_template` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Compteurs hebdomadaires (#date#)',
   `weekly_mail_day` int(11) NOT NULL DEFAULT '1',
   `monthly_mail` tinyint(1) NOT NULL DEFAULT '0',
-  `monthly_subject_template` varchar(255) NOT NULL DEFAULT 'Monthly counters (#date#)',
+  `monthly_subject_template` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Compteurs mensuels (#date#)',
   `monthly_mail_day` int(11) NOT NULL DEFAULT '1',
   `component_1` int(11) NOT NULL DEFAULT '-1',
   `component_2` int(11) NOT NULL DEFAULT '-1',
