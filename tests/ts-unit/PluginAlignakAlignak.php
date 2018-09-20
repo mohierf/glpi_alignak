@@ -5,6 +5,13 @@ use GlpiPlugin\Alignak\Tests\CommonTestCase;
 
 class PluginAlignakAlignak extends CommonTestCase {
 
+   public function setUp() {
+      parent::setUp();
+
+      // instanciate classes
+      $pa = new \PluginAlignakAlignak;
+   }
+
    public function testGetTypeName() {
       $this->string(\PluginAlignakAlignak::getTypeName(0))->isIdenticalTo('Alignak instance');
    }

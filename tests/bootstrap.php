@@ -40,6 +40,13 @@ if (!defined('STDERR')) {
 }
 echo("Glpi log dir: " . GLPI_LOG_DIR . "\n");
 
+define('ALIGNAK_ROOT', GLPI_ROOT . DIRECTORY_SEPARATOR . '/plugins/alignak');
+set_include_path(
+   get_include_path() . PATH_SEPARATOR .
+   GLPI_ROOT . PATH_SEPARATOR .
+   GLPI_ROOT . "/plugins/alignak/tests/"
+);
+
 // Giving --debug argument to atoum will be detected by GLPI too
 // the error handler in Toolbox may output to stdout a message and break process communication
 // in atoum

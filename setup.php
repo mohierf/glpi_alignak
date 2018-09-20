@@ -128,11 +128,11 @@ function plugin_init_alignak() {
 
    spl_autoload_register('plugin_alignak_autoload');
 
-//   // manage autoload of plugin custom classes
-//   include_once(PLUGIN_ALIGNAK_DIR . "/vendor/autoload.php");
-//   include_once(PLUGIN_ALIGNAK_DIR . "/inc/autoload.php");
-//   $pluginfields_autoloader = new PluginAlignakAutoloader([PLUGIN_ALIGNAK_CLASS_PATH]);
-//   $pluginfields_autoloader->register();
+   //   // manage autoload of plugin custom classes
+   //   include_once(PLUGIN_ALIGNAK_DIR . "/vendor/autoload.php");
+   //   include_once(PLUGIN_ALIGNAK_DIR . "/inc/autoload.php");
+   //   $pluginfields_autoloader = new PluginAlignakAutoloader([PLUGIN_ALIGNAK_CLASS_PATH]);
+   //   $pluginfields_autoloader->register();
 
    // CSRF compliance : All actions must be done via POST and forms closed by Html::closeForm();
    $PLUGIN_HOOKS['csrf_compliant']['alignak'] = true;
@@ -142,8 +142,6 @@ function plugin_init_alignak() {
       && $plugin->isActivated('alignak')
       && Session::getLoginUserID() ) {
 
-//      spl_autoload_register('plugin_alignak_autoload');
-//
       // Params : plugin name - string type - ID - Array of attributes
       // No specific information passed so not needed
       // Plugin::registerClass('PluginAlignakAlignak', ['classname' => 'PluginAlignakAlignak']);
