@@ -76,7 +76,7 @@ abstract class CommonTestCase extends CommonDBTestCase
    }
 
    protected function login($name, $password, $noauto = false) {
-      Session::start();
+      //      Session::start();
       $auth = new Auth();
       $result = $auth->login($name, $password, $noauto);
       $_SESSION['MESSAGE_AFTER_REDIRECT'] = [];

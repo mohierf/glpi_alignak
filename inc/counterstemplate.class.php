@@ -106,17 +106,17 @@ class PluginAlignakCountersTemplate extends CommonDBTM {
       $entity = new Entity();
       $entity->getFromDB($this->fields["entities_id"]);
       $entities_id = $this->fields["entities_id"];
-//      echo '<input type="hidden" name="id" value="' . $this->fields['id'] . '"/>';
-//      echo '<input type="hidden" name="entities_id" value="' . $entities_id . '"/>';
+      //      echo '<input type="hidden" name="id" value="' . $this->fields['id'] . '"/>';
+      //      echo '<input type="hidden" name="entities_id" value="' . $entities_id . '"/>';
 
       $this->initForm($ID, $options);
       $this->showFormHeader($options);
 
       $canedit = $this->canEdit($this->getID());
       echo "<div class='spaced'>";
-//      if ($canedit) {
-//         echo "<form method='post' name=form action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
-//      }
+      //      if ($canedit) {
+      //         echo "<form method='post' name=form action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
+      //      }
       echo '<table class="tab_cadre_fixe"';
 
       /*
@@ -183,27 +183,27 @@ class PluginAlignakCountersTemplate extends CommonDBTM {
 
       $this->showFormButtons($options);
       Html::closeForm();
-//      if ($canedit) {
-//         echo '<tr>';
-//         echo '<td class="tab_bg_2 center" colspan="4">';
-//         echo Html::hidden('id', ['value' => $this->fields['id']]);
-//         echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
-//         echo '</td>';
-//         echo '</tr>';
-//         echo '</table>';
-//         Html::closeForm();
-//      } else {
-//         echo '</table>';
-//      }
+      //      if ($canedit) {
+      //         echo '<tr>';
+      //         echo '<td class="tab_bg_2 center" colspan="4">';
+      //         echo Html::hidden('id', ['value' => $this->fields['id']]);
+      //         echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
+      //         echo '</td>';
+      //         echo '</tr>';
+      //         echo '</table>';
+      //         Html::closeForm();
+      //      } else {
+      //         echo '</table>';
+      //      }
 
       echo '</div>';
 
       return true;
    }
 
-   function alreadyExistCountersTemplateForThatEntity($entity_id){
+   function alreadyExistCountersTemplateForThatEntity($entity_id) {
       $countersTemplate = new self();
-      return($countersTemplate->find( "entities_id = ".$entity_id));
+      return($countersTemplate->find("entities_id = ".$entity_id));
    }
 
    /**
@@ -284,14 +284,14 @@ class PluginAlignakCountersTemplate extends CommonDBTM {
       if (count($counters)) {
          $tpl = new PluginAlignakCountersTemplate();
          $found = $tpl->getFromDB($template_id);
-         if( $found) {
+         if ($found) {
             echo '<table class="tab_cadre_fixe">';
             echo '<tr>';
             echo '<td class="tab_bg_2 center" colspan="4">';
             echo __('Template Name:'.$tpl->fields['name'], 'alignak');
             echo '</td>';
             echo '</tr>';
-            
+
             echo '<tr>';
             echo '<td>';
             echo __('Name:', 'alignak');

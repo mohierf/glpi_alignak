@@ -65,7 +65,7 @@ class PluginAlignakComputer extends CommonDBTM
       $pmHost = new PluginAlignakComputer();
       PluginAlignakToolbox::logIfDebug("Check if monitored: " . $item->getType() . " / "  . $item->getName());
       return true;
-//      return $pmHost->getFromDBByCrit(['itemtype' => 'computer', 'items_id' => $item->getID()]);
+      //      return $pmHost->getFromDBByCrit(['itemtype' => 'computer', 'items_id' => $item->getID()]);
    }
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {

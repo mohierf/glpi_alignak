@@ -112,7 +112,6 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
             PluginAlignakToolbox::log("Computer entity relation: ". serialize($paCountersTemplate->fields));
             $entity_relation = true;
             $ID = $this->fields['id'];
-            
          }
       } else {
          PluginAlignakToolbox::log("Existing relation: ". serialize($this->fields));
@@ -231,7 +230,7 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
 
       return true;
    }
-   
+
       /**
      * Give localized information about 1 task
      *

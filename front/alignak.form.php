@@ -55,10 +55,8 @@ $object = new PluginAlignakAlignak();
 if (isset($_POST['add'])) {
    // Check CREATE ACL
    $object->check(-1, CREATE, $_POST);
-   // Do object creation
-   $newid = $object->add($_POST);
-   // Redirect to newly created object form
-   Html::redirect("{$CFG_GLPI['root_doc']}/plugins/front/alignak.form.php?id=$newid");
+   $object->add($_POST);
+   Html::redirectToList();
 } else if (isset($_POST['update'])) {
    // Check UPDATE ACL
    $object->check($_POST['id'], UPDATE);
@@ -89,17 +87,11 @@ if (isset($_POST['add'])) {
 
    // Default is to display the object
    $with_template = (isset($_GET['withtemplate']) ? $_GET['withtemplate'] : 0);
-//   $object->display(
-//      [
-//         'id'           => $_GET['id'],
-//         'withtemplate' => $with_template
-//      ]
-//   );
 
    if (isset($_GET["id"])) {
-      $object->showForm($_GET['id'], -1, [
+      $object->display([
+         'id' => $_GET['id'],
          'canedit' => PluginAlignakAlignak::canUpdate(),
-         'colspan' => 4,
          'withtemplate' => $with_template]);
    } else {
       $object->showForm(-1);

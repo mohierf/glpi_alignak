@@ -41,7 +41,7 @@ class PluginAlignakAutoloader
           $plugin_name = strtolower($matches[1]);
           $class_name = strtolower($matches[2]);
 
-         if ($plugin_name !== "fields") {
+         if ($plugin_name !== "alignak") {
             return false;
          }
 
