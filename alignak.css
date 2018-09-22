@@ -1,1 +1,37 @@
-/* empty file */
+/* The counter badges in the Alignak menu */
+sup {
+    vertical-align: baseline;
+    position: relative;
+    top: -0.4em;
+}
+
+sup.tab_nb {
+    border-radius: 25%;
+    background-color: #cccccc;
+    min-width: 18px;
+    max-height: 16px;
+    margin-right: 5px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: top;
+    padding: 3px 3px 5px;
+    box-sizing: border-box;
+    margin-left: -5px;
+    margin-top: 2px;
+    font-weight: bold;
+}
+
+/* The service status in the services tab */
+.OK, .INFO {
+    background-color: #b4cc38;
+}
+.WARNING {
+    background-color: #ffcb05;
+}
+.CRITICAL, .ERROR {
+    background-color: #e30613;
+}
+.UNKNOWN, UNREACHABLE {
+    background-color: #447fc1;
+}
+

@@ -54,7 +54,7 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
       $array_ret = [];
       if ($item->getType() == 'Computer' and $item->getID() > -1) {
          if (Session::haveRight('plugin_alignak_counters', READ)) {
-            $array_ret[0] = self::createTabEntry(__('Monitoring counters', 'alignak'));
+//            $array_ret[0] = self::createTabEntry(__('Monitoring counters', 'alignak'));
          }
       }
       return $array_ret;

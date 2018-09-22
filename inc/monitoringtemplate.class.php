@@ -74,7 +74,7 @@ class PluginAlignakMonitoringTemplate extends CommonDBTM {
          case 'Computer' :
             // Call the show form for the current entity
             $paTemplate = new PluginAlignakMonitoringTemplate();
-            $paTemplate->showForm(-1, $item->getID(), ['canedit'=>self::canUpdate(), 'colspan'=>4 ]);
+            $paTemplate->showForm(-1, $item->getEntityID(), ['canedit'=>self::canUpdate(), 'colspan'=>4 ]);
             break;
       }
       return true;
@@ -129,8 +129,8 @@ class PluginAlignakMonitoringTemplate extends CommonDBTM {
       $entity = new Entity();
       $entity->getFromDB($this->fields["entities_id"]);
       $entities_id = $this->fields["entities_id"];
-      echo '<input type="hidden" name="id" value="' . $this->fields['id'] . '"/>';
-      echo '<input type="hidden" name="entities_id" value="' . $entities_id . '"/>';
+//      echo '<input type="hidden" name="id" value="' . $this->fields['id'] . '"/>';
+//      echo '<input type="hidden" name="entities_id" value="' . $entities_id . '"/>';
 
       $this->initForm($ID, $options);
       $this->showFormHeader($options);
@@ -152,8 +152,17 @@ class PluginAlignakMonitoringTemplate extends CommonDBTM {
       */
 
       echo '<tr>';
-      echo '<td>'.__('Entity', "alignak").'</td>';
-      echo '<td colspan="5">';
+      echo '<td colspan="2">'.__('Entity', "alignak").'</td>';
+      echo '<td colspan="2">';
+      // Select an entity in the database
+      Dropdown::show('Entity',
+         ['name'=>'entities_id',
+            'value'=>$this->fields['entities_id'],
+            'right'=>'all',
+            'comments'=>true,
+            'entity'=>$user->fields['entities_id'],
+            'entity_sons'=>true]);
+      /*
       // Select an entity in the database
       Dropdown::show('Entity',
          ['name'=>'entities_id',
@@ -162,12 +171,13 @@ class PluginAlignakMonitoringTemplate extends CommonDBTM {
          'comments'=>true,
          'entity'=>$user->fields['entities_id'],
          'entity_sons'=>true]);
+      */
       echo '</td>';
       echo '</tr>';
 
       echo '<tr>';
-      echo '<td>'.__('Monitoring template name', "alignak").'</td>';
-      echo '<td colspan="7">';
+      echo '<td colspan="2">'.__('Monitoring template name', "alignak").'</td>';
+      echo '<td colspan="2">';
       if (! empty($this->fields["name"])) {
          echo '<input type="text" name="name" value="'. $this->fields["name"] .'" size="20"/>';
       } else {
@@ -177,9 +187,9 @@ class PluginAlignakMonitoringTemplate extends CommonDBTM {
       echo '</tr>';
 
       echo '<tr class="tab_bg_1">';
-      echo '<td>'.__('Comment', 'alignak')." :</td>";
-      echo '<td>';
-      echo '<textarea name="comment" cols="124" rows="3">' . $this->fields["comment"] . '</textarea>';
+      echo '<td colspan="2">'.__('Comment', 'alignak')." :</td>";
+      echo '<td colspan="2">';
+      echo '<textarea name="comment" cols="40" rows="3">' . $this->fields["comment"] . '</textarea>';
       echo '</td>';
       echo '</tr>';
 
@@ -187,6 +197,7 @@ class PluginAlignakMonitoringTemplate extends CommonDBTM {
       echo '<hr/>';
       echo '</td></tr>';
 
+      /*
       try {
          $filename = 'host.cfg';
 
@@ -216,6 +227,7 @@ class PluginAlignakMonitoringTemplate extends CommonDBTM {
          Session::addMessageAfterRedirect($e->getMessage(), true, ERROR);
          echo nl2br(__("Alignak monitoring plugin templates runtime exception: \n", 'alignak') . $e->getMessage());
       }
+      */
 
       $this->showFormButtons($options);
 

@@ -54,13 +54,6 @@ class PluginAlignakAlignak extends CommonDBTM
       return _n('Alignak instance', 'Alignak instances', $nb, 'alignak');
    }
 
-   /**
-    * @see CommonGLPI::getMenuName()
-   static function getMenuName() {
-      return __('Alignak PluginAlignakAlignak - Alignak class');
-   }
-    **/
-
    function defineTabs($options = []) {
 
        $ong = [];
@@ -86,7 +79,7 @@ class PluginAlignakAlignak extends CommonDBTM
       echo '<tr class="tab_bg_1">';
       echo '<td>'.__('Comment', 'alignak')." :</td>";
       echo '<td>';
-      echo '<textarea name="comment" cols="124" rows="3">' . $this->fields["comment"] . '</textarea>';
+      echo '<textarea name="comment" cols="40" rows="3">' . $this->fields["comment"] . '</textarea>';
       echo '</td>';
       echo '</tr>';
 
@@ -288,17 +281,14 @@ class PluginAlignakAlignak extends CommonDBTM
               break;
 
             case 'Central' :
-               if ($_SESSION['glpishow_count_on_tabs']) {
-                   return self::createTabEntry(__('Alignak', 'alignak'),
-                      countElementsInTable($this->getTable())
-                   );
-               }
+               return __("Alignak monitoring", 'alignak');
+
             case 'Preference':
             case 'Notification':
               return [1 => __("Alignak monitoring", 'alignak')];
          }
       }
-         return '';
+      return '';
    }
 
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {

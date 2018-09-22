@@ -156,7 +156,7 @@ function plugin_init_alignak() {
 
       // Plugin Alignak - monitoring management
       Plugin::registerClass('PluginAlignakAlignak',
-         ['addtabon' => ['Profile']]);
+         ['addtabon' => ['Central', 'Profile']]);
       Plugin::registerClass('PluginAlignakMonitoringTemplate',
          ['addtabon' => ['Entity', 'Computer']]);
       Plugin::registerClass('PluginAlignakComputer',
@@ -289,7 +289,7 @@ function plugin_init_alignak() {
        * Load the relevant javascript/css files only on pages that need them.
        */
       //      $PLUGIN_HOOKS['add_javascript']['alignak'] = 'js/alignak.js';
-      //      $PLUGIN_HOOKS['add_css']['alignak'] = 'css/alignak.css';
+      $PLUGIN_HOOKS['add_css']['alignak'] = 'alignak.css';
       if (strpos(filter_input(INPUT_SERVER, "SCRIPT_NAME"), "plugins/alignak") != false) {
          $PLUGIN_HOOKS['add_javascript']['alignak'][] = 'js/alignak-copyright.js';
       }

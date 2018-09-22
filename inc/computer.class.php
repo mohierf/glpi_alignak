@@ -70,6 +70,9 @@ class PluginAlignakComputer extends CommonDBTM
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
       $array_ret = [];
+//      if ($item->getType() == 'Central') {
+//         return _n('Alignak', 'Alignaks', 2, 'alignak');
+//      }
       if ($item->getID() > -1) {
          if (Session::haveRight('plugin_alignak_configuration', READ)) {
             array_push($array_ret, self::createTabEntry(__('Monitoring configuration', 'monitoring')));
@@ -79,43 +82,127 @@ class PluginAlignakComputer extends CommonDBTM
          $pmHost = new PluginAlignakComputer();
          if ($pmHost->exists($item)) {
              array_push($array_ret, self::createTabEntry(__('Monitoring live state', 'monitoring')));
-             array_push($array_ret, self::createTabEntry(__('Monitoring history', 'monitoring')));
+            array_push($array_ret, self::createTabEntry(__('Monitoring history', 'monitoring')));
+            array_push($array_ret, self::createTabEntry(__('Daily counters', 'monitoring')));
          }
       }
       return $array_ret;
    }
 
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-      $pmHost = new PluginAlignakComputer();
+      $pmHost = new self();
       $pmHost->exists($item);
       switch ($tabnum) {
-         case 1:
-            $pmHost->showForm($item);
+         case 0:
+            $pmHost->showConfiguration();
             break;
-         case 2:
+         case 1:
             $pmHost->showLiveState();
             break;
+         case 2:
+            $pmHost->showHistory();
+            break;
          case 3:
-            $pmHost->showInfo();
+            $pmHost->showCounters();
             break;
       }
          return true;
    }
 
-   function showInfo() {
+   function showConfiguration() {
 
-       echo '<table class="tab_glpi" width="100%">';
-       echo '<tr>';
-       echo '<th>'.__('More information', 'alignak').'</th>';
-       echo '</tr>';
-       echo '<tr class="tab_bg_1">';
-       echo '<td>';
-       echo __('Type:', 'alignak');
-       echo '</td>';
-       echo '<td>';
-       echo $this->getTypeName();
-       echo '</tr>';
-       echo '</table>';
+      // Call the show form for the Alignak entity
+      // todo: get the Alignak entity for the self host
+      $paEntity = new PluginAlignakEntity();
+      $paEntity->getFromDBByCrit(["plugin_alignak_entitites_id" => 0]);
+      $paEntity->showForm();
+   }
+
+   function showHistory() {
+
+      echo '<table class="tab_cadre_fixe">';
+      echo '<tr>';
+      echo '<th>';
+      echo __('Date', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Level', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Event', 'alignak');
+      echo '</th>';
+      echo '</tr>';
+
+      $events = [
+         "a" => [
+            "date" => "20-09-2018 20:47:50",
+            "level" => "INFO",
+            "event" => "CURRENT HOST STATE: PC-entity-2;state;state_type;current_attempt;output"
+         ],
+         "b" => [
+            "date" => ", 20-09-2018 17:43:58",
+            "level" => "INFO",
+            "event" => "CURRENT SERVICE STATE: PC-entity-2;service1;state;state_type;current_attempt;output",
+         ],
+         "c" => [
+            "date" => ", 20-09-2018 17:43:58",
+            "level" => "INFO",
+            "event" => "PASSIVE HOST CHECK: PC-entity-2;status;output;long_output;perf_data",
+         ],
+         "d" => [
+            "date" => ", 20-09-2018 17:43:58",
+            "level" => "WARNING",
+            "event" => "PASSIVE SERVICE CHECK: PC-entity-2;service1;status;output;long_output;perf_data",
+         ],
+         "e" => [
+            "date" => ", 20-09-2018 17:43:58",
+            "level" => "WARNING",
+            "event" => "PASSIVE SERVICE CHECK: PC-entity-2;service2;status;output;long_output;perf_data",
+         ],
+         "f" => [
+            "date" => ", 20-09-2018 17:43:58",
+            "level" => "INFO",
+            "event" => "SERVICE COMMENT: PC-entity-2;service;author;comment",
+         ],
+         "g" => [
+            "date" => ", 20-09-2018 17:43:58",
+            "level" => "WARNING",
+            "event" => "SERVICE ALERT: PC-entity-2;service1;WARNING;HARD;current_attempt;service is raising warning!",
+         ],
+         "h" => [
+            "date" => ", 20-09-2018 17:43:58",
+            "level" => "INFO",
+            "event" => "SERVICE ALERT: PC-entity-2;service;OK;HARD;current_attempt;Service is now OK again",
+         ],
+         "i" => [
+            "date" => ", 20-09-2018 17:43:58",
+            "level" => "INFO",
+            "event" => "SERVICE ACKNOWLEDGE ALERT: PC-entity-2;service1;STARTED; Service problem has been acknowledged",
+         ],
+         "j" => [
+            "date" => ", 20-09-2018 17:43:58",
+            "level" => "INFO",
+            "event" => "SERVICE NOTIFICATION: PC-entity-2;service1;state;command;output",
+         ],
+      ];
+
+      foreach ($events as $id => $event) {
+         echo '<tr>';
+         echo '<td>';
+         echo $event['date'];
+         echo '</td>';
+         echo '<td class="'. $event['level'] .'">';
+         echo $event['level'];
+         echo '</td>';
+         echo '<td>';
+         echo $event['event'];
+         echo '</td>';
+         echo '</tr>';
+      }
+
+      echo "</table>";
+
+      return true;
    }
 
    /**
@@ -127,49 +214,216 @@ class PluginAlignakComputer extends CommonDBTM
      * @return bool true if form is ok
      **/
    function showLiveState() {
-       global $DB,$CFG_GLPI;
+      echo '<table class="tab_cadre_fixe">';
+      echo '<tr>';
+      echo '<th>';
+      echo __('Service', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Last check', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Status', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Output', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Problem', 'alignak');
+      echo '</th>';
+      echo '</tr>';
 
-       $a_entities = $this->find("`entities_id`='".$items_id."'", "", 1);
-      if (count($a_entities) == '0') {
-          $input = [];
-          $input['entities_id'] = $items_id;
-          $id = $this->add($input);
-          $this->getFromDB($id);
-      } else {
-         $a_entity = current($a_entities);
-         $this->getFromDB($a_entity['id']);
+      $services = [
+         "a" => [
+            "name" => "Autre matériel",
+            "last_check" => "20-09-2018 20:47:50",
+            "status" => "OK",
+            "output" => "Ok - List (status) : NetworkLan (0);NetworkWifi (0);Son (0);ioKiosk (0);Clavier (0);dalletactile (0);Ecran (0);', u\"----- NetworkLan found 1 devices : [LAN1 (Intel(R) 82579LM Gigabit Network Connection), status : 2 -> connected. NetworkWifi found 1 devices : [WLAN (Intel(R) Centrino(R) Advanced-N 6205), status : 4 -> Hardware not present !. Son found 1 devices : Realtek High Definition Audio (Realtek High Definition Audio), status : OK (), service : IntcAzAudAddService - Driver : IntcAzAudAddService (Service for Realtek HD Audio (WDM)), started : True, status : OK, Running ioKiosk Package 'ioKiosk' status (not checked) is 0. Clavier found keyboard(s) : Enhanced (101- or 102-key) (USB Input Device), status : OK - Driver : HidUsb (Microsoft HID Class Driver), started : True, status : OK, Running dalletactile found 1 devices : Microsoft Input Configuration Device (Microsoft Input Configuration Device), status : OK (), service : MTConfig - Driver : MTConfig (Microsoft Input Configuration Driver), started : True, status : OK, Running Ecran found 1 video controller(s) : Intel(R) HD Graphics 4000 (Intel(R) HD Graphics 4000), status : OK, found 1 display(s) : Generic PnP Monitor (Generic PnP Monitor), status : OK, resolution : 1280x768\")",
+            "problem" => ""
+         ],
+         "b" => [
+            "name" => "Imprimante",
+            "last_check" => ", 20-09-2018 17:43:58",
+            "status" => "OK",
+            "output" => "Online (J: -8) (sn: EK3K-CNAM-022002)",
+            "problem" => ""
+         ],
+         "c" => [
+            "name" => "Lecteur de cartes",
+            "last_check" => ", 20-09-2018 17:43:58",
+            "status" => "WARNING",
+            "output" => "OK (card: Mute)",
+            "problem" => ""
+         ],
+         "d" => [
+            "name" => "Onduleur",
+            "last_check" => ", 20-09-2018 17:43:58",
+            "status" => "OK",
+            "output" => "OK (charge: 100 %)",
+            "problem" => ""
+         ],
+         "e" => [
+            "name" => "Papier",
+            "last_check" => ", 20-09-2018 17:43:58",
+            "status" => "OK",
+            "output" => "DayPrintedPages (3: 0, avg: 55) (J: -8)",
+            "problem" => ""
+         ],
+      ];
+
+      foreach ($services as $id => $service) {
+         echo '<tr>';
+         echo '<td>';
+         echo $service['name'];
+         echo '</td>';
+         echo '<td>';
+         echo $service['last_check'];
+         echo '</td>';
+         echo '<td class="'. $service['status'] .'">';
+         echo $service['status'];
+         echo '</td>';
+         echo '<td>';
+         echo $service['output'];
+         echo '</td>';
+         echo '<td>';
+         echo $service['problem'];
+         echo '</td>';
+         echo '</tr>';
       }
 
-         echo "<form name='form' method='post' 
-         action='".$CFG_GLPI['root_doc']."/plugins/monitoring/front/entity.form.php'>";
+      echo "</table>";
 
-         echo "<table class='tab_cadre_fixe'";
+      return true;
+   }
 
-         echo "<tr class='tab_bg_1'>";
-         echo "<th colspan='2'>";
-         echo __('Set tag to link entity with a specific Alignak server', 'monitoring');
-         echo "</th>";
-         echo "</tr>";
+   function showCounters() {
 
-         echo "<tr class='tab_bg_1'>";
-         echo "<td>".__('Tag', 'monitoring')." :</td>";
-         echo "<td>";
-         echo "<input type='text' name='tag' value='".$this->fields["tag"]."' size='30'/>";
+      echo '<table class="tab_cadre_fixe">';
+      echo '<tr>';
+      echo '<th>';
+      echo __('Day', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Computer', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Entity', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Pages imprimées (total)', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Pages imprimées (jour)', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Pages restantes', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Pages rétractées (total)', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Pages rétractées (jour)', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Papier rechargé', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Cartes insérées (jour)', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Cartes insérées (total)', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Cartes incorrectes (jour)', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Cartes incorrectes (total)', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Cartes retirées (jour)', 'alignak');
+      echo '</th>';
+      echo '<th>';
+      echo __('Cartes retirées (total)', 'alignak');
+      echo '</th>';
+      echo '</tr>';
 
-         echo "</td>";
-         echo "</tr>";
+      $events = [
+         [
+            "day" => "21-09-2018",
+            "computer" => "PC-entity-2",
+            "entity" => "entity-2",
+            "counters" => [29508, 0, 1503, 120,0,0,0,99408,0,9992,0,107849]
+         ],
+         [
+            "day" => "20-09-2018",
+            "computer" => "PC-entity-2",
+            "entity" => "entity-2",
+            "counters" => [29508, 0, 1503,120, 0, 0, 0,99408,112, 9992, 1, 107849]
+         ],
+         [
+            "day" => "19-09-2018",
+            "computer" => "PC-entity-2",
+            "entity" => "entity-2",
+            "counters" => [29508 , 0, 1503 , 120 , 0, 0, 0, 99408 , 44 , 9879 , 1 , 107847]
+         ],
+         [
+            "day" => "18-09-2018",
+            "computer" => "PC-entity-2",
+            "entity" => "entity-2",
+            "counters" => [29508 ,0,1503 ,120 ,0,0,0,99407 ,0,9805 ,0,107846]
+         ],
+         [
+            "day" => "17-09-2018",
+            "computer" => "PC-entity-2",
+            "entity" => "entity-2",
+            "counters" => [29508 ,0,1503 ,120 ,0,0,1 ,99407 ,17 ,9805 ,1 ,107846]
+         ],
+         [
+            "day" => "16-09-2018",
+            "computer" => "PC-entity-2",
+            "entity" => "entity-2",
+            "counters" => [29508 ,0,1503 ,120 ,0,0,0,99406 ,150 ,9787 ,3 ,107845]
+         ],
+         [
+            "day" => "15-09-2018",
+            "computer" => "PC-entity-2",
+            "entity" => "entity-2",
+            "counters" => [29508 ,0,1503 ,120 ,0,0,0,99406 ,156 ,9636 ,8 ,107842]
+         ],
+         [
+            "day" => "14-09-2018",
+            "computer" => "PC-entity-2",
+            "entity" => "entity-2",
+            "counters" => [29508 ,0,1503 ,120 ,0,0,1 ,99406 ,110 ,9479 ,5 ,107834]
+         ],
+      ];
 
-         echo "<tr class='tab_bg_1'>";
-         echo "<td colspan='2' align='center'>";
-         echo "<input type='hidden' name='id' value='".$this->fields['id']."'/>";
-         echo "<input type='submit' name='update' value=\"".__('Save')."\" class='submit'>";
-         echo "</td>";
-         echo "</tr>";
+      foreach ($events as $event) {
+         echo '<tr>';
+         echo '<td>';
+         echo $event['day'];
+         echo '</td>';
+         echo '<td class="OK">';
+         echo $event['computer'];
+         echo '</td>';
+         echo '<td>';
+         echo $event['entity'];
+         echo '</td>';
+         foreach ($event['counters'] as $value) {
+            echo '<td>';
+            if ($value == 0) {
+               echo '-';
+            } else {
+               echo $value;
+            }
+            echo '</td>';
+         }
+         echo '</tr>';
+      }
 
-         echo "</table>";
-         Html::closeForm();
+      echo "</table>";
 
-         return true;
+      return true;
    }
 
    /**

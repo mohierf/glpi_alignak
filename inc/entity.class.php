@@ -48,6 +48,8 @@ if (!defined('GLPI_ROOT')) {
 class PluginAlignakEntity extends CommonDBTM
 {
 
+   static $rightname = 'plugin_alignak_alignak';
+
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       $array_ret = [];
@@ -65,8 +67,14 @@ class PluginAlignakEntity extends CommonDBTM
       if ($item->getID() > -1) {
          if (Session::haveRight('plugin_alignak_alignak', READ)
             || Session::haveRight('plugin_alignak_counters', READ)) {
-            $pmEntity = new PluginAlignakEntity();
-            $pmEntity->showForm($item);
+            $paEntity = new self();
+            PluginAlignakToolbox::log("Display tab for entity: ". $item->getID());
+            if (! $paEntity->getFromDBByCrit(['plugin_alignak_entitites_id' => $item->getID()])) {
+               $paEntity->getEmpty();
+               $paEntity->fields['plugin_alignak_entitites_id'] = $item->getID();
+//               PluginAlignakToolbox::log("Not found: ". serialize($paEntity->fields));
+            }
+            $paEntity->showForm($paEntity->getID(), ["in_tab" => true]);
          }
       }
       return true;
@@ -80,40 +88,40 @@ class PluginAlignakEntity extends CommonDBTM
      *
      * @return bool true if form is ok
      **/
-   function showForm(Entity $entity) {
+   function showForm($ID = -1, $options = []) {
 
-      $ID = $entity->getField('id');
-      if (! $entity->can($ID, READ)) {
-         return false;
-      }
+      $this->initForm($ID, $options);
+      $this->showFormHeader($options);
 
-      PluginAlignakToolbox::log("Edit relation with entity {$ID}");
-      $existing = true;
-      if (! $this->getFromDBByCrit(['entities_id' => $ID])) {
-         $existing = false;
-         $this->getEmpty();
-         $this->fields['entities_id'] = $ID;
-         $entity = $this;
-         PluginAlignakToolbox::log("Create a new entity relation: ". serialize($this->fields));
-      } else {
-         PluginAlignakToolbox::log("Existing entity relation: ". serialize($this->fields));
-      }
-
+      PluginAlignakToolbox::log("Edit relation with entity: ". $this->fields['plugin_alignak_entitites_id']);
+      PluginAlignakToolbox::log("Alignak entity relation: ". serialize($this->fields));
+      /*
       echo "<div class='spaced'>";
       if ($entity->canUpdateItem()) {
          echo "<form method='post' name=form action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
-      }
+      }*/
 
       echo '<table class="tab_cadre_fixe"';
 
       echo '<tr class="tab_bg_1">';
       echo '<td>'.__('Comment', 'alignak')." :</td>";
       echo '<td>';
-      echo '<textarea name="comment" cols="124" rows="3">' . $this->fields["comment"] . '</textarea>';
+      echo '<textarea name="comment" cols="40" rows="3">' . $this->fields["comment"] . '</textarea>';
       echo '</td>';
       echo '</tr>';
 
       if (Session::haveRight('plugin_alignak_alignak', READ)) {
+         if (! isset($options['in_tab'])) {
+            echo '<tr class="tab_bg_1">';
+            echo '<td>';
+            $entity = new Entity();
+            $entity->getFromDB($this->fields["plugin_alignak_entitites_id"]);
+            echo '<span>' . $entity->getLink() . '</span>';
+            echo '<input type="hidden" name="plugin_alignak_entitites_id" value="'. $this->fields['plugin_alignak_entitites_id'] .'"/>';
+            echo '</td>';
+            echo '</tr>';
+         }
+
          echo '<tr class="tab_bg_1">';
          echo '<th colspan="2">';
          echo __('Set the Alignak instance monitoring the computers of this entity', 'alignak');
@@ -125,7 +133,7 @@ class PluginAlignakEntity extends CommonDBTM
          echo __('Alignak instance', 'alignak');
          echo '</td>';
          echo '<td>';
-         if ($entity->canUpdateItem()) {
+         if ($this->canUpdateItem()) {
             Dropdown::show('PluginAlignakAlignak',
                ['name' => 'plugin_alignak_alignak_id',
                   'value' => $this->fields["plugin_alignak_alignak_id"],
@@ -155,7 +163,7 @@ class PluginAlignakEntity extends CommonDBTM
          echo __('Monitoring template', 'alignak');
          echo '</td>';
          echo '<td>';
-         if ($entity->canUpdateItem()) {
+         if ($this->canUpdateItem()) {
             Dropdown::show('PluginAlignakMonitoringTemplate',
                ['name' => 'plugin_alignak_monitoring_template_id',
                   'value' => $this->fields["plugin_alignak_monitoring_template_id"],
@@ -187,7 +195,7 @@ class PluginAlignakEntity extends CommonDBTM
          echo __('Monitoring counters template', 'alignak');
          echo '</td>';
          echo '<td>';
-         if ($entity->canUpdateItem()) {
+         if ($this->canUpdateItem()) {
             Dropdown::show('PluginAlignakCountersTemplate',
                ['name' => 'plugin_alignak_counters_template_id',
                   'value' => $this->fields["plugin_alignak_counters_template_id"],
@@ -217,7 +225,13 @@ class PluginAlignakEntity extends CommonDBTM
       Dropdown::showYesNo("import_vm", $pfConfig->getValue('import_vm'));
       echo '</td>';
        */
+      PluginAlignakToolbox::log("Edit relation with entity: ". $this->fields['plugin_alignak_entitites_id']);
 
+//      echo '<input type="hidden" name="plugin_alignak_entitites_id" value="'. $this->fields['plugin_alignak_entitites_id'] .'/>';
+//      Html::hidden('plugin_alignak_entitites_id', $this->fields['plugin_alignak_entitites_id']);
+      $this->showFormButtons($options);
+
+      /*
       if ($entity->canUpdateItem()) {
          echo '<tr>';
          echo '<td class="tab_bg_2 center" colspan="4">';
@@ -231,10 +245,99 @@ class PluginAlignakEntity extends CommonDBTM
       } else {
          echo '</table>';
       }
+      */
 
       echo '</div>';
 
       return true;
+   }
+
+   /*
+    * Search options, see: https://glpi-developer-documentation.readthedocs.io/en/master/devapi/search.html#search-options
+    */
+   public function getSearchOptionsNew() {
+      return $this->rawSearchOptions();
+   }
+
+   function rawSearchOptions() {
+
+      $tab = [];
+
+      $tab[] = [
+         'id'                 => 'common',
+         'name'               => __('Alignak entity')
+      ];
+
+      $tab[] = [
+         'id'                 => '1',
+         'table'              => $this->getTable(),
+         'field'              => 'name',
+         'name'               => __('Name'),
+      ];
+
+      $tab[] = [
+         'id'                 => '2',
+         'table'              => $this->getTable(),
+         'field'              => 'comment',
+         'name'               => __('Comment'),
+      ];
+
+//      $tab[] = [
+//         'id'                 => '3',
+//         'table'              => $this->getTable(),
+//         'field'              => 'plugin_alignak_entitites_id',
+//         'name'               => __('Related entity', 'alignak'),
+//      ];
+      $tab[] = [
+         'id'                 => '3',
+         'table'              => 'glpi_plugin_alignak_entities',
+         'field'              => 'name',
+         'datatype'           => 'itemlink',
+         'linkfield'          => 'plugin_alignak_entitites_id',
+         'name'               => __('Related entity', 'alignak'),
+      ];
+
+      $tab[] = [
+         'id'                 => '4',
+         'table'              => 'glpi_plugin_alignak_alignaks',
+         'field'              => 'name',
+         'datatype'           => 'itemlink',
+         'linkfield'          => 'plugin_alignak_alignak_id',
+         'name'               => __('Related Alignak instance', 'alignak'),
+      ];
+
+      $tab[] = [
+         'id'                 => '5',
+         'table'              => 'glpi_plugin_alignak_monitoringtemplates',
+         'field'              => 'name',
+         'datatype'           => 'itemlink',
+         'linkfield'          => 'plugin_alignak_monitoring_template_id',
+         'name'               => __('Related Alignak monitoring template', 'alignak'),
+      ];
+
+      $tab[] = [
+         'id'                 => '6',
+         'table'              => $this->getTable(),
+         'field'              => 'name',
+         'datatype'           => 'itemlink',
+         'linkfield'          => 'plugin_alignak_counters_template_id',
+         'name'               => __('Related counters template', 'alignak'),
+      ];
+
+      /*
+       * Include other fields here
+       */
+
+      $tab[] = [
+         'id'                 => '30',
+         'table'              => $this->getTable(),
+         'field'              => 'id',
+         'name'               => __('ID'),
+         'usehaving'          => true,
+         'searchtype'         => 'equals',
+      ];
+
+      return $tab;
    }
 
    /*
@@ -267,5 +370,36 @@ class PluginAlignakEntity extends CommonDBTM
       }
    }
    */
-}
 
+   /*
+    * Get the Alignak entity configuration for the provided entity.
+    * If not found in the provided entity, have a look in this entty ancestors
+    *
+    * ret
+    */
+   static function getForEntity($entities_id) {
+      $dbu = new DbUtils();
+
+      PluginAlignakToolbox::log("Get Alignak entity configuration for : ". $entities_id);
+      $paEntity = new self();
+      if (! $paEntity->getFromDBByCrit(['plugin_alignak_entitites_id' => $entities_id])) {
+         $ancestors = $dbu->getAncestorsOf('glpi_entities', $entities_id);
+         PluginAlignakToolbox::log("Entity ancestors: " . serialize($ancestors));
+         $entity = new Entity();
+         foreach ($ancestors as $index => $id) {
+            $entity->getFromDB($id);
+            if ($paEntity->getFromDBByCrit(['plugin_alignak_entitites_id' => $id])) {
+               // Found!
+               $entities_id = $id;
+               PluginAlignakToolbox::log("Get Alignak entity ancestor for : ". $entities_id);
+               break;
+            }
+         }
+      } else {
+         // Found!
+         PluginAlignakToolbox::log("Get Alignak entity for: ". $entities_id);
+      }
+
+      return $paEntity;
+   }
+}

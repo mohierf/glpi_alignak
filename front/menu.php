@@ -24,6 +24,4 @@ Html::header(__('Alignak plugin - main menu', 'alignak'), $_SERVER['PHP_SELF']);
 
 PluginAlignakMenu::displayMenu();
 
-// PluginAlignakMenu::board();
-
 Html::footer();

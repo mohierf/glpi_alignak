@@ -31,17 +31,18 @@
    @license   AGPLv3 or (at your option) any later version
               http://www.gnu.org/licenses/agpl-3.0-standalone.html
    @link      http://alignak.net/
+   @link      http://alignak.net/
    @since     2018
 
    ------------------------------------------------------------------------
  */
 
 // ----------------------------------------------------------------------
-// Original Author of file: Francois Mohier
+// Original Author of file: Frederic Mohier
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-include ('../../../inc/includes.php');
+include ("../../../inc/includes.php");
 
 // Check if plugin is activated...
 $plugin = new Plugin();
@@ -49,20 +50,21 @@ if (!$plugin->isInstalled('alignak') || !$plugin->isActivated('alignak')) {
    Html::displayNotFoundError();
 }
 
-// Check if current user have the appropriate right
-Session::checkRight("plugin_alignak_counters", UPDATE);
-
 // Check for ACLs
-if (PluginAlignakMailNotification::canView()) {
-   // View is granted: display the list.
+Session::checkRight('plugin_alignak_alignak', READ);
 
+// Add page header
+if ($_SESSION["glpiactiveprofile"]["interface"] == "central") {
    Html::header(
-      __('Alignak - computers counters templates', 'alignak'),
+      __('Entity', 'alignak'),
       $_SERVER['PHP_SELF'],
       'admin',
-      'pluginalignakmenu', 'computer_counters_template');
+      'pluginalignakmenu', 'alignak_entity');
 
-   Search::show('PluginAlignakComputerCountersTemplate');
-
-   Html::footer();
+} else {
+   Html::helpHeader(__('Alignak entities', 'alignak'), $_SERVER['PHP_SELF']);
 }
+
+Search::show('PluginAlignakEntity');
+
+Html::footer();

@@ -51,6 +51,10 @@ class PluginAlignakInstall {
     */
    public function install(Migration $migration) {
       $this->migration = $migration;
+
+      // Drop existing tables if some exist
+      $this->dropTables(true);
+
       $this->installSchema();
       $this->migrateInnoDb();
 
@@ -295,7 +299,7 @@ class PluginAlignakInstall {
       if (count($found_dprefs) == 0) {
          $query = "INSERT IGNORE INTO `glpi_displaypreferences`
                    (`id`, `itemtype`, `num`, `rank`, `users_id`) VALUES
-                   (NULL, 'PluginAlignakMonitoringTemplate', 2, 1, 0));";
+                   (NULL, 'PluginAlignakMonitoringTemplate', 2, 1, 0);";
          $DB->query($query) or die ($DB->error());
       }
    }

@@ -1,4 +1,4 @@
-# DROP TABLE IF EXISTS `glpi_plugin_alignak_alignaks`;
+DROP TABLE IF EXISTS `glpi_plugin_alignak_alignaks`;
 CREATE TABLE `glpi_plugin_alignak_alignaks` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE `glpi_plugin_alignak_alignaks` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
-# DROP TABLE IF EXISTS `glpi_plugin_alignak_computers`;
+DROP TABLE IF EXISTS `glpi_plugin_alignak_computers`;
 CREATE TABLE `glpi_plugin_alignak_computers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `entities_id` int(11) NOT NULL DEFAULT '0',
@@ -25,7 +25,7 @@ CREATE TABLE `glpi_plugin_alignak_computers` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
-# DROP TABLE IF EXISTS `glpi_plugin_alignak_computercounterstemplates`;
+DROP TABLE IF EXISTS `glpi_plugin_alignak_computercounterstemplates`;
 CREATE TABLE `glpi_plugin_alignak_computercounterstemplates` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `itemtype` varchar(100) DEFAULT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE `glpi_plugin_alignak_computercounterstemplates` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
-# DROP TABLE IF EXISTS `glpi_plugin_alignak_counters`;
+DROP TABLE IF EXISTS `glpi_plugin_alignak_counters`;
 CREATE TABLE `glpi_plugin_alignak_counters` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE `glpi_plugin_alignak_counters` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
-# DROP TABLE IF EXISTS `glpi_plugin_alignak_counterstemplates`;
+DROP TABLE IF EXISTS `glpi_plugin_alignak_counterstemplates`;
 CREATE TABLE `glpi_plugin_alignak_counterstemplates` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
@@ -58,7 +58,7 @@ CREATE TABLE `glpi_plugin_alignak_counterstemplates` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
-# DROP TABLE IF EXISTS `glpi_plugin_alignak_dashboards`;
+DROP TABLE IF EXISTS `glpi_plugin_alignak_dashboards`;
 CREATE TABLE `glpi_plugin_alignak_dashboards` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `is_active` tinyint(1) DEFAULT '0',
@@ -126,12 +126,13 @@ CREATE TABLE `glpi_plugin_alignak_dashboards` (
 ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
-# DROP TABLE IF EXISTS `glpi_plugin_alignak_entities`;
+DROP TABLE IF EXISTS `glpi_plugin_alignak_entities`;
 CREATE TABLE `glpi_plugin_alignak_entities` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `entities_id` int(11) NOT NULL DEFAULT '0',
   `name` varchar(255) DEFAULT NULL,
   `comment` text DEFAULT NULL,
+  `plugin_alignak_entitites_id` int(11) NOT NULL DEFAULT '0',
   `plugin_alignak_alignak_id` int(11) NOT NULL DEFAULT '0',
   `plugin_alignak_monitoring_template_id` int(11) NOT NULL DEFAULT '0',
   `plugin_alignak_counters_template_id` int(11) NOT NULL DEFAULT '0',
@@ -140,7 +141,7 @@ CREATE TABLE `glpi_plugin_alignak_entities` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
-# DROP TABLE IF EXISTS `glpi_plugin_alignak_mailnotifications`;
+DROP TABLE IF EXISTS `glpi_plugin_alignak_mailnotifications`;
 CREATE TABLE `glpi_plugin_alignak_mailnotifications` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `entities_id` int(11) NOT NULL DEFAULT '0',
@@ -168,7 +169,7 @@ CREATE TABLE `glpi_plugin_alignak_mailnotifications` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
-# DROP TABLE IF EXISTS `glpi_plugin_alignak_monitoringtemplates`;
+DROP TABLE IF EXISTS `glpi_plugin_alignak_monitoringtemplates`;
 CREATE TABLE `glpi_plugin_alignak_monitoringtemplates` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `entities_id` int(11) NOT NULL DEFAULT '0',

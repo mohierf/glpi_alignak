@@ -50,53 +50,47 @@ if (!$plugin->isInstalled('alignak') || !$plugin->isActivated('alignak')) {
    Html::displayNotFoundError();
 }
 
+Session::checkRight('plugin_alignak_alignak', READ);
 
 $object = new PluginAlignakAlignak();
 if (isset($_POST['add'])) {
    // Check CREATE ACL
-   $object->check(-1, CREATE, $_POST);
+   Session::checkRight('plugin_alignak_alignak', CREATE);
    $object->add($_POST);
-   Html::redirectToList();
+   $object->redirectToList();
 } else if (isset($_POST['update'])) {
    // Check UPDATE ACL
-   $object->check($_POST['id'], UPDATE);
-   // Do object update
+   Session::checkRight('plugin_alignak_alignak', UPDATE);
    $object->update($_POST);
-   // Redirect to object form
    Html::back();
 } else if (isset($_POST['delete'])) {
    // Check DELETE ACL
-   $object->check($_POST['id'], DELETE);
-   // Put object in dustbin
+   Session::checkRight('plugin_alignak_alignak', DELETE);
    $object->delete($_POST);
-   // Redirect to objects list
    $object->redirectToList();
 } else if (isset($_POST['purge'])) {
    // Check PURGE ACL
-   $object->check($_POST['id'], PURGE);
-   // Do object purge
+   Session::checkRight('plugin_alignak_alignak', PURGE);
    $object->delete($_POST, 1);
-   // Redirect to objects list
-   Html::redirect("{$CFG_GLPI['root_doc']}/plugins/front/alignak.php");
+   $object->redirectToList();
+}
+
+Html::header(
+   __('Alignak - dashboards', 'alignak'),
+   $_SERVER['PHP_SELF'],
+   'admin',
+   'pluginalignakmenu', 'alignak');
+
+// Default is to display the object
+$with_template = (isset($_GET['withtemplate']) ? $_GET['withtemplate'] : 0);
+
+if (isset($_GET["id"])) {
+   $object->display([
+      'id' => $_GET['id'],
+      'canedit' => PluginAlignakAlignak::canUpdate(),
+      'withtemplate' => $with_template]);
 } else {
-   Html::header(
-      __('Alignak - dashboards', 'alignak'),
-      $_SERVER['PHP_SELF'],
-      'admin',
-      'pluginalignakmenu', 'alignak');
-
-   // Default is to display the object
-   $with_template = (isset($_GET['withtemplate']) ? $_GET['withtemplate'] : 0);
-
-   if (isset($_GET["id"])) {
-      $object->display([
-         'id' => $_GET['id'],
-         'canedit' => PluginAlignakAlignak::canUpdate(),
-         'withtemplate' => $with_template]);
-   } else {
-      $object->showForm(-1);
-   }
-
+   $object->showForm(-1);
 }
 
 Html::footer();

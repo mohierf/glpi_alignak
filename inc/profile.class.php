@@ -161,15 +161,27 @@ class PluginAlignakProfile extends Profile
      * @return array
      */
    function getRightsAlignak($self_service = false) {
-       $rights = [
-        ['itemtype'  => 'PluginAlignakAlignak',
-           'label'     => __('XxX - Alignak', 'alignak'),
-           'field'     => 'plugin_alignak_alignak'],
-        ['rights'    => [READ => __('Read')],
-           'label'     => __('XxX - Right 2', 'alignak'),
-           'field'     => 'plugin_alignak_right2']
-       ];
-       return $rights;
+      $rights = [
+         ['itemtype' => 'PluginAlignakAlignak',
+            'label' => __('Alignak', 'alignak'),
+            'field' => 'plugin_alignak_alignak']
+      ];
+
+      if (! $self_service) {
+         $rights[] = [
+            'itemtype' => 'PluginAlignakMonitoringTemplate',
+            'label' => __('Monitoring', 'alignak'),
+            'field' => 'plugin_alignak_monitoring'
+         ];
+
+         $rights[] = [
+            'rights' => [READ => __('Read')],
+            'label' => __('XxX - Right 2', 'alignak'),
+            'field' => 'plugin_alignak_right2'
+         ];
+      }
+
+      return $rights;
    }
 
     /**
@@ -197,12 +209,6 @@ class PluginAlignakProfile extends Profile
             'itemtype'  => 'PluginAlignakConfig',
             'label'     => __('Configuration', 'alignak'),
             'field'     => 'plugin_alignak_configuration'
-         ];
-
-         $rights[] = [
-            'itemtype'  => 'PluginAlignakMonitoringTemplate',
-            'label'     => __('Monitoring', 'alignak'),
-            'field'     => 'plugin_alignak_monitoring'
          ];
 
          $rights[] = [
@@ -251,15 +257,6 @@ class PluginAlignakProfile extends Profile
       $dbu = new DbUtils();
 
       Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Initializing plugin profile rights:\n");
-      $a_rights  = $paProfile->getAllRights();
-      foreach ($a_rights as $data) {
-         Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "- set right {$data['field']}\n");
-         if ($dbu->countElementsInTable("glpi_profilerights", ['name' => $data['field']]) == 0) {
-            ProfileRight::addProfileRights([$data['field']]);
-            $_SESSION['glpiactiveprofile'][$data['field']] = 1;
-         }
-      }
-
       // Add all plugin rights to the current user profile
       if (isset($_SESSION['glpiactiveprofile']) && isset($_SESSION['glpiactiveprofile']['id'])) {
          // Set the plugin profile rights for the currently used profile
@@ -299,22 +296,23 @@ class PluginAlignakProfile extends Profile
       Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Add default rights for the profile: {$profile->getName()}\n");
 
       foreach ($rights as $right => $value) {
-         Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "- right: $right = $value\n");
          // If it does not yet exists...
-         if ($dbu->countElementsInTable('glpi_profilerights',
-               ["WHERE" => "`profiles_id`='$profiles_id' AND `name`='$right'"]) == 0) {
+         if ($profileRight->getFromDBByCrit(["WHERE" => "`profiles_id`='$profiles_id' AND `name`='$right'"])) {
+            // Update the profile right
+            $myright['rights']      = $value;
+            $profileRight->update($myright);
+            Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "- updating: $right = $value\n");
+         } else {
             // Create the profile right
             $myright['profiles_id'] = $profiles_id;
             $myright['name']        = $right;
             $myright['rights']      = $value;
             $profileRight->add($myright);
-
-            //Add right to the current session
-            Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "- adding: $right = $value\n");
-            $_SESSION['glpiactiveprofile'][$right] = $value;
-         } else {
-            Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "- still existing: $right = $value\n");
+            Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "- added: $right = $value\n");
          }
+
+         // Update right in the current session
+         $_SESSION['glpiactiveprofile'][$right] = $value;
       }
    }
 }

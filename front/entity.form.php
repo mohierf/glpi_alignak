@@ -34,17 +34,57 @@
 
 include ('../../../inc/includes.php');
 
+//Session::checkRight('plugin_alignak_alignak', READ);
+
+$object = new PluginAlignakEntity();
+if (isset($_POST['add'])) {
+   // Check CREATE ACL
+   Session::checkRight('plugin_alignak_alignak', CREATE);
+   $object->add($_POST);
+   Html::back();
+} else if (isset($_POST['update'])) {
+   // Check UPDATE ACL
+   Session::checkRight('plugin_alignak_alignak', UPDATE);
+   // Do object update
+   $object->update($_POST);
+   // Redirect to object form
+   Html::back();
+} else if (isset($_POST['delete'])) {
+   // Check DELETE ACL
+   Session::checkRight('plugin_alignak_alignak', DELETE);
+   // Put object in dustbin
+   $object->delete($_POST);
+   // Redirect to objects list
+   $object->redirectToList();
+} else if (isset($_POST['purge'])) {
+   // Check PURGE ACL
+   Session::checkRight('plugin_alignak_alignak', PURGE);
+   // Do object purge
+   $object->delete($_POST, 1);
+   // Redirect to objects list
+   $object->redirectToList();
+}
+
 Html::header(
    __('Entity', 'alignak'),
    $_SERVER['PHP_SELF'],
    'admin',
    'pluginalignakmenu', 'entity');
 
-if (isset ($_POST["update"])) {
-   $paEntity = new PluginAlignakEntity();
-   $cr = $paEntity->update($_POST);
-   PluginAlignakToolbox::log("Updating an entity relation: ". serialize($_POST) .", cr: ". serialize($cr));
-   Html::back();
+// Default is to display the object
+$with_template = (isset($_GET['withtemplate']) ? $_GET['withtemplate'] : 0);
+
+if (isset($_GET["id"])) {
+   if (isset($_GET["anonymous"])) {
+      PluginAlignakToolbox::log("Updating Alignak entity relation: ". serialize($_GET));
+   } else {
+      $object->display([
+         'id' => $_GET['id'],
+         'canedit' => PluginAlignakEntity::canUpdate(),
+         'withtemplate' => $with_template]);
+   }
+} else {
+   $object->showForm(-1);
 }
 
 Html::footer();

@@ -43,6 +43,7 @@ if (!$plugin->isInstalled('alignak') || !$plugin->isActivated('alignak')) {
    Html::displayNotFoundError();
 }
 
+Session::checkRight('plugin_alignak_monitoring', READ);
 
 $object = new PluginAlignakMonitoringTemplate();
 if (isset($_POST["copy"])) {
@@ -50,13 +51,20 @@ if (isset($_POST["copy"])) {
    Html::footer();
    exit;
 } else if (isset ($_POST["add"])) {
+   Session::checkRight('plugin_alignak_monitoring', CREATE);
    $object->add($_POST);
-   Html::redirectToList();
+   $object->redirectToList();
 } else if (isset ($_POST["update"])) {
+   Session::checkRight('plugin_alignak_monitoring', UPDATE);
    $object->update($_POST);
    Html::back();
 } else if (isset ($_POST["delete"])) {
+   Session::checkRight('plugin_alignak_monitoring', DELETE);
    $object->delete($_POST);
+   $object->redirectToList();
+} else if (isset($_POST['purge'])) {
+   Session::checkRight('plugin_alignak_monitoring', PURGE);
+   $object->delete($_POST, 1);
    $object->redirectToList();
 }
 

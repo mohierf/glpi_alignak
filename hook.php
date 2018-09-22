@@ -556,13 +556,31 @@ function plugin_alignak_status($param) {
  *
  **/
 function plugin_alignak_display_central() {
-   if (Session::haveRight('plugin_alignak_central', READ)) {
+   global $CFG_GLPI;
+
+   if (Session::getCurrentInterface() == "helpdesk") {
       PluginAlignakToolbox::log("On the central page!");
-      echo "<tr><th colspan='2'>";
-      echo "<div style='text-align:center; font-size:2em'>";
-      echo __("Plugin alignak displays on central page", "alignak");
-      echo "</div>";
-      echo "</th></tr>";
+
+      // Get logged in user Alignak entity configuration
+      $paEntity = PluginAlignakEntity::getForEntity($_SESSION['glpidefault_entity']);
+
+      // First column - empty now !
+      echo '<tr>';
+      echo '<div style="clear: both">';
+      echo '<a href="'. $paEntity->getLinkURL() .'&anonymous=1">';
+      echo '<img src="'. $CFG_GLPI['root_doc'] . '/plugins/alignak/pics/alignak_16x16.png">';
+      echo __("View my Alignak configuration", "alignak");
+      echo '</a>';
+      echo '</div>';
+      echo '</tr>';
+
+      echo '<tr>';
+      echo '<div style="clear: both">';
+      echo '<a href="http://alignak.net">';
+      echo '<img src="'. $CFG_GLPI['root_doc'] . '/plugins/alignak/pics/alignak_16x16.png">';
+      echo '</a>';
+      echo '</div>';
+      echo '</tr>';
    }
 }
 

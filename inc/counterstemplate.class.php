@@ -165,7 +165,7 @@ class PluginAlignakCountersTemplate extends CommonDBTM {
       echo "<td rowspan='$rowspan'><label for='comment'>".__('Comments')."</label></td>";
       echo "<td rowspan='$rowspan' class='middle'>";
 
-      echo "<textarea cols='45' rows='".($rowspan+3)."' id='comment' name='comment' >". $this->fields["comment"];
+      echo "<textarea cols='40' rows='".($rowspan+3)."' id='comment' name='comment' >". $this->fields["comment"];
       echo "</textarea></td></tr>";
       echo '</tr>';
 

@@ -366,7 +366,7 @@ class PluginAlignakDashboard extends CommonDBTM {
       echo '<tr class="tab_bg_1">';
       echo '<td>'.__('Comment', 'alignak')." :</td>";
       echo '<td>';
-      echo '<textarea name="comment" cols="124" rows="3">' . $this->fields["comment"] . '</textarea>';
+      echo '<textarea name="comment" cols="40" rows="3">' . $this->fields["comment"] . '</textarea>';
       echo '</td>';
       echo '</tr>';
 
