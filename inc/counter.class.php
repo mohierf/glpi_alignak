@@ -100,17 +100,19 @@ class PluginAlignakCounter extends CommonDBTM {
       echo '</tr>';
 
       echo '<tr class="tab_bg_1">';
+      echo '<td>'.__('Graphite Name', 'alignak').'<span style="color:red;">*</span></td>';
+      echo '<td>';
+      echo "<input type='text' name='graphite_name' value='".$this->fields['graphite_name']."' size='30'/>";
+      echo '</td>';
+      echo '</tr>';
+
+      echo '<tr class="tab_bg_1">';
       echo '<td>'.__('Template', 'alignak').' <span style="color:red;">*</span></td>';
       echo '<td>';
       Dropdown::show('PluginAlignakCountersTemplate',
          ['name' => 'plugin_alignak_counters_template_id',
             'value' => $this->fields["plugin_alignak_counters_template_id"],
             'comments' => false]);
-      /*
-      $templates = new PluginAlignakCountersTemplate();
-      $templateList = $templates->getCountersTemplateListForDropdown();
-      Dropdown::showFromArray('template_id', $templateList, ['value'=>$this->fields["template_id"]]);
-      */
       echo '</td>';
       echo '</tr>';
 

@@ -230,6 +230,11 @@ class PluginAlignakInstall {
          'mode'      => CronTask::MODE_EXTERNAL,
          'param' => 50
       ]);
+      CronTask::Register('PluginAlignakComputerTemplate', 'AlignakComputerTemplate', DAY_TIMESTAMP, [
+         'comment'   => __('Alignak Send Counters-...', 'alignak'),
+         'mode'      => CronTask::MODE_EXTERNAL,
+         'param' => 50
+      ]);
    }
 
    /**
