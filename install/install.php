@@ -61,8 +61,6 @@ class PluginAlignakInstall {
 
       $this->createCronTasks();
 
-      $this->createDefaultDisplayPreferences();
-
       Config::setConfigurationValues('alignak', ['schema_version' => PLUGIN_ALIGNAK_VERSION]);
 
       return true;
@@ -209,7 +207,7 @@ class PluginAlignakInstall {
          if (strstr($data[0], "glpi_plugin_alignak") !== false) {
             Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "- drop: {$data[0]}");
 
-            $DB->query("DROP TABLE " . $data[0]);
+            $DB->query("DROP TABLE `" . $data[0]. "`");
          }
       }
    }
@@ -226,8 +224,13 @@ class PluginAlignakInstall {
          'mode'      => CronTask::MODE_EXTERNAL,
          'param' => 50
       ]);
-      CronTask::Register('PluginAlignakComputerTemplate', 'AlignakComputerTemplate', DAY_TIMESTAMP, [
-         'comment'   => __('Alignak Send Counters-...', 'alignak'),
+      CronTask::Register('PluginAlignakComputerCountersTemplate', 'AlignakComputerTemplate', DAY_TIMESTAMP, [
+         'comment'   => __('Alignak query and store counters values', 'alignak'),
+         'mode'      => CronTask::MODE_EXTERNAL,
+         'param' => 50
+      ]);
+      CronTask::Register('PluginAlignakComputerCountersTemplate', 'AlignakCountersEmailer', DAY_TIMESTAMP, [
+         'comment'   => __('Alignak Send Counters via emails', 'alignak'),
          'mode'      => CronTask::MODE_EXTERNAL,
          'param' => 50
       ]);
@@ -242,7 +245,12 @@ class PluginAlignakInstall {
 
       require_once (GLPI_ROOT . "/plugins/alignak/inc/profile.class.php");
       PluginAlignakProfile::initProfile();
-      $this->migration->displayMessage("created.");
+
+      // Create first access to the current profile is needed
+      if (isset($_SESSION['glpiactiveprofile']) && isset($_SESSION['glpiactiveprofile']['id'])) {
+         // Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Active profile: ". serialize($_SESSION['glpiactiveprofile']));
+         PluginAlignakProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
+      }
    }
 
    /**
@@ -273,35 +281,6 @@ class PluginAlignakInstall {
             $this->migration->displayMessage("- migrating: {$table['TABLE_NAME']}");
             $DB->queryOrDie("ALTER TABLE {$table['TABLE_NAME']} ENGINE = InnoDB");
          }
-      }
-   }
-
-   /*
-    * Create default display preferences
-    */
-   protected function createDefaultDisplayPreferences() {
-      global $DB;
-      $this->migration->displayMessage("create default display preferences");
-
-      // Create standard display preferences
-      $displayprefs = new DisplayPreference();
-      $found_dprefs = $displayprefs->find("`itemtype` = 'PluginAlignakAlignak'");
-      if (count($found_dprefs) == 0) {
-         $query = "INSERT IGNORE INTO `glpi_displaypreferences`
-                   (`id`, `itemtype`, `num`, `rank`, `users_id`) VALUES
-                   (NULL, 'PluginAlignakAlignak', 3, 1, 0),
-                   (NULL, 'PluginAlignakAlignak', 4, 2, 0),
-                   (NULL, 'PluginAlignakAlignak', 5, 3, 0)";
-         $DB->query($query) or die ($DB->error());
-      }
-
-      $displayprefs = new DisplayPreference;
-      $found_dprefs = $displayprefs->find("`itemtype` = 'PluginAlignakMonitoringTemplate'");
-      if (count($found_dprefs) == 0) {
-         $query = "INSERT IGNORE INTO `glpi_displaypreferences`
-                   (`id`, `itemtype`, `num`, `rank`, `users_id`) VALUES
-                   (NULL, 'PluginAlignakMonitoringTemplate', 2, 1, 0));";
-         $DB->query($query) or die ($DB->error());
       }
    }
 }

@@ -39,6 +39,8 @@ if (!defined('GLPI_ROOT')) {
 
 class PluginAlignakComputerCountersTemplate extends CommonDBTM {
 
+
+   public $dohistory = true;
    /**
     * The right name for this class
     *
@@ -112,6 +114,7 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
             PluginAlignakToolbox::log("Computer entity relation: ". serialize($paCountersTemplate->fields));
             $entity_relation = true;
             $ID = $this->fields['id'];
+            
          }
       } else {
          PluginAlignakToolbox::log("Existing relation: ". serialize($this->fields));
@@ -230,7 +233,7 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
 
       return true;
    }
-
+   
       /**
      * Give localized information about 1 task
      *
@@ -239,11 +242,14 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
      * @return array of strings
      */
    static function cronInfo($name) {
-
-      switch ($name) {
+      switch ($name) { 
          case 'AlignakComputerTemplate' :
-            return ['description' => __('Cron Email des compteurs alignak', 'alignak'),
-                  'parameter'   => __('Cron parameter Email des compteurs alignak', 'alignak')];
+            return ['description' => __('Cron task to query and store counters values from alignak', 'alignak'),
+                  'parameter'   => __('Cron parameter for alignak', 'alignak')];
+                  
+         case 'AlignakCountersEmailer' :
+            return ['description' => __('Cron task to send counters by email to defined users', 'alignak'),
+                  'parameter'   => __('Cron parameter for alignak counters emailers ', 'alignak')];        
       }
          return [];
    }
@@ -259,12 +265,64 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
      *     0 : nothing to do
      */
    static function cronAlignakComputerTemplate($task) {
+      $task->log("cronAlignak Read/Store Counters");
+      $paCountersTemplate = new PluginAlignakCountersTemplate();
+      $allTemplates = $paCountersTemplate->find('');
+      $graphite = new PluginAlignakGraphite();
+      $ret = 0;
+      foreach ( $allTemplates as $template){
+         $ret += $graphite->readCounters($template['id']);
+         $task->log("Query counters for template:".$template['id']." -->". $ret);
+      }
+      $task->setVolume($ret);
+      return 1;
+   }
+   
+   
+      /**
+     * Execute 2 task managed by the plugin
+     *
+     * @param $task Object of CronTask class for log / stat
+     *
+     * @return interger
+     *    >0 : done
+     *    <0 : to be run again (not finished)
+     *     0 : nothing to do
+     */
+   static function cronAlignakCountersEmailer($task) {
 
-      $task->log("cronAlignakComputerTemplate log message from class");
-      $r = mt_rand(0, $task->fields['param']);
-      usleep(1000000+$r*1000);
-      $task->setVolume($r);
+      $task->log("cronAlignakCountersEmailer");
+      $paCountersTemplate = new PluginAlignakCountersTemplate();
+      $allTemplates = $paCountersTemplate->find('');
+      $emailer = new PluginAlignakCountersEmails();
+      $ret = 0;
+      foreach ( $allTemplates as $template){
+         $ret += $emailer->sendCounters($template['id']);
+         $task->log("Send counters for template:".$template['id']." -->". $ret);
+      }
+      $task->setVolume($ret);
 
       return 1;
+   }
+   
+   
+   /**
+   * getComputersName for a counters template
+   *
+   * @param $template_id integer ID of the template
+   *
+   *@return array of computers name for a given templateId
+   *
+   **/
+   function getComputersName($template_id) {
+      $computersName = [];
+
+      $computers = $this->find("`plugin_alignak_counters_template_id`='".$template_id."'", "", "");
+      $c = new Computer();
+      foreach( $computers as $comp) {
+         $c->getFromDB($comp['id']);
+         $computersName[] = $c->fields['name'];
+      }
+      return $computersName;
    }
 }

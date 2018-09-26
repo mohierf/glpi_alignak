@@ -41,7 +41,7 @@ CREATE TABLE `glpi_plugin_alignak_counters` (
   `name` varchar(255) DEFAULT NULL,
   `comment` text,
   `type_counter` ENUM( 'INTEGER', 'FLOAT', 'POURCENTAGE', 'OCTETS') NOT NULL,
-  `cumulatif` BOOLEAN NOT NULL DEFAULT FALSE,
+  `cumulatif` ENUM('LAST','AVERAGE','SUM') NOT NULL DEFAULT 'LAST';,
   `plugin_alignak_counters_template_id` int(11) NOT NULL,
   `graphite_name` varchar(255) DEFAULT NULL,
   PRIMARY KEY  (`id`),

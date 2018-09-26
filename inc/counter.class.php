@@ -95,9 +95,10 @@ class PluginAlignakCounter extends CommonDBTM {
       echo '<tr class="tab_bg_1">';
       echo '<td>'.__('Cumulatif', 'alignak')." :</td>";
       echo '<td>';
-      Dropdown::showYesNo("cumulatif", $this->fields["cumulatif"]);
+//      Dropdown::showYesNo("cumulatif", $this->fields["cumulatif"]);
+      Dropdown::showFromArray('cumulatif', ['LAST'=>'LAST', 'AVERAGE'=>'AVERAGE', 'SUM'=>'SUM'], ['value'=>$this->fields["cumulatif"]]);
       echo '</td>';
-      echo '</tr>';
+      echo '</tr>'; 
 
       echo '<tr class="tab_bg_1">';
       echo '<td>'.__('Graphite Name', 'alignak').'<span style="color:red;">*</span></td>';
