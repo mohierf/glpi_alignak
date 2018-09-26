@@ -242,13 +242,14 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
      * @return array of strings
      */
    static function cronInfo($name) {
-      switch ($name) { // $name is wrong....should be : "AlignakComputerCountersTemplate"
-      // Car dans la DB; il faut dans la crontab : PluginAlignakComputerCountersTemplate   et AlignakComputerTemplate
-      // Alors que a l'install: il met: PluginAlignakComputerTemplate  AlignakComputerTemplate et cette classe n'existe paS;
-      // todo: Fix that issue...
+      switch ($name) { 
          case 'AlignakComputerTemplate' :
-            return ['description' => __('Cron description for alignak', 'alignak'),
+            return ['description' => __('Cron task to query and store counters values from alignak', 'alignak'),
                   'parameter'   => __('Cron parameter for alignak', 'alignak')];
+                  
+         case 'AlignakCountersEmailer' :
+            return ['description' => __('Cron task to send counters by email to defined users', 'alignak'),
+                  'parameter'   => __('Cron parameter for alignak counters emailers ', 'alignak')];        
       }
          return [];
    }
@@ -264,18 +265,46 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
      *     0 : nothing to do
      */
    static function cronAlignakComputerTemplate($task) {
-
-      $task->log("cronAlignakComputerTemplate");
-      
-      $templateId = 1; // for test ...
+      $task->log("cronAlignak Read/Store Counters");
+      $paCountersTemplate = new PluginAlignakCountersTemplate();
+      $allTemplates = $paCountersTemplate->find('');
       $graphite = new PluginAlignakGraphite();
-      $ret = $graphite->readCounters($templateId);
-      $task->log("counters:". $ret);
-     // die;
+      $ret = 0;
+      foreach ( $allTemplates as $template){
+         $ret += $graphite->readCounters($template['id']);
+         $task->log("Query counters for template:".$template['id']." -->". $ret);
+      }
+      $task->setVolume($ret);
+      return 1;
+   }
+   
+   
+      /**
+     * Execute 2 task managed by the plugin
+     *
+     * @param $task Object of CronTask class for log / stat
+     *
+     * @return interger
+     *    >0 : done
+     *    <0 : to be run again (not finished)
+     *     0 : nothing to do
+     */
+   static function cronAlignakCountersEmailer($task) {
+
+      $task->log("cronAlignakCountersEmailer");
+      $paCountersTemplate = new PluginAlignakCountersTemplate();
+      $allTemplates = $paCountersTemplate->find('');
+      $emailer = new PluginAlignakCountersEmails();
+      $ret = 0;
+      foreach ( $allTemplates as $template){
+         $ret += $emailer->sendCounters($template['id']);
+         $task->log("Send counters for template:".$template['id']." -->". $ret);
+      }
       $task->setVolume($ret);
 
       return 1;
    }
+   
    
    /**
    * getComputersName for a counters template
