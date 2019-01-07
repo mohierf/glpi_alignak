@@ -1,0 +1,3 @@
+calendar_name;entity_complete_name;is_recursive;comment
+Default;Root entity;1;Default calendar
+Agence de test;Root entity > Test 2 > Test 2.1;0;

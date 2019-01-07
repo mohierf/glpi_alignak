@@ -1,0 +1,3 @@
+holiday_name;calendar_name;entity_complete_name;is_recursive;comment;begin_date;end_date;is_perpetual
+Jour de l'an;Default;Root entity;1;;2018-01-01;2018-01-01;1
+Noël;Default;Root entity;1;;2018-12-25;2018-12-25;1

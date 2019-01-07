@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recupererListeResponse>
+  <code></code>
+  <libelle></libelle>
+  <listeGaam>
+    <liste>
+      <identifiant></identifiant>
+      <codeCaisse></codeCaisse>
+      <libelleCaisse></libelleCaisse>
+      <adresse></adresse>
+      <info></info>
+      <infosSupl></infosSupl>
+      <geocode></geocode>
+      <typeBorne></typeBorne>
+      <horaires></horaires>
+      <distance></distance>
+    </liste>
+  </listeGaam>
+</recupererListeResponse>

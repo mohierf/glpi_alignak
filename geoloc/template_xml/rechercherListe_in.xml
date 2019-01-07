@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<rechercherListe>
+  <latitudeUtilisateur></latitudeUtilisateur>
+  <longitudeUtilisateur></longitudeUtilisateur>
+  <latitudeRecherche></latitudeRecherche>
+  <longitudeRecherche></longitudeRecherche>
+  <rayon></rayon>
+  <nbrMax></nbrMax>
+  <borneInf></borneInf>
+  <borneSup></borneSup>
+</rechercherListe>

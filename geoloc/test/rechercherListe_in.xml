@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+  <rechercherListe>
+    <latitudeUtilisateur>1</latitudeUtilisateur>
+    <longitudeUtilisateur>2</longitudeUtilisateur>
+    <latitudeRecherche>3</latitudeRecherche>
+    <longitudeRecherche>4</longitudeRecherche>
+    <rayon>5</rayon>
+    <nbrMax>6</nbrMax>
+    <borneInf>7</borneInf>
+    <borneSup>8</borneSup>
+  </rechercherListe>
+</root>

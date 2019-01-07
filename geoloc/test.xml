@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<root>
+  <recupererListeResponse>
+    <code>
+    ek3k-cnam-0015</code>
+    <libelle>
+    Accueil à droite du sas</libelle>
+    <listeGaam>
+      Agence de ROMANS-SUR-ISERE >
+    Accueil à droite du sas</listeGaam>
+  </recupererListeResponse>
+  <recupererListeResponse>
+    <code>
+    ek3k-cnam-0702</code>
+    <libelle>
+    Entrée à droite</libelle>
+    <listeGaam>
+      Agence de VALENCE >
+    Entrée à droite</listeGaam>
+  </recupererListeResponse>
+  <recupererListeResponse>
+    <code>
+    ek6k-cnam-0052</code>
+    <libelle>
+    A l'entrée, borne façade</libelle>
+    <listeGaam>
+      Agence de LORIENT >
+    A l'entrée, borne façade</listeGaam>
+  </recupererListeResponse>
+  <recupererListeResponse>
+    <code>
+    ek3k-cnam-0755</code>
+    <libelle>
+    espace accueil, Borne 1</libelle>
+    <listeGaam>
+      Agence de LORIENT >
+    espace accueil, Borne 1</listeGaam>
+  </recupererListeResponse>
+  <recupererListeResponse>
+    <code>
+    ek3k-cnam-0262</code>
+    <libelle>
+    Espace d’accueil en « libre-service » borne 1</libelle>
+    <listeGaam>
+      Agence de SAINT MARCELLIN >
+    Espace d’accueil en « libre-service » borne 1</listeGaam>
+  </recupererListeResponse>
+  <recupererListeResponse>
+    <code>
+    ek3k-cnam-0706</code>
+    <libelle>
+    Face porte d'entrée</libelle>
+    <listeGaam>
+      Agence de CREST >
+    Face porte d'entrée</listeGaam>
+  </recupererListeResponse>
+  <recupererListeResponse>
+    <code>
+    ek3k-cnam-0268</code>
+    <libelle>
+    En face de l'entree,borne 1</libelle>
+    <listeGaam>
+      Agence de ROUSSILLON >
+    En face de l'entree,borne 1</listeGaam>
+  </recupererListeResponse>
+  <recupererListeResponse>
+    <code>
+    ek3k-cnam-0266</code>
+    <libelle>
+    A droite de l'entree, borne 1</libelle>
+    <listeGaam>
+      Agence de RIVES >
+    A droite de l'entree, borne 1</listeGaam>
+  </recupererListeResponse>
+  <recupererListeResponse>
+    <code>
+    ek3k-cnam-0273</code>
+    <libelle>
+    Espace d’accueil en « libre-service » borne 1</libelle>
+    <listeGaam>
+      Agence de Fontaine >
+    Espace d’accueil en « libre-service » borne 1</listeGaam>
+  </recupererListeResponse>
+  <recupererListeResponse>
+    <code>
+    ek3k-cnam-0274</code>
+    <libelle>
+    Espace d’accueil en « libre-service » borne 2</libelle>
+    <listeGaam>
+      Agence de Fontaine >
+    Espace d’accueil en « libre-service » borne 2</listeGaam>
+  </recupererListeResponse>
+</root>

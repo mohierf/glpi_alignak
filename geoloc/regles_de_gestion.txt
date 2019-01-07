@@ -1,0 +1,26 @@
+3.2 Règle de gestion
+
+3.2.1 Règle de gestion 1
+Le webservice doit retourner les 10 bornes les plus proches dans un rayon compris entre 10 et 20km d’une coordonnée gps envoyée par le smartphone.
+Le rayon de départ est de 10km, autour du point de référence, et il doit pouvoir s’étendre jusqu’à 20km par incrément de 5km.
+
+Seules les bornes opérationnelles sont retournées.
+3.2.2 Règle de gestion 2
+Si une BMS affiche un statut « CRITICAL », automatiquement elle n’est pas communiquée à l’application smartphone. 
+De fait, trois cas de figure se présentent :
+a) Le BMS KO est la seule présente dans le site concerné  le site disparaît ponctuellement de la fonction « géolocalisation des bornes » : il ne sera jamais proposé au client.
+b) Le BMS KO est la seule de son type (façade / totem)  le type de borne KO disparaît ponctuellement de la fonction « géolocalisation des bornes » : seul le type de borne en fonctionnement est proposé au client.
+c) Le BMS KO n’est pas la seule de son type dans le site concerné  rien ne change, les informations du site sont bien proposées au client.
+
+3.2.3 Règle de gestion 3
+La notion « CRITICAL » pour le statut des bornes doit être paramétrable.
+Deux cas sont retenus :
+a) La borne est considérée comme « CRITICAL » lorsqu’elle est opérationnelle et seule son imprimante n’est pas disponible,
+b) La borne est considérée comme « CRITICAL » lorsqu’elle est complètement indisponible.
+
+
+3.2.4 Règle de gestion 4
+La CNAMTS doit pouvoir sur demande modifier les valeurs des paramètres :
+Nombre de bornes retournées,
+La taille minimale et maximale du rayon de recherche,
+La valeur de l’incrément du rayon de recherche.
