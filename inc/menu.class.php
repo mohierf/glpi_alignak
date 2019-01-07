@@ -32,8 +32,9 @@ class PluginAlignakMenu extends CommonGLPI
 
       $elements = [
          'config' => 'PluginAlignakConfig',
-         'alignak_entity' => 'PluginAlignakEntity',
          'alignak' => 'PluginAlignakAlignak',
+         'alignak_entity' => 'PluginAlignakEntity',
+         'alignak_computer' => 'PluginAlignakComputer',
          'mail_notification' => 'PluginAlignakMailNotification',
          'monitoring_template' => 'PluginAlignakMonitoringTemplate',
          'computer_counters_template' => 'PluginAlignakCountersTemplate',
@@ -139,10 +140,20 @@ class PluginAlignakMenu extends CommonGLPI
 
       // First column - empty now !
       echo '<td width="30%">';
+      $paConfig = new PluginAlignakConfig();
+      $paConfig = $paConfig->loadConfiguration();
+      $paConfig->showForm();
       echo '</td>';
 
       // Second column - link to plugin items!
       echo '<td>';
+
+      echo '<div style="margin-top: 5px;">';
+      echo '<strong>'. __("Feed test database", "alignak") .'</strong><br/>';
+      echo '<ul style="margin-left: 5px;">';
+      echo '<li>'. '<a href="feed_database.php">'.  __("Feed database", "alignak") .'</a></li>';
+      echo '</ul>';
+      echo '</div>';
 
       if (Session::haveRight("plugin_alignak_alignak", READ)) {
          echo '<div style="margin-top: 5px;">';
@@ -151,6 +162,14 @@ class PluginAlignakMenu extends CommonGLPI
          echo '<ul style="margin-left: 5px;">';
          $nb = $dbu->countElementsInTable(PluginAlignakEntity::getTable());
          echo '<li>'. "<sup class='tab_nb'>$nb</sup>" .'<a href="entity.php">'.  __("Alignak entities", "alignak") .'</a></li>';
+         echo '</ul>';
+         echo '</div>';
+
+         echo '<div style="margin-top: 5px;">';
+         echo '<small><em>'. __("Monitored computers", "alignak") .'</em></small><br/>';
+         echo '<ul style="margin-left: 5px;">';
+         $nb = $dbu->countElementsInTable(PluginAlignakComputer::getTable());
+         echo '<li>'. "<sup class='tab_nb'>$nb</sup>" .'<a href="computer.php">'.  __("Alignak computers", "alignak") .'</a></li>';
          echo '</ul>';
          echo '</div>';
 
@@ -211,236 +230,5 @@ class PluginAlignakMenu extends CommonGLPI
       echo '</table>';
 
       echo '</div>';
-   }
-
-   /**
-    * Display list of hosts
-    */
-   function showHostsBoard($width='', $limit='') {
-      global $DB,$CFG_GLPI;
-
-      if (! isset($_GET['order'])) {
-         $_GET['order'] = "ASC";
-      }
-      if (! isset($_GET['sort'])) {
-         $_GET['sort'] = "";
-      }
-
-      $order = "ASC";
-      if (isset($_GET['order'])) {
-         $order = $_GET['order'];
-      }
-      $where = '';
-      if (isset($_GET['field'])) {
-         foreach ($_GET['field'] as $key=>$value) {
-            $wheretmp = '';
-            if (isset($_GET['link'][$key])) {
-               $wheretmp.= " ".$_GET['link'][$key]." ";
-            }
-            $wheretmp .= Search::addWhere(
-               "",
-               0,
-               "v",
-               $_GET['field'][$key],
-               $_GET['searchtype'][$key],
-               $_GET['contains'][$key]);
-            if (!strstr($wheretmp, "``.``")) {
-               if ($where != ''
-                  AND !isset($_GET['link'][$key])) {
-                  $where .= " AND ";
-               }
-               $where .= $wheretmp;
-            }
-         }
-      }
-      if ($where != '') {
-         $where = "(".$where;
-         $where .= ") AND ";
-      }
-      $where .= " CONCAT_WS('', 
-      `glpi_computers`.`entities_id`, 
-      `glpi_printers`.`entities_id`, 
-      `glpi_networkequipments`.`entities_id`) IN (".$_SESSION['glpiactiveentities_string'].")";
-
-      if ($where != '') {
-         $where = " WHERE ".$where;
-         $where = str_replace("`".getTableForItemType("PluginMonitoringDisplay")."`.",
-            "", $where);
-
-      }
-
-      $leftjoin = " 
-         LEFT JOIN `glpi_computers`
-            ON `glpi_plugin_alignak_computers`.`items_id` = `glpi_computers`.`id`
-               AND `glpi_plugin_alignak_computers`.`itemtype`='Computer'
-         LEFT JOIN `glpi_printers`
-            ON `glpi_plugin_monitoring_hosts`.`items_id` = `glpi_printers`.`id`
-               AND `glpi_plugin_monitoring_hosts`.`itemtype`='Printer'
-         LEFT JOIN `glpi_networkequipments`
-            ON `glpi_plugin_monitoring_hosts`.`items_id` = `glpi_networkequipments`.`id`
-               AND `glpi_plugin_monitoring_hosts`.`itemtype`='NetworkEquipment'
-         LEFT JOIN `glpi_entities`
-            ON CONCAT_WS('', `glpi_computers`.`entities_id`, 
-            `glpi_printers`.`entities_id`, 
-            `glpi_networkequipments`.`entities_id`) = `glpi_entities`.`id`
-               
-      ";
-
-      // * ORDER
-      $ORDERQUERY = "ORDER BY entity_name ASC, host_name ASC";
-      $toview = array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
-      $toviewComplete = array(
-         'ITEM_0' => 'entity_name',
-         'ITEM_1' => 'host_name',
-         'ITEM_2' => 'host_state',
-         'ITEM_3' => 'service_state',
-         'ITEM_4' => 'last_check',
-         'ITEM_5' => 'event',
-         'ITEM_6' => 'perf_data',
-         'ITEM_7' => 'is_acknowledged'
-      );
-      foreach ($toview as $key => $val) {
-         if ($_GET['sort']==$val) {
-            $ORDERQUERY = Search::addOrderBy("PluginMonitoringHost", $_GET['sort'],
-               $_GET['order'], $key);
-            foreach ($toviewComplete as $keyi=>$vali) {
-               $ORDERQUERY= str_replace($keyi, $vali, $ORDERQUERY);
-            }
-         }
-      }
-
-//            `glpi_computers`.*
-
-      $query = "SELECT
-            `glpi_entities`.`name` AS entity_name,
-            CONCAT_WS('', `glpi_computers`.`id`, `glpi_printers`.`id`, `glpi_networkequipments`.`id`) AS idComputer, 
-            CONCAT_WS('', `glpi_computers`.`name`, `glpi_printers`.`name`, `glpi_networkequipments`.`name`) AS host_name,
-            `glpi_plugin_monitoring_hosts`.*,
-            `glpi_plugin_monitoring_hosts`.`state` AS host_state, 
-            `glpi_plugin_monitoring_hosts`.`is_acknowledged` AS host_acknowledged
-         FROM `glpi_plugin_monitoring_hosts`
-         ".$leftjoin."
-         ".$where."
-         ".$ORDERQUERY;
-      // Toolbox::logInFile("pm", "Query hosts - $query\n");
-
-      $result = $DB->query($query);
-
-      if (! isset($_GET["start"])) {
-         $_GET["start"]=0;
-      }
-      $start=$_GET['start'];
-      if (! isset($_GET["order"])) {
-         $_GET["order"]="ASC";
-      }
-
-      $numrows = $DB->numrows($result);
-      $parameters = '';
-
-      $globallinkto = '';
-
-      $parameters = "sort=".$_GET['sort']."&amp;order=".$_GET['order'].$globallinkto;
-      Html::printPager($_GET['start'], $numrows, $CFG_GLPI['root_doc']."/plugins/monitoring/front/host.php", $parameters);
-
-      $limit = $numrows;
-      if ($_SESSION["glpilist_limit"] < $numrows) {
-         $limit = $_SESSION["glpilist_limit"];
-      }
-      $query .= " LIMIT ".intval($start)."," . intval($_SESSION['glpilist_limit']);
-
-      // Toolbox::logInFile("pm", "Query hosts - $query\n");
-      $result = $DB->query($query);
-
-      echo '<div id="custom_date" style="display:none"></div>';
-      echo '<div id="custom_time" style="display:none"></div>';
-
-      if ($width == '') {
-         echo "<table class='tab_cadrehov' style='width:100%;'>";
-      } else {
-         echo "<table class='tab_cadrehov' style='width:".$width."px;'>";
-      }
-      $num = 0;
-
-      if (PluginMonitoringProfile::haveRight("host_command", 'r')) {
-         // Host test command ...
-         $pmCommand = new PluginMonitoringCommand();
-         $a_commands = array();
-         $a_list = $pmCommand->find("command_name LIKE 'host_action'");
-         foreach ($a_list as $data) {
-            $host_command_name = $data['name'];
-            $host_command_command = $data['command_line'];
-         }
-      }
-
-      echo "<tr class='tab_bg_1'>";
-      $this->showHeaderItem(__('Entity'), 0, $num, $start, $globallinkto, 'host.php', 'PluginMonitoringHost');
-      $this->showHeaderItem(__('Type'), 0, $num, $start, $globallinkto, 'host.php', 'PluginMonitoringHost');
-      $this->showHeaderItem(__('Host', 'monitoring'), 1, $num, $start, $globallinkto, 'host.php', 'PluginMonitoringHost');
-      $this->showHeaderItem(__('Host state'), 2, $num, $start, $globallinkto, 'host.php', 'PluginMonitoringHost');
-      if (isset($host_command_name)) {
-         echo '<th>'.__('Host action', 'monitoring').'</th>';
-      }
-      echo '<th>'.__('Host resources state', 'monitoring').'</th>';
-      echo '<th>'.__('IP address', 'monitoring').'</th>';
-      $this->showHeaderItem(__('Last check', 'monitoring'), 4, $num, $start, $globallinkto, 'host.php', 'PluginMonitoringHost');
-      $this->showHeaderItem(__('Result details', 'monitoring'), 5, $num, $start, $globallinkto, 'host.php', 'PluginMonitoringHost');
-      $this->showHeaderItem(__('Performance data', 'monitoring'), 6, $num, $start, $globallinkto, 'host.php', 'PluginMonitoringHost');
-      $this->showHeaderItem(__('Acknowledge', 'monitoring'), 7, $num, $start, $globallinkto, 'host.php', 'PluginMonitoringHost');
-      echo "</tr>";
-
-      while ($data=$DB->fetch_array($result)) {
-         // Reduced array or not ?
-         if ($_SESSION['plugin_monitoring']['reduced_interface'] and $data['state'] == 'UP') continue;
-
-         if (isset($host_command_name)) {
-            $data['host_command_name'] = $host_command_name;
-            $data['host_command_command'] = $host_command_command;
-         }
-
-         // Get all host services except if state is ok or is already acknowledged ...
-         $data['host_services_status'] = '';
-         $data['services_state'] = 'OK';
-         $query2 = "SELECT
-            `glpi_plugin_monitoring_services`.*
-            FROM `glpi_plugin_monitoring_componentscatalogs_hosts`
-            INNER JOIN `glpi_plugin_monitoring_services` 
-               ON (`glpi_plugin_monitoring_services`.`plugin_monitoring_componentscatalogs_hosts_id` = `glpi_plugin_monitoring_componentscatalogs_hosts`.`id`)
-            WHERE  `glpi_plugin_monitoring_componentscatalogs_hosts`.`items_id` = '". $data['idComputer'] ."' 
-               AND `glpi_plugin_monitoring_componentscatalogs_hosts`.`itemtype` = 'Computer'
-               AND `glpi_plugin_monitoring_services`.`state` != 'OK'
-               AND `glpi_plugin_monitoring_services`.`is_acknowledged` = '0'
-            ORDER BY `glpi_plugin_monitoring_services`.`name` ASC;";
-         // Toolbox::logInFile("pm", "Query services for host : ".$data['idComputer']." : $query2\n");
-         $result2 = $DB->query($query2);
-         if ($DB->numrows($result2) > 0) {
-            $data['host_services_status'] = '';
-            while ($data2=$DB->fetch_array($result2)) {
-               // Toolbox::logInFile("pm", "Service ".$data2['name']." is ".$data2['state'].", state : ".$data2['event']."\n");
-               if (! empty($data['host_services_status'])) $data['host_services_status'] .= "\n";
-               $data['host_services_status'] .= "Service ".$data2['name']." is ".$data2['state'].", event : ".$data2['event'];
-               if ($data2['state'] == 'CRITICAL') {
-                  // Do nothing
-               } else {
-                  $data['services_state'] = $data2['state'];
-               }
-            }
-         }
-
-         // Get host first IP address
-         $data['ip'] = __('Unknown IP address', 'monitoring');
-         $queryIp = "SELECT `glpi_ipaddresses`.`name` FROM `glpi_ipaddresses` LEFT JOIN `glpi_networknames` ON `glpi_ipaddresses`.`itemtype`='NetworkName' AND `glpi_ipaddresses`.`items_id`=`glpi_networknames`.`id` LEFT JOIN `glpi_networkports` ON `glpi_networknames`.`itemtype`='NetworkPort' AND `glpi_networknames`.`items_id`=`glpi_networkports`.`id` WHERE `glpi_networkports`.`itemtype`='Computer' AND `glpi_networkports`.`items_id`='".$data['idComputer']."' LIMIT 1";
-         $resultIp = $DB->query($queryIp);
-         if ($DB->numrows($resultIp) > 0) {
-            $dataIp=$DB->fetch_array($resultIp);
-            $data['ip'] = $dataIp['name'];
-         }
-
-         echo "<tr class='tab_bg_3'>";
-         $this->displayHostLine($data);
-         echo "</tr>";
-      }
-      echo "</table>";
-      echo "<br/>";
-      Html::printPager($start, $numrows, $CFG_GLPI['root_doc']."/plugins/monitoring/front/host.php", $parameters);
    }
 }

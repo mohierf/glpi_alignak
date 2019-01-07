@@ -34,9 +34,9 @@
 
 include ('../../../inc/includes.php');
 
-//Session::checkRight('plugin_alignak_alignak', READ);
+Session::checkRight('plugin_alignak_alignak', READ);
 
-$object = new PluginAlignakEntity();
+$object = new PluginAlignakComputer();
 if (isset($_POST['add'])) {
    // Check CREATE ACL
    Session::checkRight('plugin_alignak_alignak', CREATE);
@@ -66,28 +66,19 @@ if (isset($_POST['add'])) {
 }
 
 Html::header(
-   __('Entity', 'alignak'),
+   __('Monitored host', 'alignak'),
    $_SERVER['PHP_SELF'],
    'admin',
-   'pluginalignakmenu', 'alignak_entity');
+   'pluginalignakmenu', 'alignak_computer');
 
 // Default is to display the object
 $with_template = (isset($_GET['withtemplate']) ? $_GET['withtemplate'] : 0);
 
 if (isset($_GET["id"])) {
-   if (isset($_GET["helpdesk"])) {
-      PluginAlignakToolbox::log("Helpdesk: " . serialize($_GET));
-      if (isset($_GET["hosts_board"])) {
-         PluginAlignakBoard::showHostsBoard();
-      } else {
-         Html::redirect($_SESSION["glpiroot"]);
-      }
-   } else {
-      $object->display([
-         'id' => $_GET['id'],
-         'canedit' => PluginAlignakEntity::canUpdate(),
-         'withtemplate' => $with_template]);
-   }
+   $object->display([
+      'id' => $_GET['id'],
+      'canedit' => PluginAlignakComputer::canUpdate(),
+      'withtemplate' => $with_template]);
 } else {
    $object->showForm(-1);
 }

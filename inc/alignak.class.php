@@ -296,6 +296,7 @@ class PluginAlignakAlignak extends CommonDBTM
       switch ($item->getType()) {
          case 'Central' :
             echo __("Plugin central action", 'alignak');
+            PluginAlignakBoard::showHostsBoard();
             break;
 
          case 'Preference' :

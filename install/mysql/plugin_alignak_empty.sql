@@ -16,10 +16,15 @@ DROP TABLE IF EXISTS `glpi_plugin_alignak_computers`;
 CREATE TABLE `glpi_plugin_alignak_computers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `entities_id` int(11) NOT NULL DEFAULT 0,
-  `itemtype` varchar(255) collate utf8_unicode_ci DEFAULT NULL,
-  `items_id` int(11) NOT NULL,
-  `name` varchar(255) collate utf8_unicode_ci DEFAULT NULL,
-  `comment` text collate utf8_unicode_ci,
+  `itemtype` varchar(255) DEFAULT 'Computer',
+  `items_id` int(11) NOT NULL DEFAULT '-1',
+  `name` varchar(255) DEFAULT NULL,
+  `comment` text DEFAULT '',
+  `last_check` datetime DEFAULT NULL,
+  `state` varchar(255) DEFAULT 'UNKNOWN',
+  `state_type` varchar(255) DEFAULT 'HARD',
+  `output` varchar(255) DEFAULT '',
+  `perf_data` text DEFAULT '',
   PRIMARY KEY  (`id`),
   KEY `computer` (`itemtype`, `items_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -32,6 +37,20 @@ CREATE TABLE `glpi_plugin_alignak_computercounterstemplates` (
   `items_id` int(11) NOT NULL DEFAULT '0',
   `plugin_alignak_counters_template_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+DROP TABLE IF EXISTS `glpi_plugin_alignak_configs`;
+CREATE TABLE `glpi_plugin_alignak_configs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `timezones` varchar(255) NOT NULL DEFAULT '["0"]',
+  `extradebug` tinyint(1) NOT NULL DEFAULT '0',
+  `alignak_webui_url` varchar(255) DEFAULT 'http://127.0.0.1:5001',
+  `alignak_backend_url` varchar(255) DEFAULT 'http://127.0.0.1:5000',
+  `graphite_url` varchar(255) DEFAULT 'http://127.0.0.1:8080',
+  `graphite_prefix` varchar(255) DEFAULT '',
+  PRIMARY KEY  (`id`),
+  KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
@@ -178,3 +197,16 @@ CREATE TABLE `glpi_plugin_alignak_monitoringtemplates` (
   `comment` text DEFAULT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+DROP TABLE IF EXISTS `glpi_plugin_alignak_users`;
+CREATE TABLE `glpi_plugin_alignak_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `users_id` int(11) NOT NULL DEFAULT '0',
+  `backend_login` varchar(255) DEFAULT NULL,
+  `backend_password` varchar(255) DEFAULT NULL,
+  `backend_token` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+

@@ -561,23 +561,22 @@ function plugin_alignak_display_central() {
    if (Session::getCurrentInterface() == "helpdesk") {
       PluginAlignakToolbox::log("On the central page!");
 
-      // Get logged in user Alignak entity configuration
+      // Button
       $paEntity = PluginAlignakEntity::getForEntity($_SESSION['glpidefault_entity']);
-
-      // First column - empty now !
       echo '<tr>';
       echo '<div style="clear: both">';
-      echo '<a href="'. $paEntity->getLinkURL() .'&anonymous=1">';
-      echo '<img src="'. $CFG_GLPI['root_doc'] . '/plugins/alignak/pics/alignak_16x16.png">';
-      echo __("View my Alignak configuration", "alignak");
+      echo '<a href="'. $paEntity->getLinkURL() .'&helpdesk=1&hosts_board=1">';
+      echo '<img src="'. $CFG_GLPI['root_doc'] . '/pics/menu_show.png">&nbsp;&nbsp;';
+      echo __("Hosts board", "alignak");
       echo '</a>';
       echo '</div>';
       echo '</tr>';
 
       echo '<tr>';
       echo '<div style="clear: both">';
-      echo '<a href="http://alignak.net">';
-      echo '<img src="'. $CFG_GLPI['root_doc'] . '/plugins/alignak/pics/alignak_16x16.png">';
+      echo '<a href="'. $paEntity->getLinkURL() .'&helpdesk=1&configuration=1">';
+      echo '<img src="'. $CFG_GLPI['root_doc'] . '/pics/menu_add.png">&nbsp;&nbsp;';
+      echo __("View my configuration", "alignak");
       echo '</a>';
       echo '</div>';
       echo '</tr>';
@@ -602,10 +601,42 @@ function plugin_alignak_display_login() {
  *
  * @param $param   array
  *
- * @return un tableau
+ * @return array
  **/
 function plugin_alignak_infocom_hook($params) {
    echo "<tr><th colspan='4'>";
    echo __("Plugin alignak displays on central page", "alignak");
    echo "</th></tr>";
+}
+
+
+/**
+ * Register plugin Web services
+ **/
+function plugin_alignak_registerMethods() {
+   global $WEBSERVICES_METHOD;
+
+   Toolbox::logInFile(PLUGIN_ALIGNAK_LOG,"Register Web services...");
+   $WEBSERVICES_METHOD['kiosks.getGeoloc'] = array('PluginAlignakWebservice', 'methodGetGeoloc');
+   /*
+   $WEBSERVICES_METHOD['kiosks.getCounter'] = array('PluginKiosksWebservice', 'methodGetCounter');
+   $WEBSERVICES_METHOD['kiosks.getDashboard'] = array('PluginKiosksWebservice', 'methodGetDashboard');
+   $WEBSERVICES_METHOD['kiosks.getDatatable'] = array('PluginKiosksWebservice', 'methodGetDatatable');
+   $WEBSERVICES_METHOD['kiosks.getHosts'] = array('PluginKiosksWebservice', 'methodGetHosts');
+   $WEBSERVICES_METHOD['kiosks.getServices'] = array('PluginKiosksWebservice', 'methodGetServices');
+   $WEBSERVICES_METHOD['kiosks.getLocations'] = array('PluginKiosksWebservice', 'methodGetLocations');
+   $WEBSERVICES_METHOD['kiosks.getHelpdeskConfiguration'] = array('PluginKiosksWebservice', 'methodGetHelpdeskConfiguration');
+   $WEBSERVICES_METHOD['kiosks.listTickets'] = array('PluginKiosksWebservice', 'methodListTickets');
+   $WEBSERVICES_METHOD['kiosks.createTicket'] = array('PluginKiosksWebservice', 'methodCreateTicket');
+   $WEBSERVICES_METHOD['kiosks.addTicketFollowUp'] = array('PluginKiosksWebservice', 'methodAddTicketFollowUp');
+   $WEBSERVICES_METHOD['kiosks.getTicket'] = array('PluginKiosksWebservice', 'methodGetTicket');
+   $WEBSERVICES_METHOD['kiosks.ackService'] = array('PluginKiosksWebservice', 'methodAckService');
+   $WEBSERVICES_METHOD['kiosks.downtimeHost'] = array('PluginKiosksWebservice', 'methodDowntimeHost');
+   $WEBSERVICES_METHOD['kiosks.getKioskConfiguration'] = array('PluginKiosksWebservice', 'methodGetKioskConfiguration');
+   $WEBSERVICES_METHOD['kiosks.getCounters'] = array('PluginKiosksWebservice', 'methodGetCounters');
+   $WEBSERVICES_METHOD['kiosks.getCountersOld'] = array('PluginKiosksWebservice', 'methodGetCountersOld');
+   $WEBSERVICES_METHOD['kiosks.getComponentCounterTable'] = array('PluginKiosksWebservice', 'methodGetComponentCounterTable');
+   $WEBSERVICES_METHOD['kiosks.getSspTableData'] = array('PluginKiosksWebservice', 'methodGetSspTableData');
+   $WEBSERVICES_METHOD['kiosks.pushCondCounterValue'] = array('PluginKiosksWebservice', 'methodpushCondCounterValue');
+   */
 }

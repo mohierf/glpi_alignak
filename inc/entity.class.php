@@ -72,7 +72,6 @@ class PluginAlignakEntity extends CommonDBTM
             if (! $paEntity->getFromDBByCrit(['plugin_alignak_entitites_id' => $item->getID()])) {
                $paEntity->getEmpty();
                $paEntity->fields['plugin_alignak_entitites_id'] = $item->getID();
-//               PluginAlignakToolbox::log("Not found: ". serialize($paEntity->fields));
             }
             $paEntity->showForm($paEntity->getID(), ["in_tab" => true]);
          }
@@ -83,7 +82,7 @@ class PluginAlignakEntity extends CommonDBTM
     /**
      * Display form for an entity
      *
-     * @param $entity Entity
+     * @param $ID Entity identifier
      * @param $options array
      *
      * @return bool true if form is ok
@@ -341,37 +340,6 @@ class PluginAlignakEntity extends CommonDBTM
    }
 
    /*
-   function getEntitiesByTag($tag = '') {
-       global $DB;
-
-      if ($tag == '') {
-          return ['-1' => "-1"];
-      } else {
-         $output = [];
-         $query = "SELECT * FROM `".$this->getTable()."`
-            WHERE `tag`='".$tag."'";
-         $result = $DB->query($query);
-         while ($data=$DB->fetch_array($result)) {
-             $output[$data['entities_id']] = $data['entities_id'];
-         }
-         return $output;
-      }
-   }
-
-   static function getTagByEntities($entities_id) {
-       global $DB;
-
-       $query = "SELECT * FROM `glpi_plugin_monitoring_entities`
-         WHERE `entities_id`='".$entities_id."'
-            LIMIT 1";
-       $result = $DB->query($query);
-      while ($data=$DB->fetch_array($result)) {
-          return $data['tag'];
-      }
-   }
-   */
-
-   /*
     * Get the Alignak entity configuration for the provided entity.
     * If not found in the provided entity, have a look in this entty ancestors
     *
@@ -391,7 +359,8 @@ class PluginAlignakEntity extends CommonDBTM
             if ($paEntity->getFromDBByCrit(['plugin_alignak_entitites_id' => $id])) {
                // Found!
                $entities_id = $id;
-               PluginAlignakToolbox::log("Get Alignak entity ancestor for : ". $entities_id);
+               PluginAlignakToolbox::log("Get Alignak entity ancestor for: ". $entities_id);
+               PluginAlignakToolbox::log("Got: ". $paEntity->getLinkURL());
                break;
             }
          }

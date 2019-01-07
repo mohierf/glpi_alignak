@@ -45,7 +45,7 @@
  * Plugin global configuration variables
  */
 define ("PLUGIN_ALIGNAK_OFFICIAL_RELEASE", "0");
-define ('PLUGIN_ALIGNAK_VERSION', '1.0');
+define ('PLUGIN_ALIGNAK_VERSION', '1.0-dev');
 define ('PLUGIN_ALIGNAK_PHP_MIN_VERSION', '5.6');
 define ('PLUGIN_ALIGNAK_GLPI_MIN_VERSION', '9.2');
 define ('PLUGIN_ALIGNAK_NAME', 'Alignak monitoring plugin');
@@ -81,6 +81,9 @@ if (!defined("PLUGIN_ALIGNAK_TEMPLATES_PATH")) {
 if (!file_exists(PLUGIN_ALIGNAK_TEMPLATES_PATH)) {
    mkdir(PLUGIN_ALIGNAK_TEMPLATES_PATH);
 }
+
+// Plugin global configuration
+$PA_CONFIG = [];
 
 /*
  For the Twig templating:
@@ -124,7 +127,7 @@ define("PLUGIN_ALIGNAK_TPL_RAISE_ERRORS", true);
  * @return void
  */
 function plugin_init_alignak() {
-   global $PLUGIN_HOOKS;
+   global $PLUGIN_HOOKS, $PA_CONFIG;
 
    spl_autoload_register('plugin_alignak_autoload');
 
@@ -141,6 +144,9 @@ function plugin_init_alignak() {
    if ($plugin->isInstalled('alignak')
       && $plugin->isActivated('alignak')
       && Session::getLoginUserID() ) {
+
+      // Alignak backend client library
+      include GLPI_ROOT.'/plugins/alignak/lib/alignak-backend-php-client/src/Client.php';
 
       // Params : plugin name - string type - ID - Array of attributes
       // No specific information passed so not needed
@@ -165,6 +171,10 @@ function plugin_init_alignak() {
       // Plugin configuration class
       Plugin::registerClass('PluginAlignakConfig',
          ['addtabon' => 'Config']);
+
+      // User
+      Plugin::registerClass('PluginAlignakUser',
+         array('addtabon' => array('User')));
 
       // Plugin Alignak - Dashboard class
       Plugin::registerClass('PluginAlignakDashboard',
@@ -203,23 +213,8 @@ function plugin_init_alignak() {
 
          // Add an entry to the Administration menu
          if (Session::haveRight('plugin_alignak_menu', READ)) {
-            $PLUGIN_HOOKS['menu_toadd']['alignak'] = ['admin' => 'PluginAlignakMenu', 'tools' => 'PluginAlignakMenu'];
+            $PLUGIN_HOOKS['menu_toadd']['alignak'] = ['admin' => 'PluginAlignakMenu', 'config' => 'PluginAlignakMenu'];
          }
-
-         // Old menu style
-         //       $PLUGIN_HOOKS['menu_entry']['example'] = 'front/example.php';
-         //
-         //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['title'] = "Search";
-         //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['page']  = '/plugins/example/front/example.php';
-         //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']['search'] = '/plugins/example/front/example.php';
-         //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']['add']    = '/plugins/example/front/example.form.php';
-         //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']['config'] = '/plugins/example/index.php';
-         //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links']["<img  src='".$CFG_GLPI["root_doc"]."/pics/menu_showall.png' title='".__s('Show all')."' alt='".__s('Show all')."'>"] = '/plugins/example/index.php';
-         //       $PLUGIN_HOOKS['submenu_entry']['example']['options']['optionname']['links'][__s('Test link', 'example')] = '/plugins/example/index.php';
-         //         $PLUGIN_HOOKS['menu_toadd']['alignak']['options']['optionname']['title'] = "Search";
-         //         $PLUGIN_HOOKS['menu_toadd']['alignak']['options']['optionname']['page']  = '/plugins/alignak/front/example.php';
-         //         $PLUGIN_HOOKS['menu_toadd']['alignak']['options']['optionname']['links']['search'] = '/plugins/alignak/front/example.php';
-         //         $PLUGIN_HOOKS['menu_toadd']['alignak']['options']['optionname']['links']['add']    = '/plugins/alignak/front/example.form.php';
 
          // No menu when on simplified interface
          $PLUGIN_HOOKS["helpdesk_menu_entry"]['alignak'] = false;
@@ -331,6 +326,24 @@ function plugin_init_alignak() {
       $PLUGIN_HOOKS['pre_item_form']['alignak']    = ['PluginAlignakItemForm', 'preItemForm'];
       $PLUGIN_HOOKS['post_item_form']['alignak']   = ['PluginAlignakItemForm', 'postItemForm'];
       */
+
+      // Plugin configuration parameters
+      if (! isset($PA_CONFIG['id'])) {
+         $paConfig = new PluginAlignakConfig();
+         $paConfig->loadConfiguration();
+         Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Got the plugin configuration: ". serialize($PA_CONFIG) ."\n");
+      }
+
+      /*
+      Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Alignak backend url: ". $PA_CONFIG['alignak_backend_url'] ."\n");
+      $abc = new Alignak_Backend_Client($PA_CONFIG['alignak_backend_url']);
+      $token = PluginAlignakUser::myToken($abc);
+      if ($token != '') {
+         Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Token: ". $token ."\n");
+      } else {
+         Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "No token!\n");
+      }*/
+
    }
 }
 

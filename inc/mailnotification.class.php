@@ -1,4 +1,4 @@
-<?php
+$mmail<?php
 
 // ----------------------------------------------------------------------
 // Original Author of file: Frederic Mohier

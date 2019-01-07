@@ -31,36 +31,40 @@
    @license   AGPLv3 or (at your option) any later version
               http://www.gnu.org/licenses/agpl-3.0-standalone.html
    @link      http://alignak.net/
+   @link      http://alignak.net/
    @since     2018
 
    ------------------------------------------------------------------------
  */
 
-/**
- * Upgrade any version of Alignak < 1.0.0 to 1.0.0
- * -----------------
- * Note that this is only an example of what should be implemented
- * -----------------
- * @param Migration $migration
- */
-function plugin_alignak_update_1_0(Migration $migration) {
-   global $DB;
+// ----------------------------------------------------------------------
+// Original Author of file: Frederic Mohier
+// Purpose of file:
+// ----------------------------------------------------------------------
 
-   $migration->displayMessage("Upgrade to version 1.1");
+include ("../../../inc/includes.php");
 
-   plugin_alignak_updateTable_1_1($migration);
-
-   $migration->executeMigration();
+// Check if plugin is activated...
+$plugin = new Plugin();
+if (!$plugin->isInstalled('alignak') || !$plugin->isActivated('alignak')) {
+   Html::displayNotFoundError();
 }
 
-function plugin_alignak_updateTable_1_1(Migration $migration) {
-   global $DB;
+// Check for ACLs
+Session::checkRight('plugin_alignak_alignak', READ);
 
-   
-   // Legacy upgrade of a table...
-   $migration->displayMessage("Upgrade glpi_plugin_alignak_counters");
-   // Update field type from previous version (Need answer to be text since text can be WYSIWING).
-   $query = "ALTER TABLE  `glpi_plugin_alignak_counters` ADD  `graphite_name` VARCHAR(255);";
-   $DB->query($query) or plugin_alignak_upgrade_error($migration);
+// Add page header
+if ($_SESSION["glpiactiveprofile"]["interface"] == "central") {
+   Html::header(
+      __('Monitored host', 'alignak'),
+      $_SERVER['PHP_SELF'],
+      'admin',
+      'pluginalignakmenu', 'alignak_computer');
 
+} else {
+   Html::helpHeader(__('Alignak computers', 'alignak'), $_SERVER['PHP_SELF']);
 }
+
+Search::show('PluginAlignakComputer');
+
+Html::footer();
