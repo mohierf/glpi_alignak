@@ -451,9 +451,10 @@ function plugin_alignak_check_config($verbose = false) {
    return false;
 }
 
+
 /**
  * Autoloader
- * @param unknown $classname
+ * @param string $classname
  */
 function plugin_alignak_autoload($classname) {
    if (strpos($classname, 'PluginAlignak') === 0) {
