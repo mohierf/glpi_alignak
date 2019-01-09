@@ -52,7 +52,7 @@ function plugin_alignak_update_dev(Migration $migration) {
       $query = "CREATE TABLE `".$newTable."` (
                  `id` int(11) NOT NULL AUTO_INCREMENT,
                  `timezones` varchar(255) NOT NULL DEFAULT '[\"0\"]',
-                 `extradebug` tinyint(1) NOT NULL DEFAULT '0',
+                 `extra_debug` tinyint(1) NOT NULL DEFAULT '0',
                  `alignak_webui_url` varchar(255) DEFAULT 'http://127.0.0.1:5001',
                  `alignak_backend_url` varchar(255) DEFAULT 'http://127.0.0.1:5000',
                  `graphite_url` varchar(255) DEFAULT 'http://127.0.0.1:8080',

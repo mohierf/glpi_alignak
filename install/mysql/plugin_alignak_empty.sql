@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS `glpi_plugin_alignak_alignaks`;
+
 CREATE TABLE `glpi_plugin_alignak_alignaks` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
@@ -13,6 +14,7 @@ CREATE TABLE `glpi_plugin_alignak_alignaks` (
 
 
 DROP TABLE IF EXISTS `glpi_plugin_alignak_computers`;
+
 CREATE TABLE `glpi_plugin_alignak_computers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `entities_id` int(11) NOT NULL DEFAULT 0,
@@ -44,13 +46,12 @@ DROP TABLE IF EXISTS `glpi_plugin_alignak_configs`;
 CREATE TABLE `glpi_plugin_alignak_configs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `timezones` varchar(255) NOT NULL DEFAULT '["0"]',
-  `extradebug` tinyint(1) NOT NULL DEFAULT '0',
+  `extra debug` tinyint(1) NOT NULL DEFAULT '0',
   `alignak_webui_url` varchar(255) DEFAULT 'http://127.0.0.1:5001',
   `alignak_backend_url` varchar(255) DEFAULT 'http://127.0.0.1:5000',
   `graphite_url` varchar(255) DEFAULT 'http://127.0.0.1:8080',
   `graphite_prefix` varchar(255) DEFAULT '',
-  PRIMARY KEY  (`id`),
-  KEY `name` (`name`)
+  PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
@@ -208,5 +209,3 @@ CREATE TABLE `glpi_plugin_alignak_users` (
   `backend_token` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-

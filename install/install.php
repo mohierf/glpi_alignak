@@ -74,6 +74,9 @@ class PluginAlignakInstall {
 
    /**
     * Upgrade the plugin
+    * @param Migration $migration
+    *
+    * @return boolean
     */
    public function upgrade(Migration $migration) {
       $this->migration = $migration;
@@ -112,7 +115,7 @@ class PluginAlignakInstall {
    /**
     * Find the version of the plugin
     *
-    * @return string|NULL
+    * @return string|null
     */
    protected function getSchemaVersion() {
       if ($this->isPluginInstalled()) {
@@ -123,7 +126,7 @@ class PluginAlignakInstall {
    }
 
    /**
-    * Find version of the plugin in GLPI's config
+    * Find version of the plugin in GLPI configuration
     *
     * @return string
     */
@@ -225,15 +228,19 @@ class PluginAlignakInstall {
 
       $this->migration->displayMessage("Creating plugin tasks");
 
+      // TODO: some other are to be registered !
+
       CronTask::Register('PluginAlignakAlignak', 'AlignakBuild', DAY_TIMESTAMP, [
          'comment'   => __('Alignak - to be developed...', 'alignak'),
          'mode'      => CronTask::MODE_EXTERNAL,
-         'param' => 50
+         'state'     => CronTask::STATE_DISABLE,
+         'param'     => 50
       ]);
       CronTask::Register('PluginAlignakComputerTemplate', 'AlignakComputerTemplate', DAY_TIMESTAMP, [
          'comment'   => __('Alignak Send Counters-...', 'alignak'),
          'mode'      => CronTask::MODE_EXTERNAL,
-         'param' => 50
+         'state'     => CronTask::STATE_DISABLE,
+         'param'     => 50
       ]);
    }
 
