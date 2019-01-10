@@ -29,14 +29,14 @@
 
    @package   Plugin Monitoring for GLPI
    @author    David Durieux
-   @co-author 
-   @comment   
+   @co-author
+   @comment
    @copyright Copyright (c) 2011-2013 Plugin Monitoring for GLPI team
    @license   AGPL License 3.0 or (at your option) any later version
               http://www.gnu.org/licenses/agpl-3.0-standalone.html
    @link      https://forge.indepnet.net/projects/monitoring/
    @since     2011
- 
+
    ------------------------------------------------------------------------
  */
 
@@ -48,7 +48,7 @@ class PluginAlignakService extends CommonDBTM {
 
 
    function getSearchOptions() {
-      $tab = array();
+      $tab = [];
       $tab['common'] = _n('Resource characteristic', 'Resource characteristics', 2);
 
       $tab[1]['table']           = 'glpi_computers';
@@ -57,15 +57,15 @@ class PluginAlignakService extends CommonDBTM {
       $tab[1]['datatype']        = 'itemlink';
       $tab[1]['itemlink_type']   = $this->getType();
       $tab[1]['massiveaction']   = false; // implicit key==1
-      $tab[1]['nosearch']        = TRUE;
-      
+      $tab[1]['nosearch']        = true;
+
       $tab[2]['table']           = "glpi_plugin_monitoring_components";
       $tab[2]['field']           = 'name';
       $tab[2]['linkfield']       = 'plugin_monitoring_components_id';
       $tab[2]['name']            = __('Component', 'monitoring');
       $tab[2]['datatype']        = 'itemlink';
       $tab[2]['itemlink_type']   = 'PluginMonitoringComponent';
-      
+
       $tab[3]['table']           = $this->getTable();
       $tab[3]['field']           = 'state';
       $tab[3]['name']            = __('Resource state', 'monitoring');
@@ -73,7 +73,7 @@ class PluginAlignakService extends CommonDBTM {
       // $tab[3]['searchtype']      = 'equals';
       // $tab[3]['datatype']        = 'itemlink';
       // $tab[3]['itemlink_type']   = 'PluginAlignakService';
-      
+
       $tab[4]['table']           = $this->getTable();
       $tab[4]['field']           = 'state_type';
       $tab[4]['name']            = __('Service state type', 'monitoring');
@@ -81,7 +81,7 @@ class PluginAlignakService extends CommonDBTM {
       // $tab[4]['searchtype']      = 'equals';
       // $tab[4]['datatype']        = 'itemlink';
       // $tab[4]['itemlink_type']   = 'PluginAlignakService';
-      
+
       $tab[5]['table']           = $this->getTable();
       $tab[5]['field']           = 'last_check';
       $tab[5]['name']            = __('Last check', 'monitoring');
@@ -97,59 +97,58 @@ class PluginAlignakService extends CommonDBTM {
       $tab[7]['field']          = 'is_acknowledged';
       $tab[7]['name']           = __('Acknowledge', 'monitoring');
       $tab[7]['datatype']       = 'bool';
-     
+
       $tab[8]['table']          = 'glpi_plugin_monitoring_hosts';
       $tab[8]['field']          = 'is_acknowledged';
       $tab[8]['name']           = __('Host acknowledge', 'monitoring');
       $tab[8]['datatype']       = 'bool';
-      
+
       $tab[9]['table']          = "glpi_plugin_monitoring_componentscatalogs";
       $tab[9]['field']          = 'name';
       $tab[9]['name']           = __('Components catalog', 'monitoring');
       $tab[9]['datatype']       = 'itemlink';
-     
+
       $tab[20]['table']          = 'glpi_computers';
       $tab[20]['field']          = 'name';
       $tab[20]['name']           = __('Item')." > ".__('Computer');
       $tab[20]['searchtype']     = 'equals';
       $tab[20]['datatype']       = 'itemlink';
       $tab[20]['itemlink_type']  = 'Computer';
-      
+
       $tab[21]['table']          = 'glpi_printers';
       $tab[21]['field']          = 'name';
       $tab[21]['name']           = __('Item')." > ".__('Printer');
       $tab[21]['searchtype']     = 'equals';
       $tab[21]['datatype']       = 'itemlink';
       $tab[21]['itemlink_type']  = 'Printer';
-      
+
       $tab[22]['table']          = 'glpi_networkequipments';
       $tab[22]['field']          = 'name';
-//      $tab[22]['linkfield']      = 'items_id';
+      //      $tab[22]['linkfield']      = 'items_id';
       $tab[22]['name']           = __('Item')." > ".__('Network device');
       $tab[22]['searchtype']     = 'equals';
       $tab[22]['datatype']       = 'itemlink';
       $tab[22]['itemlink_type']  = 'NetworkEquipment';
 
-      
       // TODO : ...
       // $tab[12]['table']          = 'glpi_plugin_monitoring_componentscatalogs_hosts';
       // $tab[12]['field']          = 'plugin_monitoring_componentscatalog_id';
       // $tab[12]['name']           = __('Components catalog', 'monitoring');
       // $tab[12]['datatype']       = 'equals';
-     
+
       return $tab;
    }
-   
-   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+
+   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       if (!$withtemplate) {
          switch ($item->getType()) {
             case 'Central' :
                if (PluginMonitoringProfile::haveRight("homepage", 'r') && PluginMonitoringProfile::haveRight("homepage_all_ressources", 'r')) {
-                  return array(1 => __('All resources', 'monitoring'));
+                  return [1 => __('All resources', 'monitoring')];
                } else {
                   if (PluginMonitoringProfile::haveRight("homepage", 'r') && PluginMonitoringProfile::haveRight("homepage_perfdata", 'r')) {
-                     return array(1 => __('Performance data', 'monitoring'));
+                     return [1 => __('Performance data', 'monitoring')];
                   } else {
                      return '';
                   }
@@ -159,7 +158,7 @@ class PluginAlignakService extends CommonDBTM {
       return '';
    }
 
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
 
       switch ($item->getType()) {
          case 'Central' :
@@ -174,7 +173,7 @@ class PluginAlignakService extends CommonDBTM {
    }
 
    function manageServices($itemtype, $items_id) {
-      
+
       if ($itemtype == 'Computer') {
          $pmHostaddress = new PluginMonitoringHostaddress();
          $item = new $itemtype();
@@ -185,7 +184,7 @@ class PluginAlignakService extends CommonDBTM {
       $pmServices = new PluginAlignakService();
       $pmServices->listByHost($itemtype, $items_id);
    }
-   
+
    /**
     * Display services associated with host
     *
@@ -197,14 +196,14 @@ class PluginAlignakService extends CommonDBTM {
       global $CFG_GLPI,$DB;
 
       $pmComponentscatalog = new PluginMonitoringComponentscatalog();
-      
+
       $query = "SELECT * FROM `glpi_plugin_monitoring_componentscatalogs_hosts`
          WHERE `items_id`='".$items_id."'
             AND `itemtype`='".$itemtype."'";
       $result = $DB->query($query);
 
-//      echo "<form name='form' method='post' 
-//         action='".$CFG_GLPI['root_doc']."/plugins/monitoring/front/service.form.php'>";
+      //      echo "<form name='form' method='post'
+      //         action='".$CFG_GLPI['root_doc']."/plugins/monitoring/front/service.form.php'>";
 
       echo "<table class='tab_cadre_fixe'>";
 
@@ -215,23 +214,23 @@ class PluginAlignakService extends CommonDBTM {
       $item->getFromDB($items_id);
       echo " - ".$item->getTypeName();
       echo " - ".$item->getName();
-//      echo "&nbsp;<a href='".$CFG_GLPI['root_doc']."/plugins/monitoring/front/service.form.php?services_id=".$a_hosts['id']."'>
-//         <img src='".$CFG_GLPI['root_doc']."/pics/menu_add.png' /></a>";
-//      
-//      echo "&nbsp;<a href='".$CFG_GLPI['root_doc']."/plugins/monitoring/front/servicedef.form.php?add_template=1'>
-//         <img src='".$CFG_GLPI['root_doc']."/pics/menu_addtemplate.png' /></a>";
+      //      echo "&nbsp;<a href='".$CFG_GLPI['root_doc']."/plugins/monitoring/front/service.form.php?services_id=".$a_hosts['id']."'>
+      //         <img src='".$CFG_GLPI['root_doc']."/pics/menu_add.png' /></a>";
+      //
+      //      echo "&nbsp;<a href='".$CFG_GLPI['root_doc']."/plugins/monitoring/front/servicedef.form.php?add_template=1'>
+      //         <img src='".$CFG_GLPI['root_doc']."/pics/menu_addtemplate.png' /></a>";
       echo "</th>";
       echo "</tr>";
-      
+
       echo "<table class='tab_cadre_fixe'>";
 
       while ($data=$DB->fetch_array($result)) {
          $pmComponentscatalog->getFromDB($data['plugin_monitoring_componentscalalog_id']);
-         
+
          echo "<tr class='tab_bg_1'>";
          echo "<th colspan='14'>".$pmComponentscatalog->getTypeName()."&nbsp;:&nbsp;".$pmComponentscatalog->getLink()."</th>";
          echo "</tr>";
-         
+
          echo "<tr class='tab_bg_1'>";
          echo "<th>";
          echo __('Show counters', 'monitoring');
@@ -254,14 +253,14 @@ class PluginAlignakService extends CommonDBTM {
          echo "<th>";
          echo __('Check period', 'monitoring');
          echo "</th>";
-         echo "<th>".__('Current month', 'monitoring')." ".Html::showToolTip(__('Availability', 'monitoring'), array('display'=>false))."</th>";
-         echo "<th>".__('Last month', 'monitoring')." ".Html::showToolTip(__('Availability', 'monitoring'), array('display'=>false))."</th>";
-         echo "<th>".__('Current year', 'monitoring')." ".Html::showToolTip(__('Availability', 'monitoring'), array('display'=>false))."</th>";
+         echo "<th>".__('Current month', 'monitoring')." ".Html::showToolTip(__('Availability', 'monitoring'), ['display'=>false])."</th>";
+         echo "<th>".__('Last month', 'monitoring')." ".Html::showToolTip(__('Availability', 'monitoring'), ['display'=>false])."</th>";
+         echo "<th>".__('Current year', 'monitoring')." ".Html::showToolTip(__('Availability', 'monitoring'), ['display'=>false])."</th>";
          echo "<th>".__('Detail', 'monitoring')."</th>";
          echo '<th>'.__('Acknowledge', 'monitoring').'</th>';
-         echo "<th>".__('Arguments', 'monitoring')."</th>"; 
+         echo "<th>".__('Arguments', 'monitoring')."</th>";
          echo "</tr>";
-         
+
          $querys = "SELECT `glpi_plugin_monitoring_services`.* FROM `glpi_plugin_monitoring_services`
             LEFT JOIN `glpi_plugin_monitoring_components`
                on `plugin_monitoring_components_id` = `glpi_plugin_monitoring_components`.`id`
@@ -269,24 +268,24 @@ class PluginAlignakService extends CommonDBTM {
                ORDER BY `name`";
          $results = $DB->query($querys);
          while ($datas=$DB->fetch_array($results)) {
-            $this->getFromDB($datas['id']);            
-            
+            $this->getFromDB($datas['id']);
+
             echo "<tr class='tab_bg_1'>";
             PluginMonitoringDisplay::displayLine($datas, 0);
             echo "</tr>";
-            
+
          }
-                  
+
          echo "<tr style='border:1px solid #ccc;background-color:#ffffff'>";
          echo "<td colspan='14' height='5'></td>";
          echo "</tr>";
       }
-      
+
       echo "</table>";
 
       Html::closeForm();
    }
-   
+
    /**
     * Display graphs of services associated with host
     *
@@ -309,12 +308,12 @@ class PluginAlignakService extends CommonDBTM {
 
       echo '<div id="custom_date" style="display:none"></div>';
       echo '<div id="custom_time" style="display:none"></div>';
-      
+
       echo "<table class='tab_cadre_fixe'>";
       $td = 0;
       while ($data=$DB->fetch_array($result)) {
          $pmComponentscatalog->getFromDB($data['plugin_monitoring_componentscalalog_id']);
-         
+
          $querys = "SELECT `glpi_plugin_monitoring_services`.* FROM `glpi_plugin_monitoring_services`
             LEFT JOIN `glpi_plugin_monitoring_components`
                on `plugin_monitoring_components_id` = `glpi_plugin_monitoring_components`.`id`
@@ -336,11 +335,11 @@ class PluginAlignakService extends CommonDBTM {
                echo "</tr>";
                echo "<tr class='tab_bg_1'>";
                echo "<td>";
-               $pmServicegraph->displayGraph($pmComponent->fields['graph_template'], 
-                                             "PluginAlignakService", 
-                                             $datas['id'], 
-                                             "0", 
-                                             "2h", 
+               $pmServicegraph->displayGraph($pmComponent->fields['graph_template'],
+                                             "PluginAlignakService",
+                                             $datas['id'],
+                                             "0",
+                                             "2h",
                                              "",
                                              450);
                echo "</td>";
@@ -361,13 +360,13 @@ class PluginAlignakService extends CommonDBTM {
       }
       echo "</tr>";
       echo "</table>";
-      
+
    }
-   
-   function showForm($items_id, $options=array(), $services_id='') {
+
+   function showForm($items_id, $options = [], $services_id = '') {
       $pMonitoringCommand = new PluginMonitoringCommand();
       $pMonitoringServicedef = new PluginAlignakServicedef();
-      
+
       if (isset($_GET['withtemplate']) AND ($_GET['withtemplate'] == '1')) {
          $options['withtemplate'] = 1;
       } else {
@@ -389,7 +388,6 @@ class PluginAlignakService extends CommonDBTM {
       }
       $template = false;
 
-
       echo "<tr>";
       echo "<td>";
       if ($services_id!='') {
@@ -400,7 +398,7 @@ class PluginAlignakService extends CommonDBTM {
       echo "<td>";
       $objectName = autoName($this->fields["name"], "name", ($template === "newcomp"),
                              $this->getType());
-      Html::autocompletionTextField($this, 'name', array('value' => $objectName));      
+      Html::autocompletionTextField($this, 'name', ['value' => $objectName]);
       echo "</td>";
       echo "<td>";
       echo __('Template')."&nbsp;:";
@@ -412,27 +410,25 @@ class PluginAlignakService extends CommonDBTM {
       echo "<input type='hidden' name='plugin_monitoring_servicedefs_id_s' value='".$this->fields['plugin_monitoring_servicedefs_id']."'>\n";
       if ($pMonitoringServicedef->fields['is_template'] == '0') {
          $this->fields['plugin_monitoring_servicedefs_id'] = 0;
-      }      
-      Dropdown::show("PluginAlignakServicetemplate", array(
+      }
+      Dropdown::show("PluginAlignakServicetemplate", [
             'name' => 'plugin_monitoring_servicetemplates_id',
             'value' => $this->fields['plugin_monitoring_servicetemplates_id'],
             'auto_submit' => true
-      ));
+      ]);
       echo "</td>";
       echo "<td>";
-      if ($this->fields["items_id"] == '') {
-
-      } else {
+      if (! empty($this->fields["items_id"])) {
          echo "<input type='hidden' name='items_id' value='".$this->fields["items_id"]."'>\n";
          echo "<input type='hidden' name='itemtype' value='".$this->fields["itemtype"]."'>\n";
       }
       echo "</td>";
       echo "</tr>";
-      
+
       echo "<tr>";
       echo "<th colspan='4'>&nbsp;</th>";
       echo "</tr>";
-      
+
       echo "<tr>";
       // * itemtype link
       if ($this->fields['itemtype'] != '') {
@@ -449,7 +445,7 @@ class PluginAlignakService extends CommonDBTM {
          echo "<td colspan='2' align='center'>";
          echo __('No type associated', 'monitoring');
          echo "</td>";
-      }      
+      }
       // * command
       echo "<td>";
       echo __('Command', 'monitoring')."&nbsp;:";
@@ -459,17 +455,17 @@ class PluginAlignakService extends CommonDBTM {
          $pMonitoringServicetemplate = new PluginAlignakServicetemplate();
          $pMonitoringServicetemplate->getFromDB($this->fields['plugin_monitoring_servicetemplates_id']);
          $pMonitoringCommand->getFromDB($pMonitoringServicetemplate->fields['plugin_monitoring_commands_id']);
-         echo $pMonitoringCommand->getLink(1);         
+         echo $pMonitoringCommand->getLink(1);
       } else {
          $pMonitoringCommand->getFromDB($pMonitoringServicedef->fields['plugin_monitoring_commands_id']);
-         Dropdown::show("PluginMonitoringCommand", array(
+         Dropdown::show("PluginMonitoringCommand", [
                               'name' =>'plugin_monitoring_commands_id',
                               'value'=>$pMonitoringServicedef->fields['plugin_monitoring_commands_id']
-                              ));
+                              ]);
       }
       echo "</td>";
       echo "</tr>";
-      
+
       echo "<tr>";
       // * checks
       echo "<td>".__('Check definition', 'monitoring')."&nbsp;:</td>";
@@ -479,9 +475,9 @@ class PluginAlignakService extends CommonDBTM {
          $pMonitoringCheck->getFromDB($pMonitoringServicetemplate->fields['plugin_monitoring_checks_id']);
          echo $pMonitoringCheck->getLink(1);
       } else {
-         Dropdown::show("PluginMonitoringCheck", 
-                        array('name'=>'plugin_monitoring_checks_id',
-                              'value'=>$pMonitoringServicedef->fields['plugin_monitoring_checks_id']));
+         Dropdown::show("PluginMonitoringCheck",
+                        ['name'=>'plugin_monitoring_checks_id',
+                              'value'=>$pMonitoringServicedef->fields['plugin_monitoring_checks_id']]);
       }
       echo "</td>";
       // * active check
@@ -496,7 +492,7 @@ class PluginAlignakService extends CommonDBTM {
       }
       echo "</td>";
       echo "</tr>";
-      
+
       echo "<tr>";
       // * passive check
       echo "<td>";
@@ -517,15 +513,15 @@ class PluginAlignakService extends CommonDBTM {
          $calendar->getFromDB($pMonitoringServicetemplate->fields['calendars_id']);
          echo $calendar->getLink(1);
       } else {
-         dropdown::show("Calendar", array('name'=>'calendars_id',
-                                 'value'=>$pMonitoringServicedef->fields['calendars_id']));
+         dropdown::show("Calendar", ['name'=>'calendars_id',
+                                 'value'=>$pMonitoringServicedef->fields['calendars_id']]);
       }
       echo "</td>";
       echo "</tr>";
-      
+
       if (!($this->fields['plugin_monitoring_servicetemplates_id'] > 0
               AND $pMonitoringServicetemplate->fields['remotesystem'] == '')) {
-      
+
          echo "<tr>";
          echo "<th colspan='4'>".__('Remote check', 'monitoring')."</th>";
          echo "</tr>";
@@ -536,7 +532,7 @@ class PluginAlignakService extends CommonDBTM {
          echo __('Utility used for remote check', 'monitoring')."&nbsp;:";
          echo "</td>";
          echo "<td>";
-         $input = array();
+         $input = [];
          $input[''] = '------';
          $input['byssh'] = 'byssh';
          $input['nrpe'] = 'nrpe';
@@ -544,11 +540,11 @@ class PluginAlignakService extends CommonDBTM {
          if ($this->fields['plugin_monitoring_servicetemplates_id'] > 0) {
             echo $input[$pMonitoringServicetemplate->fields['remotesystem']];
          } else {
-            Dropdown::showFromArray("remotesystem", 
-                                 $input, 
-                                 array('value'=>$pMonitoringServicedef->fields['remotesystem']));
+            Dropdown::showFromArray("remotesystem",
+                                 $input,
+                                 ['value'=>$pMonitoringServicedef->fields['remotesystem']]);
          }
-         echo "</td>";      
+         echo "</td>";
          // * is_argument
          echo "<td>";
          echo __('Use arguments (NRPE only)', 'monitoring')."&nbsp;:";
@@ -559,7 +555,7 @@ class PluginAlignakService extends CommonDBTM {
          } else {
             Dropdown::showYesNo("is_arguments", $pMonitoringServicedef->fields['is_arguments']);
          }
-         echo "</td>"; 
+         echo "</td>";
          echo "</tr>";
 
          echo "<tr>";
@@ -573,7 +569,7 @@ class PluginAlignakService extends CommonDBTM {
          } else {
             echo "<input type='text' name='alias_command' value='".$pMonitoringServicedef->fields['alias_command']."' />";
          }
-         echo "</td>"; 
+         echo "</td>";
 
          echo "<td>";
          echo __('Template (for graphs generation)', 'monitoring')."&nbsp;:GHJKL";
@@ -582,21 +578,21 @@ class PluginAlignakService extends CommonDBTM {
          if ($this->fields['plugin_monitoring_servicetemplates_id'] > 0) {
             $pMonitoringCommand->getEmpty();
             $pMonitoringCommand->getFromDB($pMonitoringServicetemplate->fields['aliasperfdata_commands_id']);
-            echo $pMonitoringCommand->getLink(1);         
+            echo $pMonitoringCommand->getLink(1);
          } else {
             $pMonitoringCommand->getFromDB($pMonitoringServicedef->fields['aliasperfdata_commands_id']);
-            Dropdown::show("PluginMonitoringCommand", array(
+            Dropdown::show("PluginMonitoringCommand", [
                                  'name' =>'aliasperfdata_commands_id',
                                  'value'=>$pMonitoringServicedef->fields['aliasperfdata_commands_id']
-                                 ));
+                                 ]);
          }
-         echo "</td>"; 
+         echo "</td>";
          echo "</tr>";
       }
-      
+
       // * Manage arguments
-      $array = array();
-      $a_displayarg = array();
+      $array = [];
+      $a_displayarg = [];
       if (isset($pMonitoringCommand->fields['command_line'])) {
          preg_match_all("/\\$(ARG\d+)\\$/", $pMonitoringCommand->fields['command_line'], $array);
          $a_arguments = importArrayFromDB($this->fields['arguments']);
@@ -607,7 +603,7 @@ class PluginAlignakService extends CommonDBTM {
                   $a_arguments[$arg] = '';
                }
                $a_displayarg[$arg] = $a_arguments[$arg];
-               
+
             }
          }
       }
@@ -616,26 +612,26 @@ class PluginAlignakService extends CommonDBTM {
          echo "<tr>";
          echo "<th colspan='4'>".__('Argument ([text:text] is used to get values dynamically)', 'monitoring')."&nbsp;</th>";
          echo "</tr>";
-          
+
          foreach ($a_displayarg as $key=>$value) {
-         echo "<tr>";
-         echo "<th>".$key."</th>";
-         echo "<td colspan='2'>";
+            echo "<tr>";
+            echo "<th>".$key."</th>";
+            echo "<td colspan='2'>";
             if (isset($a_argtext[$key])) {
                echo nl2br($a_argtext[$key])."&nbsp;:";
             } else {
                echo __('Argument', 'monitoring')."&nbsp;:";
             }
-            
+
             if ($value == '') {
-               $matches = array();
+               $matches = [];
                preg_match('/(\[\w+\:\w+\])/',
                               nl2br($a_argtext[$key]), $matches);
                if (isset($matches[0])) {
                   $value = $matches[0];
                }
             }
-            
+
             echo "</td>";
             echo "<td>";
             echo "<input type='text' name='arg[".$key."]' value='".$value."'/><br/>";
@@ -643,21 +639,21 @@ class PluginAlignakService extends CommonDBTM {
             echo "</tr>";
          }
       }
-      
+
       $this->showFormButtons($options);
       return true;
    }
 
    static function convertArgument($services_id, $argument) {
       global $DB;
-      
+
       $pmService = new PluginAlignakService();
       $pmComponentscatalog_Host = new PluginMonitoringComponentscatalog_Host();
-      
+
       $pmService->getFromDB($services_id);
-      
+
       $pmComponentscatalog_Host->getFromDB($pmService->fields['plugin_monitoring_componentscatalogs_hosts_id']);
-      
+
       $itemtype = $pmComponentscatalog_Host->fields['itemtype'];
       $item = new $itemtype();
       $item->getFromDB($pmComponentscatalog_Host->fields['items_id']);
@@ -665,9 +661,9 @@ class PluginAlignakService extends CommonDBTM {
       $argument = str_replace("[", "", $argument);
       $argument = str_replace("]", "", $argument);
       $a_arg = explode(":", $argument);
-      
+
       $devicetype = '';
-      $devicedata = array();
+      $devicedata = [];
       if ($itemtype == "NetworkPort") {
          $itemtype2 = $item->fields['itemtype'];
          $item2 = new $itemtype2();
@@ -678,12 +674,12 @@ class PluginAlignakService extends CommonDBTM {
          $devicetype = $itemtype;
          $devicedata = $item->fields;
       }
-      
+
       if ($devicetype == "NetworkEquipment") {
          if (class_exists("PluginFusioninventoryNetworkEquipment")) {
             $pfNetworkEquipment = new PluginFusioninventoryNetworkEquipment();
             $a_pfNetworkEquipment = current($pfNetworkEquipment->find("`networkequipments_id`='".$devicedata['id']."'", "", 1));
-            
+
             switch ($a_arg[0]) {
 
                case 'OID':
@@ -701,17 +697,16 @@ class PluginAlignakService extends CommonDBTM {
 
                   $result=$DB->query($query);
                   while ($data=$DB->fetch_array($result)) {
-                     return Dropdown::getDropdownName('glpi_plugin_fusioninventory_snmpmodelmiboids',$data['plugin_fusioninventory_snmpmodelmiboids_id']).
+                     return Dropdown::getDropdownName('glpi_plugin_fusioninventory_snmpmodelmiboids', $data['plugin_fusioninventory_snmpmodelmiboids_id']).
                           ".".$item->fields['logical_number'];
                   }
-
 
                   return '';
                   break;
 
                case 'SNMP':
                   if ($a_pfNetworkEquipment['plugin_fusioninventory_configsecurities_id'] == '0') {
-                     
+
                      switch ($a_arg[1]) {
 
                         case 'version':
@@ -723,7 +718,7 @@ class PluginAlignakService extends CommonDBTM {
                            break;
 
                      }
-                     
+
                   }
                   $pfConfigSecurity = new PluginFusioninventoryConfigSecurity();
                   $pfConfigSecurity->getFromDB($a_pfNetworkEquipment['plugin_fusioninventory_configsecurities_id']);
@@ -752,18 +747,18 @@ class PluginAlignakService extends CommonDBTM {
    }
 
    function showCustomArguments($services_id) {
-      
+
       $pmComponent = new PluginMonitoringComponent();
       $pmCommand = new PluginMonitoringCommand();
       $pmComponentscatalog_Host = new PluginMonitoringComponentscatalog_Host();
-      
+
       $this->getFromDB($services_id);
-      
-      $options = array();
+
+      $options = [];
       $options['target'] = str_replace("service.form.php", "servicearg.form.php", $this->getFormURL());
-      
+
       $this->showFormHeader($options);
-      
+
       $pmComponentscatalog_Host->getFromDB($this->fields['plugin_monitoring_componentscatalogs_hosts_id']);
       $itemtype = $pmComponentscatalog_Host->fields['itemtype'];
       $item = new $itemtype();
@@ -777,12 +772,12 @@ class PluginAlignakService extends CommonDBTM {
       echo "</td>";
       echo "<td colspan='2'></td>";
       echo "</tr>";
-      
+
       $pmComponent->getFromDB($this->fields['plugin_monitoring_components_id']);
       $pmCommand->getFromDB($pmComponent->fields['plugin_monitoring_commands_id']);
-      
-      $array = array();
-      $a_displayarg = array();
+
+      $array = [];
+      $a_displayarg = [];
       if (isset($pmCommand->fields['command_line'])) {
          preg_match_all("/\\$(ARG\d+)\\$/", $pmCommand->fields['command_line'], $array);
          $a_arguments = importArrayFromDB($pmComponent->fields['arguments']);
@@ -804,10 +799,10 @@ class PluginAlignakService extends CommonDBTM {
          echo "<th colspan='2'>".__('Component arguments', 'monitoring')."</th>";
          echo "<th colspan='2'>".__('List of tags available', 'monitoring')."&nbsp;</th>";
          echo "</tr>";
-          
+
          foreach ($a_displayarg as $key=>$value) {
-         echo "<tr>";
-         echo "<td>";
+            echo "<tr>";
+            echo "<td>";
             if (isset($a_argtext[$key])
                     AND $a_argtext[$key] != '') {
                echo nl2br($a_argtext[$key])."&nbsp;:";
@@ -846,13 +841,13 @@ class PluginAlignakService extends CommonDBTM {
             echo "</tr>";
          }
       }
-      
-      // customized arguments 
+
+      // customized arguments
       echo "<tr>";
       echo "<th colspan='4'>".__('Custom arguments for this resource (empty : inherit)', 'monitoring')."</th>";
       echo "</tr>";
-      $array = array();
-      $a_displayarg = array();
+      $array = [];
+      $a_displayarg = [];
       if (isset($pmCommand->fields['command_line'])) {
          preg_match_all("/\\$(ARG\d+)\\$/", $pmCommand->fields['command_line'], $array);
          $a_arguments = importArrayFromDB($this->fields['arguments']);
@@ -883,24 +878,24 @@ class PluginAlignakService extends CommonDBTM {
          echo "<td colspan='2'></td>";
          echo "</tr>";
       }
-      
+
       $this->showFormButtons($options);
-      
+
    }
 
    function post_addItem() {
 
       $pmLog = new PluginMonitoringLog();
       $pmComponentscatalog_Host = new PluginMonitoringComponentscatalog_Host();
-      
-      $input = array();
+
+      $input = [];
       $input['itemtype'] = "PluginAlignakService";
       $input['items_id'] = $this->fields['id'];
       $input['action'] = "add";
       $pmComponentscatalog_Host->getFromDB($this->fields['plugin_monitoring_componentscatalogs_hosts_id']);
       $itemtype = $pmComponentscatalog_Host->fields['itemtype'];
       $item = new $itemtype();
-      $item->getFromDB($pmComponentscatalog_Host->fields['items_id']);      
+      $item->getFromDB($pmComponentscatalog_Host->fields['items_id']);
       $input['value'] = "New service ".$this->fields['name']." for ".$item->getTypeName()." ".$item->getName();
       $pmLog->add($input);
    }
@@ -908,8 +903,8 @@ class PluginAlignakService extends CommonDBTM {
    function post_purgeItem() {
 
       $pmLog = new PluginMonitoringLog();
-      
-      $input = array();
+
+      $input = [];
       $input['itemtype'] = "PluginAlignakService";
       $input['items_id'] = $this->fields['id'];
       $input['action'] = "delete";
@@ -924,44 +919,44 @@ class PluginAlignakService extends CommonDBTM {
          $input['value'] = "Service ".$this->fields['name']." of port of ";
       }
       $pmLog->add($input);
-      
+
       unset($_SESSION['plugin_monitoring_hosts']);
    }
 
    function showWidget($id, $time) {
       global $DB, $CFG_GLPI;
-      
+
       $pmComponent = new PluginMonitoringComponent();
-      
+
       if ($this->getFromDB($id)) {
          $pmComponent->getFromDB($this->fields['plugin_monitoring_components_id']);
 
          $pmServicegraph = new PluginAlignakServicegraph();
          ob_start();
-         $pmServicegraph->displayGraph($pmComponent->fields['graph_template'], 
-                                       "PluginAlignakService", 
-                                       $id, 
-                                       "0", 
-                                       $time, 
-                                       "div", 
+         $pmServicegraph->displayGraph($pmComponent->fields['graph_template'],
+                                       "PluginAlignakService",
+                                       $id,
+                                       "0",
+                                       $time,
+                                       "div",
                                        "475");
          $chart = ob_get_contents();
          ob_end_clean();
          return $chart;
       }
    }
-   
+
    /**
     * Form to add acknowledge on a service/host
     */
-   function addAcknowledge($id, $hostname='', $allServices=false) {
+   function addAcknowledge($id, $hostname = '', $allServices = false) {
       global $CFG_GLPI,$DB;
-      
+
       // Acknowledge an host ... note that $id is Glpi computer Id
       if (! empty($hostname)) {
          echo "<form name='form' method='post' 
             action='".$CFG_GLPI['root_doc']."/plugins/monitoring/front/acknowledge.form.php'>";
-      
+
          echo "<input type='hidden' name='host_id' value='$id' />";
          echo "<input type='hidden' name='hostname' value='$hostname' />";
 
@@ -975,9 +970,9 @@ class PluginAlignakService extends CommonDBTM {
          }
          echo "</td>";
          echo "</tr>";
-         
+
          echo "<tr><td colspan='3'><hr/></td></tr>";
-         
+
          // Acknowledge host AND all faulty services ...
          // if ($allServices) {
             // Get all host services except if state is ok or is already acknowledged ...
@@ -992,21 +987,21 @@ class PluginAlignakService extends CommonDBTM {
 
             $result = $DB->query($query);
             $i=0;
-            while ($data=$DB->fetch_array($result)) {
-               // Toolbox::logInFile("monitoring", "Service ".$data['name']." is ".$data['state'].", state : ".$data['event']."\n");
-               echo "<tr class='tab_bg_1'>";
-               echo "<td>".$data['name']."</td>";
-               echo "<td>".$data['state']."</td>";
-               echo "<td>".$data['event']."</td>";
-               echo "</tr>";
-               echo "<input type='hidden' name='serviceId$i' value='".$data['id']."' />";
-               $i++;
-            }
-            if ($i != 0) {
-               echo "<tr><td colspan='3'>".__('All these services will be acknowledged')."</td></tr>";
-               echo "<input type='hidden' name='serviceCount' value='$i' />";
-               echo "<tr><td colspan='3'><hr/></td></tr>";
-            }
+         while ($data=$DB->fetch_array($result)) {
+            // Toolbox::logInFile("monitoring", "Service ".$data['name']." is ".$data['state'].", state : ".$data['event']."\n");
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>".$data['name']."</td>";
+            echo "<td>".$data['state']."</td>";
+            echo "<td>".$data['event']."</td>";
+            echo "</tr>";
+            echo "<input type='hidden' name='serviceId$i' value='".$data['id']."' />";
+            $i++;
+         }
+         if ($i != 0) {
+            echo "<tr><td colspan='3'>".__('All these services will be acknowledged')."</td></tr>";
+            echo "<input type='hidden' name='serviceCount' value='$i' />";
+            echo "<tr><td colspan='3'><hr/></td></tr>";
+         }
          // } else {
          if (! $allServices) {
             echo "<input type='hidden' name='hostAcknowledge' value='$hostname' />";
@@ -1020,36 +1015,36 @@ class PluginAlignakService extends CommonDBTM {
          echo "<textarea cols='80' rows='4' name='acknowledge_comment' ></textarea>";
          echo "</td>";
          echo "</tr>";
-         
+
          echo "<tr class='tab_bg_1'>";
          echo "<td colspan='3' align='center'>";
          echo "<input type='hidden' name='id' value='".$id."' />";
          echo "<input type='hidden' name='is_acknowledged' value='1' />";
          echo "<input type='hidden' name='acknowledge_users_id' value='".$_SESSION['glpiID']."' />";
          echo "<input type='hidden' name='referer' value='".$_SERVER['HTTP_REFERER']."' />";
-         
-         echo "<input type='submit' name='add' value=\"".__('Add')."\" class='submit'>";            
+
+         echo "<input type='submit' name='add' value=\"".__('Add')."\" class='submit'>";
          echo "</td>";
          echo "</tr>";
          echo "</table>";
-         
+
          Html::closeForm();
-         
+
          return;
       }
-      
+
       // Acknowledge a service ...
       if ($this->getFromDB($id)) {
          echo "<form name='form' method='post' 
             action='".$CFG_GLPI['root_doc']."/plugins/monitoring/front/acknowledge.form.php'>";
-      
+
          echo "<table class='tab_cadre_fixe'>";
          echo "<tr class='tab_bg_1'>";
          echo "<th colspan='2'>";
          echo __('Add an acknowledge for a service: ', 'monitoring').$this->fields['name'];
          echo "</td>";
          echo "</tr>";
-         
+
          echo "<tr class='tab_bg_1'>";
          echo "<td>";
          echo __('Comments');
@@ -1058,19 +1053,19 @@ class PluginAlignakService extends CommonDBTM {
          echo "<textarea cols='80' rows='4' name='acknowledge_comment' ></textarea>";
          echo "</td>";
          echo "</tr>";
-         
+
          echo "<tr class='tab_bg_1'>";
          echo "<td colspan='2' align='center'>";
          echo "<input type='hidden' name='id' value='".$id."' />";
          echo "<input type='hidden' name='is_acknowledged' value='1' />";
          echo "<input type='hidden' name='acknowledge_users_id' value='".$_SESSION['glpiID']."' />";
          echo "<input type='hidden' name='referer' value='".$_SERVER['HTTP_REFERER']."' />";
-         
-         echo "<input type='submit' name='add' value=\"".__('Add')."\" class='submit'>";            
+
+         echo "<input type='submit' name='add' value=\"".__('Add')."\" class='submit'>";
          echo "</td>";
          echo "</tr>";
          echo "</table>";
-         
+
          Html::closeForm();
       }
    }
@@ -1078,9 +1073,9 @@ class PluginAlignakService extends CommonDBTM {
    /**
     * Form to modify acknowledge on a service/host
     */
-   function formAcknowledge($id, $hostname='') {
+   function formAcknowledge($id, $hostname = '') {
       global $CFG_GLPI;
-      
+
       // Modify acknowledge of an host ... note that $id is Glpi computer Id
       if (! empty($hostname)) {
          /*
@@ -1091,11 +1086,11 @@ class PluginAlignakService extends CommonDBTM {
 
          echo "<form name='form' method='post' 
             action='".$CFG_GLPI['root_doc']."/plugins/monitoring/front/acknowledge.form.php'>";
-      
+
          echo "<input type='hidden' name='host_id' value='$id' />";
          echo "<input type='hidden' name='hostname' value='$hostname' />";
          echo "<input type='hidden' name='hostAcknowledge' value='$hostname' />";
-         
+
          echo "<table class='tab_cadre_fixe'>";
          echo "<tr class='tab_bg_1'>";
          echo "<th colspan='2'>";
@@ -1108,7 +1103,7 @@ class PluginAlignakService extends CommonDBTM {
          echo "</td>";
          echo "<td>";
          $user = new User();
-         $user->getFromDB($pmHost->fields['acknowledge_users_id']);    
+         $user->getFromDB($pmHost->fields['acknowledge_users_id']);
          echo $user->getName(1);
          echo "</td>";
          echo "</tr>";
@@ -1127,13 +1122,13 @@ class PluginAlignakService extends CommonDBTM {
          echo "<input type='hidden' name='acknowledge_users_id' value='".$_SESSION['glpiID']."' />";
          echo "<input type='hidden' name='referer' value='".$_SERVER['HTTP_REFERER']."' />";
 
-         echo "<input type='submit' name='update' value=\"".__('Update')."\" class='submit'>";            
+         echo "<input type='submit' name='update' value=\"".__('Update')."\" class='submit'>";
          echo "</td>";
          echo "</tr>";
          echo "</table>";
          Html::closeForm();
       }
-      
+
       // Modify acknowledge of a service ...
       if ($this->getFromDB($id)) {
          echo "<form name='form' method='post' 
@@ -1150,7 +1145,7 @@ class PluginAlignakService extends CommonDBTM {
          echo "</td>";
          echo "<td>";
          $user = new User();
-         $user->getFromDB($this->fields['acknowledge_users_id']);    
+         $user->getFromDB($this->fields['acknowledge_users_id']);
          echo $user->getName(1);
          echo "</td>";
          echo "</tr>";
@@ -1169,7 +1164,7 @@ class PluginAlignakService extends CommonDBTM {
          echo "<input type='hidden' name='acknowledge_users_id' value='".$_SESSION['glpiID']."' />";
          echo "<input type='hidden' name='referer' value='".$_SERVER['HTTP_REFERER']."' />";
 
-         echo "<input type='submit' name='update' value=\"".__('Update')."\" class='submit'>";            
+         echo "<input type='submit' name='update' value=\"".__('Update')."\" class='submit'>";
          echo "</td>";
          echo "</tr>";
          echo "</table>";

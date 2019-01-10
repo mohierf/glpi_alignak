@@ -77,7 +77,7 @@ class PluginMonitoringAlignak {
    function constructDatas(array &$data) {
       global $CFG_GLPI;
 
-      $options = array('max_results' => $data['search']['list_limit']);
+      $options = ['max_results' => $data['search']['list_limit']];
       // Manage paging
       if ($data['search']['start'] > 0) {
          $options['page'] = ceil($data['search']['start']/$data['search']['list_limit']) + 1;
@@ -94,11 +94,11 @@ class PluginMonitoringAlignak {
       $data['data']['count'] = $back_data['_meta']['total'];
       $data['data']['begin'] = 0;
       $data['data']['end'] = 1;
-      $data['data']['cols'] = array();
+      $data['data']['cols'] = [];
       $num       = 0;
 
       foreach ($data['toview'] as $key => $val) {
-         $data['data']['cols'][$num] = array();
+         $data['data']['cols'][$num] = [];
 
          $data['data']['cols'][$num]['itemtype']  = $data['itemtype'];
          $data['data']['cols'][$num]['id']        = $val;
@@ -114,18 +114,18 @@ class PluginMonitoringAlignak {
          $num++;
       }
 
-      $data['data']['rows'] = array();
+      $data['data']['rows'] = [];
       $i = 0;
       foreach ($back_data['_items'] as $values) {
-         $data['data']['rows'][$i] = array(
-             'raw' => array(),
+         $data['data']['rows'][$i] = [
+             'raw' => [],
              'id'  => $values['_id']
-         );
+         ];
          foreach ($data['data']['cols'] as $num=>$vals) {
-            $data['data']['rows'][$i][$num] = array(
+            $data['data']['rows'][$i][$num] = [
                 'count' => 1,
                 'displayname' => $values[$vals['field']]
-            );
+            ];
             if ($vals['field'] == 'name') {
                $data['data']['rows'][$i][$num]['displayname'] = "<a href='".$CFG_GLPI['root_doc']."/plugins/monitoring/front/command.form.php?id=".$values['_id']."'>".$values[$vals['field']]."</a>";
             }
@@ -154,16 +154,16 @@ class PluginMonitoringAlignak {
       }
 
       //$fields = $this->abc->get('docs/spec.json');
-//      $thisdomain = $fields['domains'][$this->resource]['/'.$this->resource]['POST']['params'];
-//      foreach ($thisdomain as $values) {
-//         if (isset($values['ui'])
-//                 && $values['name'] != 'ui'
-//                 && isset($values['ui']['visible'])
-//                 && $values['ui']['visible']
-//                 && $values['type'] == 'boolean') {
-//            $data[$values['name']] = (bool)$data[$values['name']];
-//         }
-//      }
+      //      $thisdomain = $fields['domains'][$this->resource]['/'.$this->resource]['POST']['params'];
+      //      foreach ($thisdomain as $values) {
+      //         if (isset($values['ui'])
+      //                 && $values['name'] != 'ui'
+      //                 && isset($values['ui']['visible'])
+      //                 && $values['ui']['visible']
+      //                 && $values['type'] == 'boolean') {
+      //            $data[$values['name']] = (bool)$data[$values['name']];
+      //         }
+      //      }
 
       $resp = $this->abc->post($this->resource, $data);
       return $resp;
@@ -172,7 +172,7 @@ class PluginMonitoringAlignak {
 
    function delItem($id, $etag) {
       if ($id != '') {
-         $resp = $this->abc->delete($this->resource."/".$id, array('If-Match' => $etag));
+         $resp = $this->abc->delete($this->resource."/".$id, ['If-Match' => $etag]);
          print_r($resp);
       }
    }
@@ -189,7 +189,7 @@ class PluginMonitoringAlignak {
          }
       }
 
-      $currentResource = array();
+      $currentResource = [];
       if ($items_id != '') {
          $currentResource = $this->abc->get($this->resource."/".$items_id);
       }
@@ -231,18 +231,18 @@ class PluginMonitoringAlignak {
       echo "<tr class='tab_bg_2'>";
       echo "<td class='center' colspan='4'>\n";
       if (isset($currentResource['_id'])) {
-         echo Html::hidden('_etag', array('value' => $currentResource['_etag']));
-         echo Html::hidden('_id', array('value' => $currentResource['_id']));
-         echo Html::submit(_x('button','Save'), array('name' => 'update'));
+         echo Html::hidden('_etag', ['value' => $currentResource['_etag']]);
+         echo Html::hidden('_id', ['value' => $currentResource['_id']]);
+         echo Html::submit(_x('button', 'Save'), ['name' => 'update']);
          echo "</td>";
          echo "</tr>";
          echo "<tr class='tab_bg_2'>\n";
          echo "<td class='right' colspan='4' >\n";
-         echo Html::submit(_x('button','Delete permanently'),
-                           array('name'    => 'purge',
-                                 'confirm' => __('Confirm the final deletion?')));
+         echo Html::submit(_x('button', 'Delete permanently'),
+                           ['name'    => 'purge',
+                                 'confirm' => __('Confirm the final deletion?')]);
       } else {
-         echo Html::submit(_x('button','Add'), array('name' => 'add'));
+         echo Html::submit(_x('button', 'Add'), ['name' => 'add']);
       }
       echo "</td></tr>\n";
       echo "</table>";
@@ -262,7 +262,7 @@ class PluginMonitoringAlignak {
             break;
 
          case 'integer':
-            Dropdown::showNumber($data['name'], array('value' => $data['default']));
+            Dropdown::showNumber($data['name'], ['value' => $data['default']]);
             break;
 
          case 'boolean':
@@ -272,7 +272,7 @@ class PluginMonitoringAlignak {
          case "objectid":
             // Get data of this object
             $obj = $this->abc->get($data['data_relation']['resource']);
-            $elements = array();
+            $elements = [];
             foreach ($obj['_items'] as $obj_values) {
                $elements[$obj_values[$data['data_relation']['field']]] = $obj_values['name'];
             }
@@ -287,7 +287,7 @@ class PluginMonitoringAlignak {
    }
 
    function getVisibleFields($data) {
-      $return = array();
+      $return = [];
       foreach ($data as $values) {
          if (isset($values['ui'])
                  && $values['name'] != 'ui'
@@ -300,14 +300,14 @@ class PluginMonitoringAlignak {
    }
 
 
-   function getPropertiesDefinition($visible='all') {
-//      $fields = $this->abc->get('docs/spec.json');
-//      $thisdomain = $fields['domains'][$this->resource]['/'.$this->resource]['POST']['params'];
-//      if ($visible == 'only') {
-//         $thisdomain = $this->getVisibleFields($thisdomain);
-//      }
-//      return $thisdomain;
+   function getPropertiesDefinition($visible = 'all') {
+      //      $fields = $this->abc->get('docs/spec.json');
+      //      $thisdomain = $fields['domains'][$this->resource]['/'.$this->resource]['POST']['params'];
+      //      if ($visible == 'only') {
+      //         $thisdomain = $this->getVisibleFields($thisdomain);
+      //      }
+      //      return $thisdomain;
    }
 }
 
-?>
+

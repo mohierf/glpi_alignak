@@ -23,7 +23,7 @@ class PluginAlignakBoard extends CommonGLPI
          $order = $_GET["order"];
       }
 
-      $linkto = $CFG_GLPI['root_doc']."/plugins/monitoring/front/$page?".
+      $linkto = $CFG_GLPI['root_doc']."/plugins/alignak/front/$page?".
          "itemtype=$itemtype&amp;sort=".$numoption."&amp;order=".
          ($order=="ASC"?"DESC":"ASC")."&amp;start=".$start.
          $globallinkto;
@@ -35,9 +35,9 @@ class PluginAlignakBoard extends CommonGLPI
    }
 
 
-   static function getState($state, $state_type, $event, $acknowledge=0) {
+   static function getState($state, $state_type, $event, $acknowledge = 0) {
       $shortstate = '';
-      switch($state) {
+      switch ($state) {
 
          case 'UP':
          case 'OK':
@@ -64,7 +64,6 @@ class PluginAlignakBoard extends CommonGLPI
                $shortstate = 'orange';
             }
             break;
-
 
          case 'UNKNOWN':
          case '':
@@ -126,7 +125,7 @@ class PluginAlignakBoard extends CommonGLPI
       $item = new $itemtype();
       $item->getFromDB($data['items_id']);
       $link = $CFG_GLPI['root_doc'].
-         "/plugins/monitoring/front/service.php?hidesearch=1&reset=reset".
+         "/plugins/alignak/front/service.php?hidesearch=1&reset=reset".
          "&field[0]=1&searchtype[0]=equals&contains[0]=".$data['items_id'].
          "&itemtype=PluginMonitoringService&start=0'";
       echo '<a href="'.$link.'" title="'.$item->getName().'">'.$item->getName()."</a>";
@@ -144,8 +143,8 @@ class PluginAlignakBoard extends CommonGLPI
          || $shortstate == 'orange') {
          if (Session::haveRight("plugin_alignak_actions", READ)) {
             echo "<span>&nbsp;";
-            echo "<a href='".$CFG_GLPI['root_doc']."/plugins/monitoring/front/acknowledge.form.php?host=".$data['host_name']."&id=".$data['idComputer']."'>"
-               ."<img src='".$CFG_GLPI['root_doc']."/plugins/monitoring/pics/acknowledge_checked.png'"
+            echo "<a href='".$CFG_GLPI['root_doc']."/plugins/alignak/front/acknowledge.form.php?host=".$data['host_name']."&id=".$data['idComputer']."'>"
+               ."<img src='".$CFG_GLPI['root_doc']."/plugins/alignak/pics/acknowledge_checked.png'"
                ." alt='".htmlspecialchars(__('Add an acknowledge for the host and all faulty services of the host', 'monitoring'), ENT_QUOTES)."'"
                ." title='".htmlspecialchars(__('Add an acknowledge for the host and all faulty services of the host', 'monitoring'), ENT_QUOTES)."'/>"
                ."</a>";
@@ -157,12 +156,12 @@ class PluginAlignakBoard extends CommonGLPI
       echo "</td>";
 
       if (isset($data['host_command_name'])) {
-         $scriptName=$CFG_GLPI['root_doc']."/plugins/monitoring/scripts/".$data['host_command_command'];
+         $scriptName=$CFG_GLPI['root_doc']."/plugins/alignak/scripts/".$data['host_command_command'];
          $scriptArgs=$data['host_name']." ".$data['ip'];
 
          echo "<td class='center'>";
          echo "<form name='form' method='post' 
-            action='".$CFG_GLPI['root_doc']."/plugins/monitoring/scripts/".$data['host_command_command'].".php'>";
+            action='".$CFG_GLPI['root_doc']."/plugins/alignak/scripts/".$data['host_command_command'].".php'>";
 
          echo "<input type='hidden' name='host_id' value='".$data['idComputer']."' />";
          echo "<input type='hidden' name='host_name' value='".$data['host_name']."' />";
@@ -191,7 +190,7 @@ class PluginAlignakBoard extends CommonGLPI
       }
       if (Session::haveRight("dashboard_all_ressources", READ)) {
          $link = $CFG_GLPI['root_doc'].
-            "/plugins/monitoring/front/service.php?hidesearch=1&reset=reset".
+            "/plugins/alignak/front/service.php?hidesearch=1&reset=reset".
             "&field[0]=1&searchtype[0]=equals&contains[0]=".$data['items_id'].
             "&itemtype=PluginMonitoringService&start=0'";
 
@@ -203,8 +202,8 @@ class PluginAlignakBoard extends CommonGLPI
       if (!empty($data['host_services_status'])) {
          if (Session::haveRight("plugin_alignak_actions", READ)) {
             echo "<span>&nbsp;";
-            echo "<a href='".$CFG_GLPI['root_doc']."/plugins/monitoring/front/acknowledge.form.php?host=".$data['host_name']."&allServices&id=".$data['idComputer']."'>"
-               ."<img src='".$CFG_GLPI['root_doc']."/plugins/monitoring/pics/acknowledge_checked.png'"
+            echo "<a href='".$CFG_GLPI['root_doc']."/plugins/alignak/front/acknowledge.form.php?host=".$data['host_name']."&allServices&id=".$data['idComputer']."'>"
+               ."<img src='".$CFG_GLPI['root_doc']."/plugins/alignak/pics/acknowledge_checked.png'"
                ." alt='".htmlspecialchars(__('Add an acknowledge for all faulty services of the host', 'monitoring'), ENT_QUOTES)."'"
                ." title='".htmlspecialchars(__('Add an acknowledge for all faulty services of the host', 'monitoring'), ENT_QUOTES)."'/>"
                ."</a>";
@@ -242,7 +241,7 @@ class PluginAlignakBoard extends CommonGLPI
          echo "<br/>";
          echo"<i>". __('Comments')." : </i>";
          if (Session::haveRight("plugin_alignak_actions", READ)) {
-            echo "<a href='".$CFG_GLPI['root_doc']."/plugins/monitoring/front/acknowledge.form.php?host=".$data['host_name']."&form=".$data['idComputer']."' title='".htmlspecialchars(__('Modify acknowledge comment for the host', 'monitoring'), ENT_QUOTES)."'>";
+            echo "<a href='".$CFG_GLPI['root_doc']."/plugins/alignak/front/acknowledge.form.php?host=".$data['host_name']."&form=".$data['idComputer']."' title='".htmlspecialchars(__('Modify acknowledge comment for the host', 'monitoring'), ENT_QUOTES)."'>";
             echo $data['acknowledge_comment']."</a>";
          } else {
             echo $data['acknowledge_comment'];
@@ -255,7 +254,7 @@ class PluginAlignakBoard extends CommonGLPI
    /**
     * Display list of hosts
     */
-   static function showHostsBoard($width='', $limit='') {
+   static function showHostsBoard($width = '', $limit = '') {
       global $DB,$CFG_GLPI;
 
       if (! isset($_GET['order'])) {
@@ -312,7 +311,7 @@ class PluginAlignakBoard extends CommonGLPI
 
       // * ORDER
       $ORDERQUERY = "ORDER BY entity_name ASC, host_name ASC";
-/*      $toview = array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+      /*      $toview = array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
       $toviewComplete = array(
          'ITEM_0' => 'entity_name',
          'ITEM_1' => 'host_name',
@@ -332,7 +331,7 @@ class PluginAlignakBoard extends CommonGLPI
          }
       }*/
 
-//            `glpi_computers`.*
+      //            `glpi_computers`.*
 
       $query = "SELECT
             `glpi_entities`.`name` AS entity_name,
@@ -362,7 +361,7 @@ class PluginAlignakBoard extends CommonGLPI
       $globallinkto = '';
 
       $parameters = "sort=".$_GET['sort']."&amp;order=".$_GET['order'].$globallinkto;
-      Html::printPager($_GET['start'], $numrows, $CFG_GLPI['root_doc']."/plugins/monitoring/front/host.php", $parameters);
+      Html::printPager($_GET['start'], $numrows, $CFG_GLPI['root_doc']."/plugins/alignak/front/host.php", $parameters);
 
       $limit = $numrows;
       if ($_SESSION["glpilist_limit"] < $numrows) {
@@ -397,7 +396,7 @@ class PluginAlignakBoard extends CommonGLPI
 
       echo "<tr class='tab_bg_1'>";
       PluginAlignakBoard::showHeaderItem(__('Entity'), 0, $num, $start, $globallinkto, 'host.php', 'PluginAlignakComputer');
-//      PluginAlignakBoard::showHeaderItem(__('Type'), 0, $num, $start, $globallinkto, 'host.php', 'PluginAlignakComputer');
+      //      PluginAlignakBoard::showHeaderItem(__('Type'), 0, $num, $start, $globallinkto, 'host.php', 'PluginAlignakComputer');
       PluginAlignakBoard::showHeaderItem(__('Host', 'monitoring'), 1, $num, $start, $globallinkto, 'host.php', 'PluginAlignakComputer');
       PluginAlignakBoard::showHeaderItem(__('Host state'), 2, $num, $start, $globallinkto, 'host.php', 'PluginAlignakComputer');
       if (isset($host_command_name)) {
@@ -413,7 +412,7 @@ class PluginAlignakBoard extends CommonGLPI
 
       while ($data=$DB->fetch_array($result)) {
          // Reduced array or not ?
-//         if ($_SESSION['plugin_monitoring']['reduced_interface'] and $data['state'] == 'UP') continue;
+         //         if ($_SESSION['plugin_monitoring']['reduced_interface'] and $data['state'] == 'UP') continue;
 
          /*
          if (isset($host_command_name)) {
@@ -429,9 +428,9 @@ class PluginAlignakBoard extends CommonGLPI
          $query2 = "SELECT
             `glpi_plugin_monitoring_services`.*
             FROM `glpi_plugin_monitoring_componentscatalogs_hosts`
-            INNER JOIN `glpi_plugin_monitoring_services` 
+            INNER JOIN `glpi_plugin_monitoring_services`
                ON (`glpi_plugin_monitoring_services`.`plugin_monitoring_componentscatalogs_hosts_id` = `glpi_plugin_monitoring_componentscatalogs_hosts`.`id`)
-            WHERE  `glpi_plugin_monitoring_componentscatalogs_hosts`.`items_id` = '". $data['idComputer'] ."' 
+            WHERE  `glpi_plugin_monitoring_componentscatalogs_hosts`.`items_id` = '". $data['idComputer'] ."'
                AND `glpi_plugin_monitoring_componentscatalogs_hosts`.`itemtype` = 'Computer'
                AND `glpi_plugin_monitoring_services`.`state` != 'OK'
                AND `glpi_plugin_monitoring_services`.`is_acknowledged` = '0'
@@ -478,13 +477,13 @@ class PluginAlignakBoard extends CommonGLPI
       }
       echo "</table>";
       echo "<br/>";
-      Html::printPager($start, $numrows, $CFG_GLPI['root_doc']."/plugins/monitoring/front/host.php", $parameters);
+      Html::printPager($start, $numrows, $CFG_GLPI['root_doc']."/plugins/alignak/front/host.php", $parameters);
    }
 
    /**
     * Display list of counters
     */
-   static function showCountersBoard($width='', $limit='') {
+   static function showCountersBoard($width = '', $limit = '') {
       global $DB,$CFG_GLPI;
 
    }

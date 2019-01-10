@@ -26,29 +26,17 @@ cache:
     - $HOME/.composer/cache
 
 before_script:
-  - "./tests/before_script.sh"
-#  # Update composer
-#  - composer self-update
-#  # Dump Mysql version
-#  - mysql -u root -e 'select version();'
-#  # Get and prepare Glpi application
-#  - cd ..
-#  - git clone --depth=1 https://github.com/glpi-project/glpi glpi -b $GLPI
-#  - cd glpi
-#  - pwd
-#  - composer install --no-dev
-#  - mysql -u root -e 'create database glpi_test;'
-#  # Prepare test database
-#  - php ./scripts/cliinstall.php --db=glpitest --user=root --tests
-#  - php ./scripts/cliupdate.php --config-dir=../tests |grep -q "No migration needed." || (echo "scripts/cliupdate.php FAILED" && exit 1)
-#  # Install alignak plugin in Glpi
-#  - mv ../glpi_alignak plugins/alignak
-#  - cd plugins/alignak
-#  - composer install -o
+  # Update composer
+  - composer self-update
+  # Dump Mysql version
+  - mysql -u root -e 'select version();'
+  # Get and prepare Glpi from source repository
+  - ./tests/before_script.sh
 
 script:
   # Plugin unit tests
   - if [ "${TRAVIS_PHP_VERSION:0:3}" = "$CS" ] && [ "$GLPI_BRANCH" = "$AFTER_SUCCESS_BRANCH" ]; then COVERAGE="--nccfc CommonTreeDropdown CommonDropdown CommonDBTM CommonGLPI"; else COVERAGE="-ncc"; fi
+  # Install and configure default plugin DB
   - if [ -e ../../scripts/cliinstall.php ] ; then php ../../scripts/cliinstall.php --db=$OLDDBNAME --user=root --tests ; fi
   - if [ -e ../../tools/cliinstall.php ] ; then php  ../../tools/cliinstall.php --db=$OLDDBNAME --user=root --tests ; fi
   - mysql -u root $OLDDBNAME < tests/plugin_alignak_empty_1.0.0.sql

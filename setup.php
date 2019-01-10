@@ -61,22 +61,22 @@ if (!file_exists(PLUGIN_ALIGNAK_DOC_DIR)) {
    mkdir(PLUGIN_ALIGNAK_DOC_DIR);
 }
 
-if (!defined("PLUGIN_ALIGNAK_CLASS_PATH")) {
-   define("PLUGIN_ALIGNAK_CLASS_PATH", PLUGIN_ALIGNAK_DIR . "/inc");
-}
-if (!file_exists(PLUGIN_ALIGNAK_CLASS_PATH)) {
-   mkdir(PLUGIN_ALIGNAK_CLASS_PATH);
-}
-
-if (!defined("PLUGIN_ALIGNAK_FRONT_PATH")) {
-   define("PLUGIN_ALIGNAK_FRONT_PATH", PLUGIN_ALIGNAK_DIR."/front");
-}
-if (!file_exists(PLUGIN_ALIGNAK_FRONT_PATH)) {
-   mkdir(PLUGIN_ALIGNAK_FRONT_PATH);
-}
-
+//if (!defined("PLUGIN_ALIGNAK_CLASS_PATH")) {
+//   define("PLUGIN_ALIGNAK_CLASS_PATH", PLUGIN_ALIGNAK_DIR . "/inc");
+//}
+//if (!file_exists(PLUGIN_ALIGNAK_CLASS_PATH)) {
+//   mkdir(PLUGIN_ALIGNAK_CLASS_PATH);
+//}
+//
+//if (!defined("PLUGIN_ALIGNAK_FRONT_PATH")) {
+//   define("PLUGIN_ALIGNAK_FRONT_PATH", PLUGIN_ALIGNAK_DIR."/front");
+//}
+//if (!file_exists(PLUGIN_ALIGNAK_FRONT_PATH)) {
+//   mkdir(PLUGIN_ALIGNAK_FRONT_PATH);
+//}
+//
 if (!defined("PLUGIN_ALIGNAK_TEMPLATES_PATH")) {
-   define("PLUGIN_ALIGNAK_TEMPLATES_PATH", PLUGIN_ALIGNAK_DIR."/templates");
+   define("PLUGIN_ALIGNAK_TEMPLATES_PATH", PLUGIN_ALIGNAK_DOC_DIR ."/templates");
 }
 if (!file_exists(PLUGIN_ALIGNAK_TEMPLATES_PATH)) {
    mkdir(PLUGIN_ALIGNAK_TEMPLATES_PATH);
@@ -174,7 +174,7 @@ function plugin_init_alignak() {
 
       // User
       Plugin::registerClass('PluginAlignakUser',
-         array('addtabon' => array('User')));
+         ['addtabon' => ['User']]);
 
       // Plugin Alignak - Dashboard class
       Plugin::registerClass('PluginAlignakDashboard',

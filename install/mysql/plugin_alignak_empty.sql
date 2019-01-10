@@ -17,16 +17,16 @@ DROP TABLE IF EXISTS `glpi_plugin_alignak_computers`;
 
 CREATE TABLE `glpi_plugin_alignak_computers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `entities_id` int(11) NOT NULL DEFAULT 0,
+  `entities_id` int(11) NOT NULL DEFAULT '0',
   `itemtype` varchar(255) DEFAULT 'Computer',
   `items_id` int(11) NOT NULL DEFAULT '-1',
   `name` varchar(255) DEFAULT NULL,
-  `comment` text DEFAULT '',
+  `comment` text,
   `last_check` datetime DEFAULT NULL,
   `state` varchar(255) DEFAULT 'UNKNOWN',
   `state_type` varchar(255) DEFAULT 'HARD',
   `output` varchar(255) DEFAULT '',
-  `perf_data` text DEFAULT '',
+  `perf_data` varchar(255) DEFAULT '',
   PRIMARY KEY  (`id`),
   KEY `computer` (`itemtype`, `items_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -60,8 +60,8 @@ CREATE TABLE `glpi_plugin_alignak_counters` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `comment` text,
-  `type_counter` ENUM( 'INTEGER', 'FLOAT', 'POURCENTAGE', 'OCTETS') NOT NULL,
-  `cumulatif` BOOLEAN NOT NULL DEFAULT FALSE,
+  `type_counter` enum('INTEGER', 'FLOAT', 'POURCENTAGE', 'OCTETS') NOT NULL,
+  `cumulatif` tinyint(1) NOT NULL DEFAULT '0',
   `plugin_alignak_counters_template_id` int(11) NOT NULL,
   `graphite_name` varchar(255) DEFAULT NULL,
   PRIMARY KEY  (`id`),
@@ -72,9 +72,9 @@ CREATE TABLE `glpi_plugin_alignak_counters` (
 DROP TABLE IF EXISTS `glpi_plugin_alignak_counterstemplates`;
 CREATE TABLE `glpi_plugin_alignak_counterstemplates` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `entities_id` int(11) NOT NULL DEFAULT '0',
   `name` varchar(255) DEFAULT NULL,
   `comment` text DEFAULT NULL,
-  `entities_id` int(11),
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -165,7 +165,7 @@ CREATE TABLE `glpi_plugin_alignak_entities` (
 DROP TABLE IF EXISTS `glpi_plugin_alignak_mailnotifications`;
 CREATE TABLE `glpi_plugin_alignak_mailnotifications` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `entities_id` int(11) NOT NULL DEFAULT 0,
+  `entities_id` int(11) NOT NULL DEFAULT '0',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `name` varchar(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `user_to_id` int(11) NOT NULL DEFAULT '-1',

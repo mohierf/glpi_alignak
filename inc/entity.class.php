@@ -226,8 +226,8 @@ class PluginAlignakEntity extends CommonDBTM
        */
       PluginAlignakToolbox::log("Edit relation with entity: ". $this->fields['plugin_alignak_entitites_id']);
 
-//      echo '<input type="hidden" name="plugin_alignak_entitites_id" value="'. $this->fields['plugin_alignak_entitites_id'] .'/>';
-//      Html::hidden('plugin_alignak_entitites_id', $this->fields['plugin_alignak_entitites_id']);
+      //      echo '<input type="hidden" name="plugin_alignak_entitites_id" value="'. $this->fields['plugin_alignak_entitites_id'] .'/>';
+      //      Html::hidden('plugin_alignak_entitites_id', $this->fields['plugin_alignak_entitites_id']);
       $this->showFormButtons($options);
 
       /*
@@ -281,12 +281,12 @@ class PluginAlignakEntity extends CommonDBTM
          'name'               => __('Comment'),
       ];
 
-//      $tab[] = [
-//         'id'                 => '3',
-//         'table'              => $this->getTable(),
-//         'field'              => 'plugin_alignak_entitites_id',
-//         'name'               => __('Related entity', 'alignak'),
-//      ];
+      //      $tab[] = [
+      //         'id'                 => '3',
+      //         'table'              => $this->getTable(),
+      //         'field'              => 'plugin_alignak_entitites_id',
+      //         'name'               => __('Related entity', 'alignak'),
+      //      ];
       $tab[] = [
          'id'                 => '3',
          'table'              => 'glpi_plugin_alignak_entities',

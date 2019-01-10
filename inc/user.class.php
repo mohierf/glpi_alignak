@@ -48,68 +48,75 @@ class PluginAlignakUser extends CommonDBTM {
 
    static $rightname = 'plugin_alignak_alignak';
 
-   /**
-   * Get name of this type
-   *
-   *@return text name of this type by language of the user connected
-   *
-   static function getTypeName($nb=0) {
-      return __('Alignak backend user', 'monitoring');
+
+   static function getTypeName($nb = 0) {
+      return _n('Alignak user', 'Alignak users', $nb, 'alignak');
    }
+
+
+   /**
+    * @see CommonGLPI::getTabNameForItem()
     **/
+   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
-
-   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
-
-      $array_ret = array();
-      if (($item->getID() > 0) && Session::haveRight('plugin_alignak_alignak', READ)) {
-         $array_ret[0] = self::createTabEntry(__('Monitoring user', 'alignak'));
-      }
+      $array_ret = [];
+      $array_ret[0] = self::createTabEntry(__('Monitoring user', 'alignak'));
       return $array_ret;
    }
 
 
+   /**
+    * @param $item         CommonGLPI object
+    * @param $tabnum       (default 1)
+    * @param $withtemplate (default 0)
+    *
+    * @return boolean
+    **/
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
 
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+      echo "Type: " . $item->getType() . "<br>" . $item->getID() . "<br>" . "<br>" . "<br>" . "<br>" . "<br>";
 
-      if (($item->getID() > 0) && Session::haveRight('plugin_alignak_alignak', READ)) {
-         $pmUser = new PluginAlignakUser();
-         $pmUser->showForm(0);
-      }
+      self::showForItem($item, $withtemplate);
+
       return true;
    }
 
 
+   static function showForItem(CommonDBTM $item, $withtemplate = 0) {
+      $found = false;
+      $pa_user = new PluginAlignakUser();
+
+      $a_list = $pa_user->find("`users_id`='". $item->getField('id') ."'", '', 1);
+      if (count($a_list)) {
+         $array = current($a_list);
+         $found = $pa_user->getFromDB($array["id"]);
+      }
+
+      if ($found) {
+         $pa_user->showForm($pa_user->getID());
+      }
+   }
+
    /**
-   * Display form for Alignak backend user configuration
+   * Display form for an Alignak user configuration
    *
-   * @param $items_id integer ID
-   * @param $options array
+   * @param $ID integer    ID
+   * @param $options       array
    *
    *@return bool true if form is ok
    *
    **/
-   function showForm($items_id, $options=array()) {
+   function showForm($ID, $options = []) {
       global $CFG_GLPI;
 
-      if ($items_id == '0') {
-         $a_list = $this->find("`users_id`='".$_GET['id']."'", '', 1);
-         if (count($a_list)) {
-            $array = current($a_list);
-            $items_id = $array['id'];
-         }
-      }
-
-      if ($items_id != '0') {
-         $this->getFromDB($items_id);
-      } else {
+      if ($ID == '0') {
          $this->getEmpty();
       }
 
-//      $this->initForm($items_id, $options);
+      $this->initForm($ID, $options);
       $this->showFormHeader($options);
-
-      $this->getFromDB($items_id);
+      //
+      //      $this->getFromDB($items_id);
 
       echo "<tr class='tab_bg_1'>";
       echo "<th colspan='4'>";
@@ -120,8 +127,8 @@ class PluginAlignakUser extends CommonDBTM {
       echo "<tr class='tab_bg_1'>";
       echo "<td>".__('Alignak backend login', 'monitoring')." :</td>";
       echo "<td>";
-      Html::autocompletionTextField($this, 'backend_login', array('value' => $this->fields['backend_login']));
-      echo Html::hidden('users_id', array('value' => $_GET['id']));
+      Html::autocompletionTextField($this, 'backend_login', ['value' => $this->fields['backend_login']]);
+      echo Html::hidden('users_id', ['value' => $_GET['id']]);
       echo "</td>";
       echo "<td>".__('Alignak backend password', 'alignak')." :</td>";
       echo "<td>";
@@ -136,14 +143,13 @@ class PluginAlignakUser extends CommonDBTM {
       echo "<tr class='tab_bg_1'>";
       echo "<td>".__('Alignak backend token', 'alignak')." :</td>";
       echo "<td>";
-      Html::autocompletionTextField($this, 'backend_token', array('value' => $this->fields['backend_token']));
+      Html::autocompletionTextField($this, 'backend_token', ['value' => $this->fields['backend_token']]);
       echo "</td>";
       echo "<td colspan='2'>";
       echo "</td>";
       echo "</tr>";
 
       $this->showFormButtons($options);
-
 
       echo "<form name='form' method='post' action='".$CFG_GLPI['root_doc']."/plugins/monitoring/front/user.form.php'>";
       echo "<table class='tab_cadre_fixe'>";
@@ -185,9 +191,9 @@ class PluginAlignakUser extends CommonDBTM {
    * @return computed token
    *
    **/
-   static function myToken(&$backend=null) {
+   static function myToken(&$backend = null) {
       if (isset($_SESSION['alignak_backend_token'])) {
-         PluginAlignakToolbox::logIfExtradebug("Use session stored token: ". $_SESSION['alignak_backend_token'] . "\n");
+         PluginAlignakToolbox::logIfExtraDebug("Use session stored token: ". $_SESSION['alignak_backend_token'] . "\n");
          $backend->token = $_SESSION['alignak_backend_token'];
          return $_SESSION['alignak_backend_token'];
       }
@@ -212,7 +218,7 @@ class PluginAlignakUser extends CommonDBTM {
          }
          if (! isset($_SESSION['alignak_backend_token'])) {
             $_SESSION['alignak_backend_token'] = $token;
-            PluginAlignakToolbox::logIfExtradebug("Store Alignak backend token in the current session: ". $_SESSION['alignak_backend_token'] . "\n");
+            PluginAlignakToolbox::logIfExtraDebug("Store Alignak backend token in the current session: ". $_SESSION['alignak_backend_token'] . "\n");
          }
       }
       return($token);
@@ -230,7 +236,7 @@ class PluginAlignakUser extends CommonDBTM {
       $user = new User();
       $user->getFromDB($users_id);
 
-      $pm_user_data = array();
+      $pm_user_data = [];
       $a_list = $this->find("`users_id`='".$users_id."'", '', 1);
       if (count($a_list)) {
          $pm_user_data = current($a_list);
@@ -238,22 +244,22 @@ class PluginAlignakUser extends CommonDBTM {
 
       if (!empty($pm_user_data['backend_login'])) {
          // Yet associated to as backend account
-         return TRUE;
+         return true;
       }
 
       $abc = new Alignak_Backend_Client($PM_CONFIG['alignak_backend_url']);
       PluginAlignakUser::myToken($abc);
 
-      $data = array(
+      $data = [
           'name'     => $user->fields['name'],
           'email'    => '',
           '_realm'   => 'xxx',
           'password' => $this->randomPassword()
-      );
+      ];
 
       try {
          // Get default timeperiod
-         $timeperiods = $abc->get('timeperiod', array('name' => '24x7'));
+         $timeperiods = $abc->get('timeperiod', ['name' => '24x7']);
          $timeperiod = $timeperiods['_items'][0];
          $data['_realm'] = $timeperiod['_realm'];
          $data['service_notification_period'] = $timeperiod['_id'];
@@ -261,14 +267,14 @@ class PluginAlignakUser extends CommonDBTM {
          // Add user
          $backend_id = $abc->post("user/", $data);
       } catch (Exception $e) {
-         
+
           echo 'Caught exception: ',  $e->getMessage(), "\n";
-          return FALSE;
+          return false;
       }
-      $input = array(
+      $input = [
           'backend_login'    => $user->fields['name'],
           'backend_password' => $data['password']
-      );
+      ];
       if (count($pm_user_data)) {
          $input['id'] = $pm_user_data['id'];
          $this->update($input);
@@ -276,7 +282,7 @@ class PluginAlignakUser extends CommonDBTM {
          $input['users_id'] = $users_id;
          $this->add($input);
       }
-      return TRUE;
+      return true;
    }
 
 
@@ -287,7 +293,7 @@ class PluginAlignakUser extends CommonDBTM {
     */
    function randomPassword() {
       $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
-      $pass = array(); //remember to declare $pass as an array
+      $pass = []; //remember to declare $pass as an array
       $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
       for ($i = 0; $i < 8; $i++) {
          $n = rand(0, $alphaLength);
@@ -306,8 +312,8 @@ class PluginAlignakUser extends CommonDBTM {
    static function showMassiveActionsSubForm(MassiveAction $ma) {
       if ($ma->getAction() == 'createalignakuser') {
          echo Html::submit(__('Create accounts', 'monitoring'),
-                                      array('name' => 'massiveaction'));
-         return TRUE;
+                                      ['name' => 'massiveaction']);
+         return true;
       }
       return parent::showMassiveActionsSubForm($ma);
    }

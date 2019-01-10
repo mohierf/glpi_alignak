@@ -616,8 +616,8 @@ function plugin_alignak_infocom_hook($params) {
 function plugin_alignak_registerMethods() {
    global $WEBSERVICES_METHOD;
 
-   Toolbox::logInFile(PLUGIN_ALIGNAK_LOG,"Register Web services...");
-   $WEBSERVICES_METHOD['kiosks.getGeoloc'] = array('PluginAlignakWebservice', 'methodGetGeoloc');
+   Toolbox::logInFile(PLUGIN_ALIGNAK_LOG, "Register Web services...");
+   $WEBSERVICES_METHOD['kiosks.getGeoloc'] = ['PluginAlignakWebservice', 'methodGetGeoloc'];
    /*
    $WEBSERVICES_METHOD['kiosks.getCounter'] = array('PluginKiosksWebservice', 'methodGetCounter');
    $WEBSERVICES_METHOD['kiosks.getDashboard'] = array('PluginKiosksWebservice', 'methodGetDashboard');

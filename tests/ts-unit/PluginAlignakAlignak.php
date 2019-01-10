@@ -12,42 +12,51 @@ class PluginAlignakAlignak extends CommonTestCase {
       $pa = new \PluginAlignakAlignak;
    }
 
-   public function testGetTypeName() {
-      $this->string(\PluginAlignakAlignak::getTypeName(0))->isIdenticalTo('Alignak instance');
+   public function testGetTypeNameSingular() {
+      $this
+         // création d'une nouvelle instance de la classe à tester
+         ->given($this->newTestedInstance)
+
+         ->then
+            ->string($this->testedInstance->getTypeName(1))
+            ->isIdenticalTo('Alignak instance')
+      ;
    }
 
-   public function testGetTypeName2() {
-      $this->string(\PluginAlignakAlignak::getTypeName(2))->isIdenticalTo('Alignak instances');
-   }
-
-   //   public function testGetTypeName2() {
-   //      $this->string(\PluginAlignakAlignak::getTypeName())->isIdenticalTo('AlignakXxx');
-   //   }
-
-   /*
-   public function testGetSearchOptions() {
-      $container = new \PluginAlignakConfig();
+   public function testGetTypeNamePlural() {
       $this
          ->given($this->newTestedInstance)
+
          ->then
-            ->array($this->testedInstance->getSearchOptions())
-               ->hasSize(8);
+            ->string($this->testedInstance->getTypeName(0))
+            ->isIdenticalTo('Alignak instances')
+            ->string($this->testedInstance->getTypeName(2))
+            ->isIdenticalTo('Alignak instances')
+      ;
    }
 
-   public function testNewConfig() {
-      $container = new \PluginAlignakConfig();
+   public function testDefineTabs() {
+      $this
+         ->given($this->newTestedInstance)
 
-      $data = [
-         'label'     => '_container_label1',
-         'type'      => 'tab',
-         'is_active' => '1',
-         'itemtypes' => ["Computer", "User"]
-      ];
-
-      $newid = $container->add($data);
-      $this->integer($newid)->isGreaterThan(0);
-
-      $this->boolean(class_exists('PluginFieldsComputercontainerlabel1'))->isTrue();
+         ->then
+            ->array($this->testedInstance->defineTabs())
+            ->isEqualTo(
+               [ "PluginAlignakAlignak\$main" => 'Alignak instance' ]
+            )
+      ;
    }
-   */
+
+   public function testRawSearchOptions() {
+      $this
+         ->given($this->newTestedInstance)
+
+         ->then
+         ->array($this->testedInstance->rawSearchOptions())
+         ->isEqualTo(
+            [ "PluginAlignakAlignak\$main" => 'Alignak instance' ]
+         )
+      ;
+   }
+
 }

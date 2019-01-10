@@ -16,34 +16,30 @@ class PluginAlignakCrontasks extends CommonDBTM
       switch ($name) {
          case 'genericGraphiteCounters':
             return  ['description' => __('Update generic Graphite counters', 'alignak')];
-          break;
 
          case 'genericDailyCounters':
             return  ['description' => __('Update generic daily counters', 'alignak')];
-          break;
 
          case 'specificDailyCounters':
             return ['description' => __('Update specific daily counters', 'alignak')];
-          break;
 
          case 'getCSVDailyCounters':
             return ['description' => __('Send daily counters by mail', 'alignak')];
-          break;
       }
-         return [];
+      return [];
    }
 
     // Compute generic Graphite metrics counters
    static function crongenericGraphiteCounters() {
-       global $DB;
+      global $DB;
 
-       // Interval period ... default is 1 week.
-       $interval="1 WEEK";
+      // Interval period ... default is 1 week.
+      $interval="1 WEEK";
 
-       /*
-       * Create global daily counters table
-       */
-       $table = "glpi_plugin_alignak_metrics";
+      /*
+      * Create global daily counters table
+      */
+      $table = "glpi_plugin_alignak_metrics";
       if (! TableExists($table)) {
           $query = "CREATE TABLE `$table` (
                `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -205,22 +201,22 @@ class PluginAlignakCrontasks extends CommonDBTM
 
     // Compute generic daily counters
    static function crongenericDailyCounters() {
-       global $DB;
+      global $DB;
 
-       // Interval period ... default is 1 week.
-       $interval="1 WEEK";
+      // Interval period ... default is 1 week.
+      $interval="1 WEEK";
 
-       // All components with active counters
-       $sql = "SELECT DISTINCT(`mc`.`description`) as component FROM `glpi_plugin_alignak_counters` AS kc INNER JOIN `glpi_plugin_monitoring_components` AS mc ON `mc`.`id` = `kc`.`plugin_monitoring_components_id` WHERE `kc`.`is_active` = 1";
-       $result = $DB->query($sql);
+      // All components with active counters
+      $sql = "SELECT DISTINCT(`mc`.`description`) as component FROM `glpi_plugin_alignak_counters` AS kc INNER JOIN `glpi_plugin_monitoring_components` AS mc ON `mc`.`id` = `kc`.`plugin_monitoring_components_id` WHERE `kc`.`is_active` = 1";
+      $result = $DB->query($sql);
       while ($data = $DB->fetch_array($result)) {
          if (self::logEnabled()) {
             Toolbox::logInFile("pk-cron", "crongenericDailyCounters, component = ". $data['component'] ."\n");
          }
-            PluginKiosksCrontasks::componentDailyCounters($data['component'], $interval);
+         PluginKiosksCrontasks::componentDailyCounters($data['component'], $interval);
       }
 
-         return true;
+      return true;
    }
 
     // Compute specific daily counters (CNAM)
@@ -366,7 +362,7 @@ class PluginAlignakCrontasks extends CommonDBTM
     // CNAM daily counters
    static function cnamDailyCounters() {
 
-       $DB = new DB();
+      $DB = new DB();
       if (!$DB->connected) {
           die("No DB connection\n");
       }
@@ -427,7 +423,6 @@ class PluginAlignakCrontasks extends CommonDBTM
          Toolbox::logInFile("pk-cron", "end, cnamDailyCounters\n");
       }
    }
-
 
     /*
     * Update daily counters table for a specific component :
@@ -553,7 +548,6 @@ class PluginAlignakCrontasks extends CommonDBTM
          return($return);
    }
 
-
    static function paymentRecordCounters($plugin_alignak_counters_name = "payment_record") {
        global $DB;
 
@@ -619,7 +613,6 @@ class PluginAlignakCrontasks extends CommonDBTM
       }
          return (true);
    }
-
 
    static function gameRecordCounters($plugin_alignak_counters_name = "game_record") {
        global $DB;
@@ -692,7 +685,6 @@ class PluginAlignakCrontasks extends CommonDBTM
       }
          return (true);
    }
-
 
    static function getCSVDailyCounters($when = "previous_week", $notification = null) {
        global $DB;
@@ -941,7 +933,6 @@ class PluginAlignakCrontasks extends CommonDBTM
          return (false);
       }
    }
-
 
    static function cronMonitoringCnam($interval_days = 7) {
        global $DB;

@@ -129,8 +129,8 @@ class PluginAlignakMonitoringTemplate extends CommonDBTM {
       $entity = new Entity();
       $entity->getFromDB($this->fields["entities_id"]);
       $entities_id = $this->fields["entities_id"];
-//      echo '<input type="hidden" name="id" value="' . $this->fields['id'] . '"/>';
-//      echo '<input type="hidden" name="entities_id" value="' . $entities_id . '"/>';
+      //      echo '<input type="hidden" name="id" value="' . $this->fields['id'] . '"/>';
+      //      echo '<input type="hidden" name="entities_id" value="' . $entities_id . '"/>';
 
       $this->initForm($ID, $options);
       $this->showFormHeader($options);

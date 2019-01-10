@@ -63,7 +63,7 @@ class PluginAlignakComputer extends CommonDBTM
      **/
    function exists(CommonGLPI $item) {
       $paHost = new PluginAlignakComputer();
-//      PluginAlignakToolbox::logIfDebug("Check if monitored: " . $item->getType() . " / "  . $item->getName());
+      //      PluginAlignakToolbox::logIfDebug("Check if monitored: " . $item->getType() . " / "  . $item->getName());
       PluginAlignakToolbox::log("Check if monitored: " . $item->getType() . " / "  . $item->getName());
       if ($this->getFromDBByCrit(['itemtype' => 'Computer', 'items_id' => $item->getID()])) {
          return true;
@@ -444,7 +444,7 @@ class PluginAlignakComputer extends CommonDBTM
    function showForm($item, $options = []) {
        global $DB,$CFG_GLPI;
 
-//       PluginAlignakToolbox::logIfDebug("Show form for: " . $item->getName());
+      //       PluginAlignakToolbox::logIfDebug("Show form for: " . $item->getName());
        /*
        if ($items_id!='') {
         $this->getFromDB($items_id);
@@ -499,7 +499,7 @@ class PluginAlignakComputer extends CommonDBTM
       global $CFG_GLPI;
 
       $comment = "";
-      $toadd   = array();
+      $toadd   = [];
 
       // The associated computer ...
       $item = new $this->fields['itemtype'];
@@ -507,8 +507,8 @@ class PluginAlignakComputer extends CommonDBTM
 
       if ($this->fields['itemtype'] == 'Computer') {
          if ($item->isField('completename')) {
-            $toadd[] = array('name'  => __('Complete name'),
-               'value' => nl2br($item->getField('completename')));
+            $toadd[] = ['name'  => __('Complete name'),
+               'value' => nl2br($item->getField('completename'))];
          }
 
          $type = new ComputerType();
@@ -516,8 +516,8 @@ class PluginAlignakComputer extends CommonDBTM
             $type->getFromDB($item->getField("computertypes_id"));
             $type = $type->getName();
             if (! empty($type)) {
-               $toadd[] = array('name'  => __('Type'),
-                  'value' => nl2br($type));
+               $toadd[] = ['name'  => __('Type'),
+                  'value' => nl2br($type)];
             }
          } else {
             return $comment;
@@ -528,8 +528,8 @@ class PluginAlignakComputer extends CommonDBTM
             $model->getFromDB($item->getField("computermodels_id"));
             $model = $model->getName();
             if (! empty($model)) {
-               $toadd[] = array('name'  => __('Model'),
-                  'value' => nl2br($model));
+               $toadd[] = ['name'  => __('Model'),
+                  'value' => nl2br($model)];
             }
          }
 
@@ -537,39 +537,39 @@ class PluginAlignakComputer extends CommonDBTM
          $state->getFromDB($item->fields["states_id"]);
          $state = $state->getName();
          if (! empty($state)) {
-            $toadd[] = array('name'  => __('State'),
-               'value' => nl2br($state));
+            $toadd[] = ['name'  => __('State'),
+               'value' => nl2br($state)];
          }
 
          $entity = new Entity();
          $entity->getFromDB($item->fields["entities_id"]);
          $entity = $entity->getName();
          if (! empty($entity)) {
-            $toadd[] = array('name'  => __('Entity'),
-               'value' => nl2br($entity));
+            $toadd[] = ['name'  => __('Entity'),
+               'value' => nl2br($entity)];
          }
 
          $location = new Location();
          $location->getFromDB($item->fields["locations_id"]);
-         $location = $location->getName(array('complete'  => true));
+         $location = $location->getName(['complete'  => true]);
          if (! empty($location)) {
-            $toadd[] = array('name'  => __('Location'),
-               'value' => nl2br($location));
+            $toadd[] = ['name'  => __('Location'),
+               'value' => nl2br($location)];
          }
 
          if (! empty($item->fields["serial"])) {
-            $toadd[] = array('name'  => __('Serial'),
-               'value' => nl2br($item->fields["serial"]));
+            $toadd[] = ['name'  => __('Serial'),
+               'value' => nl2br($item->fields["serial"])];
          }
          if (! empty($item->fields["otherserial"])) {
-            $toadd[] = array('name'  => __('Inventory number'),
-               'value' => nl2br($item->fields["otherserial"]));
+            $toadd[] = ['name'  => __('Inventory number'),
+               'value' => nl2br($item->fields["otherserial"])];
          }
 
          if (($this instanceof CommonDropdown)
             && $this->isField('comment')) {
-            $toadd[] = array('name'  => __('Comments'),
-               'value' => nl2br($this->getField('comment')));
+            $toadd[] = ['name'  => __('Comments'),
+               'value' => nl2br($this->getField('comment'))];
          }
 
          if (count($toadd)) {
@@ -579,17 +579,17 @@ class PluginAlignakComputer extends CommonDBTM
             }
          }
       } else {
-         $toadd[] = array('name'  => __('Host type'),
-            'value' => nl2br($item->getTypeName()));
+         $toadd[] = ['name'  => __('Host type'),
+            'value' => nl2br($item->getTypeName())];
 
          if ($item->isField('completename')) {
-            $toadd[] = array('name'  => __('Complete name'),
-               'value' => nl2br($item->getField('completename')));
+            $toadd[] = ['name'  => __('Complete name'),
+               'value' => nl2br($item->getField('completename'))];
          }
       }
 
       if (!empty($comment)) {
-         return Html::showToolTip($comment, array('display' => false));
+         return Html::showToolTip($comment, ['display' => false]);
       }
    }
 
@@ -623,12 +623,12 @@ class PluginAlignakComputer extends CommonDBTM
          'name'               => __('Comment'),
       ];
 
-//      $tab[] = [
-//         'id'                 => '3',
-//         'table'              => $this->getTable(),
-//         'field'              => 'plugin_alignak_entitites_id',
-//         'name'               => __('Related entity', 'alignak'),
-//      ];
+      //      $tab[] = [
+      //         'id'                 => '3',
+      //         'table'              => $this->getTable(),
+      //         'field'              => 'plugin_alignak_entitites_id',
+      //         'name'               => __('Related entity', 'alignak'),
+      //      ];
       $tab[] = [
          'id'                 => '3',
          'table'              => 'glpi_entities',

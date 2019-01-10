@@ -64,8 +64,6 @@ class PluginAlignakAlignak extends CommonDBTM
    }
 
    function showForm($ID, $options = []) {
-      global $CFG_GLPI;
-
       $this->initForm($ID, $options);
       $this->showFormHeader($options);
 
@@ -208,32 +206,35 @@ class PluginAlignakAlignak extends CommonDBTM
    }
 
    /**
-     * Give localized information about 1 task
-     *
-     * @param $name of the task
-     *
-     * @return array of strings
-     */
+    * Give localized information about 1 task
+    *
+    * @param $name string - name of the task
+    *
+    * @return array of strings
+    */
    static function cronInfo($name) {
-
       switch ($name) {
          case 'AlignakBuild' :
-            return ['description' => __('Cron description for alignak', 'alignak'),
-                  'parameter'   => __('Cron parameter for alignak', 'alignak')];
+            return [
+               'description' => __('Cron description for alignak', 'alignak'),
+               'parameter'   => __('Cron parameter for alignak', 'alignak')
+            ];
       }
-         return [];
+      return [];
    }
 
    /**
-     * Execute 1 task managed by the plugin
-     *
-     * @param $task Object of CronTask class for log / stat
-     *
-     * @return interger
-     *    >0 : done
-     *    <0 : to be run again (not finished)
-     *     0 : nothing to do
-     */
+    * Execute 1 task managed by the plugin
+    *
+    * Build Alignak instance configuration
+    *
+    * @param $task Object of CronTask class for log / stat
+    *
+    * @return integer
+    *    >0 : done
+    *    <0 : to be run again (not finished)
+    *     0 : nothing to do
+    */
    static function cronAlignakBuild($task) {
 
       $task->log("Example log message from class");
@@ -244,28 +245,9 @@ class PluginAlignakAlignak extends CommonDBTM
       return 1;
    }
 
-   // Hook done on before add item case (data from form, not altered)
-   static function pre_item_add_computer(Computer $item) {
-      if (isset($item->input['name']) && empty($item->input['name'])) {
-          Session::addMessageAfterRedirect("Pre Add Computer Hook KO (name empty)", true);
-          return $item->input = false;
-      } else {
-         Session::addMessageAfterRedirect("Pre Add Computer Hook OK", true);
-      }
-   }
-
-    // Hook done on before add item case (data altered by object prepareInputForAdd)
-   static function post_prepareadd_computer(Computer $item) {
-       Session::addMessageAfterRedirect("Post prepareAdd Computer Hook", true);
-   }
-
-    // Hook done on add item case
-   static function item_add_computer(Computer $item) {
-
-       Session::addMessageAfterRedirect("Add Computer Hook, ID=".$item->getID(), true);
-       return true;
-   }
-
+   /**
+    * @see CommonGLPI::getTabNameForItem()
+    **/
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       if (!$withtemplate) {
@@ -291,6 +273,11 @@ class PluginAlignakAlignak extends CommonDBTM
       return '';
    }
 
+   /**
+    * @param $item         CommonGLPI object
+    * @param $tabnum       (default 1)
+    * @param $withtemplate (default 0)
+    **/
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
 
       switch ($item->getType()) {
@@ -360,136 +347,4 @@ class PluginAlignakAlignak extends CommonDBTM
       }
          return '';
    }
-
-   /**
-     * Get an history entry message
-     *
-     * @param $data Array from glpi_logs table
-     *
-     * @since GLPI version 0.84
-     *
-     * @return string
-     **/
-   static function getHistoryEntry($data) {
-
-      switch ($data['linked_action'] - Log::HISTORY_PLUGIN) {
-         case 0:
-            return __('History from plugin alignak', 'alignak');
-      }
-
-         return '';
-   }
-
-   /**
-     *
-     * @since version 0.85
-     *
-     * @see CommonDBTM::getSpecificMassiveActions()
-     **/
-   function getSpecificMassiveActions($checkitem = null) {
-
-       $actions = parent::getSpecificMassiveActions($checkitem);
-
-       $actions['Document_Item'.MassiveAction::CLASS_ACTION_SEPARATOR.'add']  =
-                                       _x('button', 'Add a document');         // GLPI core one
-       $actions[__CLASS__.MassiveAction::CLASS_ACTION_SEPARATOR.'do_nothing'] =
-                                       __('Do Nothing - just for fun', 'alignak');  // Specific one
-
-       return $actions;
-   }
-
-   /**
-     *
-     * @since version 0.85
-     *
-     * @see CommonDBTM::showMassiveActionsSubForm()
-     **/
-   static function showMassiveActionsSubForm(MassiveAction $ma) {
-
-      switch ($ma->getAction()) {
-         case 'DoIt':
-            echo "&nbsp;<input type='hidden' name='toto' value='1'>".
-                Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']).
-                " ".__('Write in item history', 'alignak');
-            return true;
-         case 'do_nothing' :
-            echo "&nbsp;".Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']).
-                " ".__('but do nothing :)', 'alignak');
-            return true;
-      }
-         return parent::showMassiveActionsSubForm($ma);
-   }
-
-   /**
-     *
-     * @since version 0.85
-     *
-     * @see CommonDBTM::processMassiveActionsForOneItemtype()
-     **/
-   static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
-        array $ids
-    ) {
-       global $DB;
-
-      switch ($ma->getAction()) {
-         case 'DoIt' :
-            if ($item->getType() == 'Computer') {
-                Session::addMessageAfterRedirect(__("Right it is the type I want...", 'alignak'));
-                Session::addMessageAfterRedirect(__('Write in item history', 'alignak'));
-                $changes = [0, 'old value', 'new value'];
-               foreach ($ids as $id) {
-                  if ($item->getFromDB($id)) {
-                      Session::addMessageAfterRedirect("- ".$item->getField("name"));
-                      Log::history(
-                          $id, 'Computer', $changes, 'PluginAlignakAlignak',
-                          Log::HISTORY_PLUGIN
-                      );
-                      $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
-                  } else {
-                     // Example of ko count
-                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
-                  }
-               }
-            } else {
-               // When nothing is possible ...
-               $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
-            }
-            return;
-
-         case 'do_nothing' :
-            If ($item->getType() == 'PluginAlignakAlignak') {
-                Session::addMessageAfterRedirect(__("Right it is the type I want...", 'alignak'));
-                Session::addMessageAfterRedirect(
-                    __(
-                        "But... I say I will do nothing for:",
-                        'alignak'
-                    )
-                );
-               foreach ($ids as $id) {
-                  if ($item->getFromDB($id)) {
-                      Session::addMessageAfterRedirect("- ".$item->getField("name"));
-                      $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
-                  } else {
-                     // Example for noright / Maybe do it with can function is better
-                     $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_KO);
-                  }
-               }
-            } else {
-               $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
-            }
-            Return;
-      }
-      parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
-   }
-
-   static function generateLinkContents($link, CommonDBTM $item) {
-
-      if (strstr($link, "[ALIGNAK_ID]")) {
-          $link = str_replace("[ALIGNAK_ID]", $item->getID(), $link);
-          return [$link];
-      }
-
-         return parent::generateLinkContents($link, $item);
-   }
-
 }

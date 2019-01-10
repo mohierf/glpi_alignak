@@ -53,7 +53,7 @@ class PluginAlignakToolbox
 {
 
    /**
-    * Log when extra-debug is activated
+    * Log a message
     *
     * @param $message string or array
     */
@@ -85,4 +85,29 @@ class PluginAlignakToolbox
       }
    }
 
+   /*
+    * Recursive cope
+    */
+   static function copyr($source, $dest) {
+      // recursive function to copy
+      // all subdirectories and contents:
+      if (is_dir($source)) {
+         $dir_handle=opendir($source);
+         $sourcefolder = basename($source);
+         mkdir($dest."/".$sourcefolder);
+         while ($file=readdir($dir_handle)) {
+            if ($file!="." && $file!="..") {
+               if (is_dir($source."/".$file)) {
+                  self::copyr($source."/".$file, $dest."/".$sourcefolder);
+               } else {
+                  copy($source."/".$file, $dest."/".$file);
+               }
+            }
+         }
+         closedir($dir_handle);
+      } else {
+         // can also handle simple copy commands
+         copy($source, $dest);
+      }
+   }
 }

@@ -130,7 +130,7 @@ for ($i = 0; $i < 10; $i++) {
       'perf_data'=> $perf
    ];
    $cr = $paObject->update($updates);
-//   $paObject->updateInDB($updates);
+   //   $paObject->updateInDB($updates);
    echo "Computer: $hostId, update: ". serialize($cr) ."\n";
 
    $rand = rand(0, 100);

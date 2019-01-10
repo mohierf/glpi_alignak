@@ -87,7 +87,7 @@ class PluginAlignakConfig extends CommonDBTM
          $query = "CREATE TABLE `".$newTable."` (
                  `id` int(11) NOT NULL AUTO_INCREMENT,
                  `timezones` varchar(255) NOT NULL DEFAULT '[\"0\"]',
-                 `extradebug` tinyint(1) NOT NULL DEFAULT '0',
+                 `extra_debug` tinyint(1) NOT NULL DEFAULT '0',
                  `alignak_webui_url` varchar(255) DEFAULT 'http://127.0.0.1:5001',
                  `alignak_backend_url` varchar(255) DEFAULT 'http://127.0.0.1:5000',
                  `graphite_url` varchar(255) DEFAULT 'http://127.0.0.1:8080',
@@ -118,9 +118,9 @@ class PluginAlignakConfig extends CommonDBTM
 
       $result = $DB->query($query);
       if ($DB->numrows($result) == '0') {
-         $input = array();
+         $input = [];
          $input['timezones'] = '["0"]';
-         $input['extradebug'] = 0;
+         $input['extra_debug'] = 0;
          $input['alignak_backend_url'] = 'http://127.0.0.1:5000';
          $input['alignak_webui_url'] = 'http://127.0.0.1:5001';
          $input['graphite_url'] = 'http://127.0.0.1:8080';
@@ -189,12 +189,12 @@ class PluginAlignakConfig extends CommonDBTM
 
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
 
-//      if (($item->getType() == 'Config')
-//         && ($item->getID() > 0)
-//         && Session::haveRight('plugin_alignak_configuration', READ)) {
-//         $config = new self();
-//         $config->showForm();
-//      }
+      //      if (($item->getType() == 'Config')
+      //         && ($item->getID() > 0)
+      //         && Session::haveRight('plugin_alignak_configuration', READ)) {
+      //         $config = new self();
+      //         $config->showForm();
+      //      }
       $config = new self();
       $config->showForm();
    }
@@ -210,23 +210,20 @@ class PluginAlignakConfig extends CommonDBTM
       $this->initForm($ID, $options);
       $this->showFormHeader($options);
 
-//      $my_config = Config::getConfigurationValues('plugin:Alignak');
+      //      $my_config = Config::getConfigurationValues('plugin:Alignak');
 
-//      $this->showFormHeader();
+      //      $this->showFormHeader();
 
-//      echo "<form name='form' action=\"".Toolbox::getItemTypeFormURL('Config')."\" method='post'>";
-//      echo "<div class='center' id='tabsbody'>";
-//      echo "<table class='tab_cadre_fixe'>";
-
-
-
+      //      echo "<form name='form' action=\"".Toolbox::getItemTypeFormURL('Config')."\" method='post'>";
+      //      echo "<div class='center' id='tabsbody'>";
+      //      echo "<table class='tab_cadre_fixe'>";
 
       echo "<tr><th colspan='2'>" . __('Alignak monitoring plugin setup') . "</th></tr>";
       echo "<td >" . __('Log extra debug:') . "</td>";
       echo "<td colspan='3'>";
-//      echo "<input type='hidden' name='config_class' value='".__CLASS__."'>";
-//      echo "<input type='hidden' name='config_context' value='plugin:Alignak'>";
-      Dropdown::showYesNo("configuration", $this->fields['extradebug']);
+      //      echo "<input type='hidden' name='config_class' value='".__CLASS__."'>";
+      //      echo "<input type='hidden' name='config_context' value='plugin:Alignak'>";
+      Dropdown::showYesNo("configuration", $this->fields['extra_debug']);
       echo "</td></tr>";
 
       echo '<tr class="tab_bg_1">';
@@ -234,7 +231,7 @@ class PluginAlignakConfig extends CommonDBTM
       echo __('Alignak backend URL', 'alignak');
       echo '</td>';
       echo '<td>';
-      Html::autocompletionTextField($this, 'alignak_backend_url', array('value' => $this->fields['alignak_backend_url']));
+      Html::autocompletionTextField($this, 'alignak_backend_url', ['value' => $this->fields['alignak_backend_url']]);
       echo '</td>';
       echo '</tr>';
 
@@ -243,7 +240,7 @@ class PluginAlignakConfig extends CommonDBTM
       echo __('Alignak Web UI URL', 'alignak');
       echo '</td>';
       echo '<td>';
-      Html::autocompletionTextField($this, 'alignak_webui_url', array('value' => $this->fields['alignak_webui_url']));
+      Html::autocompletionTextField($this, 'alignak_webui_url', ['value' => $this->fields['alignak_webui_url']]);
       echo '</td>';
       echo '</tr>';
 
@@ -252,7 +249,7 @@ class PluginAlignakConfig extends CommonDBTM
       echo "<input type='submit' name='update' class='submit' value=\""._sx('button', 'Save')."\">";
       echo "</td></tr>";
 
-//      $this->showFormButtons();
+      //      $this->showFormButtons();
 
       echo "</table>";
       echo "</div>";

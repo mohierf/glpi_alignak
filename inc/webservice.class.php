@@ -49,12 +49,12 @@ class PluginAlignaksWebservice {
    /*
       Plugin Alignak WS return error message
     */
-   static function Error($message='') {
+   static function Error($message = '') {
 
       if (! empty($message)) {
-         return array("error"   => $message);
+         return ["error"   => $message];
       } else {
-         return array("error"   => "Plugin Alignak web service unknown error.");
+         return ["error"   => "Plugin Alignak web service unknown error."];
       }
    }
 
@@ -263,7 +263,7 @@ class PluginAlignaksWebservice {
       $xml_answer = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?><root>';
       switch ($action) {
          case 'rechercherListe':
-            while($data=$DB->fetch_array($result)) {
+            while ($data=$DB->fetch_array($result)) {
                Toolbox::logInFile("pk-geoloc", "getGeoloc, $action, data: ".serialize($data)."\n");
                $address = $data['entityAddress'].' '.$data['entityPostcode'].' '.$data['entityTown'];
 
@@ -294,7 +294,7 @@ class PluginAlignaksWebservice {
             break;
 
          case 'recupererListe':
-            while($data=$DB->fetch_array($result)) {
+            while ($data=$DB->fetch_array($result)) {
                Toolbox::logInFile("pk-geoloc", "getGeoloc, $action, data: ".serialize($data)."\n");
                $address = $data['entityAddress'].' '.$data['entityPostcode'].' '.$data['entityTown'];
 
@@ -325,7 +325,7 @@ class PluginAlignaksWebservice {
             break;
 
          case 'detailsGaam':
-            while($data=$DB->fetch_array($result)) {
+            while ($data=$DB->fetch_array($result)) {
                Toolbox::logInFile("pk-geoloc", "getGeoloc, $action, data: ".serialize($data)."\n");
                $address = $data['entityAddress'].' '.$data['entityPostcode'].' '.$data['entityTown'];
 
@@ -341,7 +341,7 @@ class PluginAlignaksWebservice {
                $parent_entity->getFromDB($data['entityParent']);
                $parent_name = strtoupper($parent_entity->fields['name']);
                $calendars_id = self::getGeolocCalendarId($data['entityId'], $data['calendarsId']);
-               if (! array_key_exists($calendars_id, $calendars)){
+               if (! array_key_exists($calendars_id, $calendars)) {
                   Toolbox::logInFile("pk-geoloc", "ERROR: $calendars_id do not have declared segments !\n");
                   $calendars[$calendars_id] = "Horaires non renseignes.";
                } else {
@@ -469,7 +469,7 @@ class PluginAlignaksWebservice {
     */
    static function methodGetDashboard($params, $protocol) {
       if (!Session::getLoginUserID()) {
-         return (array( 'error' => "User is not authenticated!" ));
+         return ([ 'error' => "User is not authenticated!" ]);
       }
 
       $debug = false;
@@ -477,22 +477,22 @@ class PluginAlignaksWebservice {
          $debug=true;
       }
       if ($debug) {
-         $debugFields = array();
+         $debugFields = [];
          $debugFields['ws'] = "kiosks.getDashboard";
       }
 
       $templateRoot = "default";
-      if ( isset($params['template']) && (! empty($params['template'])) ) {
+      if (isset($params['template']) && (! empty($params['template']))) {
          $templateRoot = strtolower($params['template']);
       }
       if ($debug) {
          $debugFields['requiredTemplate'] = $templateRoot;
       }
 
-      if ( isset($params['name']) && (! empty($params['name'])) ) {
+      if (isset($params['name']) && (! empty($params['name']))) {
          $name = strtolower($params['name']);
       } else {
-         return (array( 'error' => "Missing parameter 'name'." ));
+         return ([ 'error' => "Missing parameter 'name'." ]);
       }
       if ($debug) {
          $debugFields['requiredName'] = $name;
@@ -599,10 +599,10 @@ class PluginAlignaksWebservice {
                if ($debug) {
                   $debugFields['templateCounters'] = $c_file." was not found!";
                }
-               return array('result'         => false,
+               return ['result'         => false,
                             'error'          => "Missing template file: $c_file",
                             'configuration'  => null
-               );
+               ];
             }
             $template = str_replace("#template.main_counters#", $c_result, $template);
             // if ($debug) {
@@ -648,10 +648,10 @@ class PluginAlignaksWebservice {
             if ($debug) {
                $debugFields['templateDashboard'] = $file." was not found!";
             }
-            return array('result'         => false,
+            return ['result'         => false,
                          'error'          => "Missing template file: $file",
                          'configuration'  => null
-            );
+            ];
          }
       } else {
          if ($debug) {
@@ -666,7 +666,7 @@ class PluginAlignaksWebservice {
          $configuration = '';
          $json_error='';
 
-         if ( is_file( $file ) ) {
+         if (is_file( $file )) {
             if ($debug) {
                $debugFields['DashboardDB2'] = "Dashboard found in file = " . $file;
             }
@@ -710,16 +710,16 @@ class PluginAlignaksWebservice {
          }
       }
       if ($debug) {
-         return array('result'         => $result,
+         return ['result'         => $result,
                       'error'          => $json_error,
                       'configuration'  => $configuration,
                       'debug'          => $debugFields
-         );
+         ];
       }
-      return array('result'         => $result,
+      return ['result'         => $result,
                    'error'          => $json_error,
                    'configuration'  => $configuration
-      );
+      ];
    }
 
    /*
@@ -763,7 +763,7 @@ class PluginAlignaksWebservice {
     */
    static function methodGetDatatable($params, $protocol) {
       if (!Session::getLoginUserID()) {
-          return (array( 'error' => "User is not authenticated!" ));
+          return ([ 'error' => "User is not authenticated!" ]);
       }
 
       $debug = false;
@@ -771,14 +771,14 @@ class PluginAlignaksWebservice {
           $debug=true;
       }
       if ($debug) {
-         $debugFields = array();
+         $debugFields = [];
          $debugFields['ws'] = "kiosks.getDatatable";
       }
 
-      if ( isset($params['table']) && ($params['table']) ) {
+      if (isset($params['table']) && ($params['table'])) {
          $table = $params['table'];
       } else {
-         return (array( 'error' => "Missing parameter 'table'." ));
+         return ([ 'error' => "Missing parameter 'table'." ]);
       }
       if ($debug) {
          $debugFields['requiredTable'] = $table;
@@ -786,99 +786,101 @@ class PluginAlignaksWebservice {
 
       // Get data table configuration file
       $file = GLPI_ROOT . "/plugins/kiosks/conf/table.$table.php";
-      if ( is_file( $file ) ) {
+      if (is_file( $file )) {
          require_once( $file );
       } else {
-         return (array( 'error' => "File $file.php not found!" ));
+         return ([ 'error' => "File $file.php not found!" ]);
       }
       if ($debug) {
          $debugFields['databaseTable'] = $table;
       }
 
          // Table's primary key
-         if (! isset($primaryKey)) {
-            $primaryKey = 'id';
-            if ( isset($params['primaryKey']) && ($params['primaryKey']) ) {
-                 $primaryKey = $params['primaryKey'];
-            }
+      if (! isset($primaryKey)) {
+         $primaryKey = 'id';
+         if (isset($params['primaryKey']) && ($params['primaryKey'])) {
+              $primaryKey = $params['primaryKey'];
          }
-         if ($debug) {
-            $debugFields['primaryKey'] = $primaryKey;
-         }
+      }
+      if ($debug) {
+         $debugFields['primaryKey'] = $primaryKey;
+      }
 
-         if (! isset($columns)) {
-            return (array( 'error' => "Missing configuration for 'table'. Columns declaration not found!" ));
-         }
-         if ($debug) {
-            $debugFields['columns'] = $columns;
-         }
+      if (! isset($columns)) {
+         return ([ 'error' => "Missing configuration for 'table'. Columns declaration not found!" ]);
+      }
+      if ($debug) {
+         $debugFields['columns'] = $columns;
+      }
 
          $extraCondition = $order = $groupBy = '';
 
          // Entities
-         if (isset($params['entitiesList'])) {
-             $row['entitiesList']=$params['entitiesList'];
-             if (!Session::haveAccessToAllOfEntities($params['entitiesList'])) {
-                return (array( 'error' => "Access to all required entities is not allowed!" ));
-             }
-             $extraCondition = getEntitiesRestrictRequest("", isset($entitiesTable) ? "$entitiesTable" : "$table", '', $params['entitiesList']) .
-                               $extraCondition;
-         } else {
-             $extraCondition = getEntitiesRestrictRequest("", isset($entitiesTable) ? "$entitiesTable" : "$table") .
-                               $extraCondition;
+      if (isset($params['entitiesList'])) {
+          $row['entitiesList']=$params['entitiesList'];
+         if (!Session::haveAccessToAllOfEntities($params['entitiesList'])) {
+              return ([ 'error' => "Access to all required entities is not allowed!" ]);
          }
-         if ($debug) {
-            $debugFields['whereEntities'] = $extraCondition;
-         }
+          $extraCondition = getEntitiesRestrictRequest("", isset($entitiesTable) ? "$entitiesTable" : "$table", '', $params['entitiesList']) .
+                            $extraCondition;
+      } else {
+          $extraCondition = getEntitiesRestrictRequest("", isset($entitiesTable) ? "$entitiesTable" : "$table") .
+                            $extraCondition;
+      }
+      if ($debug) {
+         $debugFields['whereEntities'] = $extraCondition;
+      }
 
          // Hosts filter
-         if (isset($params['hostsFilter']) && ! empty($params['hostsFilter'])) {
-            $row['hostsFilter']=$params['hostsFilter'];
-            if (is_array($params['hostsFilter'])) {
-               $extraCondition .= " AND `$table`.`hostname` IN ('" . implode("','",$params['hostsFilter']) . "')";
-            } else {
-               $extraCondition .= " AND `$table`.`hostname` = '" . $params['hostsFilter'] . "'";
-            }
+      if (isset($params['hostsFilter']) && ! empty($params['hostsFilter'])) {
+         $row['hostsFilter']=$params['hostsFilter'];
+         if (is_array($params['hostsFilter'])) {
+            $extraCondition .= " AND `$table`.`hostname` IN ('" . implode("','", $params['hostsFilter']) . "')";
+         } else {
+            $extraCondition .= " AND `$table`.`hostname` = '" . $params['hostsFilter'] . "'";
          }
-         if ($debug) {
-            $debugFields['whereHosts'] = $extraCondition;
-         }
+      }
+      if ($debug) {
+         $debugFields['whereHosts'] = $extraCondition;
+      }
 
          // Services filter
-         if (isset($params['servicesFilter']) && ! empty($params['servicesFilter'])) {
-            $row['servicesFilter']=$params['servicesFilter'];
-            if (is_array($params['servicesFilter'])) {
-               $extraCondition .= " AND `$table`.`service` IN ('" . implode("','",$params['servicesFilter']) . "')";
-            } else {
-               $extraCondition .= " AND `$table`.`service` = '" . $params['servicesFilter'] . "'";
-            }
+      if (isset($params['servicesFilter']) && ! empty($params['servicesFilter'])) {
+         $row['servicesFilter']=$params['servicesFilter'];
+         if (is_array($params['servicesFilter'])) {
+            $extraCondition .= " AND `$table`.`service` IN ('" . implode("','", $params['servicesFilter']) . "')";
+         } else {
+            $extraCondition .= " AND `$table`.`service` = '" . $params['servicesFilter'] . "'";
          }
-         if ($debug) {
-            $debugFields['whereServices'] = $extraCondition;
-         }
+      }
+      if ($debug) {
+         $debugFields['whereServices'] = $extraCondition;
+      }
 
          // Group by
-         if ( isset($params['groupBy']) && ($params['groupBy']) ) {
-            $groupBy = $params['groupBy'];
-         }
-         if ($debug) {
-            $debugFields['groupBy'] = $groupBy;
-         }
+      if (isset($params['groupBy']) && ($params['groupBy'])) {
+         $groupBy = $params['groupBy'];
+      }
+      if ($debug) {
+         $debugFields['groupBy'] = $groupBy;
+      }
 
          $distinct = -1;
-         if ( isset($params['distinct']) && ($params['distinct']) ) {
-            $distinct = $params['distinct'];
-         }
-         if ($debug) $debugFields['distinct'] = $distinct;
+      if (isset($params['distinct']) && ($params['distinct'])) {
+         $distinct = $params['distinct'];
+      }
+      if ($debug) {
+         $debugFields['distinct'] = $distinct;
+      }
 
          // DB connection
          $db = new DB();
-         $sql_details = array(
+         $sql_details = [
                'host' => $db->dbhost,
                'db'   => $db->dbdefault,
                'user' => $db->dbuser,
                'pass' => $db->dbpassword
-               );
+               ];
          // Get SSP library for DataTables
          require_once (GLPI_ROOT . "/plugins/kiosks/lib/ssp.php");
 
@@ -964,11 +966,11 @@ class PluginAlignaksWebservice {
       global $DB, $CFG_GLPI;
 
       if (!Session::getLoginUserID()) {
-         return (array( 'error' => "User is not authenticated!" ));
+         return ([ 'error' => "User is not authenticated!" ]);
       }
 
-      $rows = array();
-      $row = array();
+      $rows = [];
+      $row = [];
       $row['id']=-1;
 
       $debug = false;
@@ -1000,7 +1002,7 @@ class PluginAlignaksWebservice {
       if (isset($params['entitiesList'])) {
          $row['entitiesList']=$params['entitiesList'];
          if (!Session::haveAccessToAllOfEntities($params['entitiesList'])) {
-            return (array( 'error' => "Access to all required entities is not allowed!" ));
+            return ([ 'error' => "Access to all required entities is not allowed!" ]);
          }
          $where = getEntitiesRestrictRequest("WHERE", "glpi_computers", '', $params['entitiesList']) .
                            $where;
@@ -1013,7 +1015,7 @@ class PluginAlignaksWebservice {
          $row['hostsFilter']=$params['hostsFilter'];
          if (is_array($params['hostsFilter'])) {
             if (count($params['hostsFilter']) != 0) {
-               $where .= " AND `glpi_computers`.`name` IN ('" . implode("','",$params['hostsFilter']) . "')";
+               $where .= " AND `glpi_computers`.`name` IN ('" . implode("','", $params['hostsFilter']) . "')";
             }
          } else {
             if (! empty($params['hostsFilter']) != 0) {
@@ -1036,7 +1038,7 @@ class PluginAlignaksWebservice {
       if (isset($params['locationsFilter'])) {
          $row['locationsFilter']=$params['locationsFilter'];
          if (is_array($params['locationsFilter'])) {
-            $where .= " AND `glpi_locations`.`id` IN ('" . implode("','",$params['locationsFilter']) . "')";
+            $where .= " AND `glpi_locations`.`id` IN ('" . implode("','", $params['locationsFilter']) . "')";
          } else {
             $where .= " AND `glpi_locations`.`id` = " . $params['locationsFilter'];
          }
@@ -1044,12 +1046,12 @@ class PluginAlignaksWebservice {
 
       // States filter
       if (! isset($params['hostsStateFilter'])) {
-         $params['hostsStateFilter'] = array ('DOWN','PENDING','UNKNOWN','UNREACHABLE','UP');
+         $params['hostsStateFilter'] =  ['DOWN','PENDING','UNKNOWN','UNREACHABLE','UP'];
       }
       if (isset($params['hostsStateFilter'])) {
          $row['hostsStateFilter']=$params['hostsStateFilter'];
          if (is_array($params['hostsStateFilter'])) {
-            $where .= " AND `glpi_plugin_monitoring_hosts`.`state` IN ('" . implode("','",$params['hostsStateFilter']) . "')";
+            $where .= " AND `glpi_plugin_monitoring_hosts`.`state` IN ('" . implode("','", $params['hostsStateFilter']) . "')";
          } else {
             $where .= " AND `glpi_plugin_monitoring_hosts`.`state` = '" . $params['hostsStateFilter'] . "'";
          }
@@ -1122,7 +1124,7 @@ class PluginAlignaksWebservice {
 
       $result = $DB->query($query);
       while ($data=$DB->fetch_array($result)) {
-         $row = array();
+         $row = [];
          foreach ($data as $key=>$value) {
             if (is_string($key)) {
                $row[$key] = trim($value);
@@ -1150,7 +1152,7 @@ class PluginAlignaksWebservice {
          if (! empty($data['state']) && isset($params['servicesFilter'])) {
             // Fetch host services
             $services = self::methodGetServices(
-                  array(
+                  [
                      'debug'               => isset($params['debug']) ? true : null,
                      'start'               => 0,
                      'limit'               => 100,
@@ -1158,9 +1160,9 @@ class PluginAlignaksWebservice {
                      'hostsFilter'         => isset($row['name']) ? $row['name'] : null,
                      'servicesFilter'      => $params['servicesFilter'] == '*' ? '' : $params['servicesFilter'],
                      'servicesStateFilter' => $params['servicesStateFilter'] == '*' ? null : $params['servicesStateFilter']
-               )
-               ,
-               $protocol
+                  ],
+
+                  $protocol
             );
             if (isset($services['host_name'])) {
                unset($services['host_name']);
@@ -1228,11 +1230,11 @@ class PluginAlignaksWebservice {
    static function methodGetServices($params, $protocol) {
       global $DB, $CFG_GLPI;
       if (!Session::getLoginUserID()) {
-         return (array( 'error' => "User is not authenticated!" ));
+         return ([ 'error' => "User is not authenticated!" ]);
       }
 
-      $rows = array();
-      $row = array();
+      $rows = [];
+      $row = [];
       $row['id']=-1;
 
       $debug = false;
@@ -1264,68 +1266,68 @@ class PluginAlignaksWebservice {
       if (isset($params['entitiesList'])) {
          $row['entitiesList']=$params['entitiesList'];
          if (!Session::haveAccessToAllOfEntities($params['entitiesList'])) {
-            return (array( 'error' => "Access to all required entities is not allowed!" ));
+            return ([ 'error' => "Access to all required entities is not allowed!" ]);
          }
          $where = getEntitiesRestrictRequest("WHERE", "glpi_computers", '', $params['entitiesList']) .
                            $where;
-         } else {
-            $where = getEntitiesRestrictRequest("WHERE", "glpi_computers") .
-                           $where;
-         }
+      } else {
+         $where = getEntitiesRestrictRequest("WHERE", "glpi_computers") .
+                        $where;
+      }
 
          // Hosts filter
-         if (isset($params['hostsFilter'])) {
-            $row['hostsFilter']=$params['hostsFilter'];
-            if (is_array($params['hostsFilter'])) {
-               if (count($params['hostsFilter']) != 0) {
-                  $where .= " AND `glpi_computers`.`name` IN ('" . implode("','",$params['hostsFilter']) . "')";
-               }
-            } else {
-               if (! empty($params['hostsFilter']) != 0) {
-                  $where .= " AND `glpi_computers`.`name` = '" . $params['hostsFilter'] . "'";
-               }
+      if (isset($params['hostsFilter'])) {
+         $row['hostsFilter']=$params['hostsFilter'];
+         if (is_array($params['hostsFilter'])) {
+            if (count($params['hostsFilter']) != 0) {
+               $where .= " AND `glpi_computers`.`name` IN ('" . implode("','", $params['hostsFilter']) . "')";
+            }
+         } else {
+            if (! empty($params['hostsFilter']) != 0) {
+               $where .= " AND `glpi_computers`.`name` = '" . $params['hostsFilter'] . "'";
             }
          }
+      }
 
          // Services filter
-         if (isset($params['servicesFilter'])) {
-            $row['servicesFilter']=$params['servicesFilter'];
-            if (is_array($params['servicesFilter'])) {
-               if (count($params['servicesFilter']) != 0) {
-                  $where .= " AND (`glpi_plugin_monitoring_components`.`name` IN ('" . implode("','",$params['servicesFilter']) . "')" . " OR `glpi_plugin_monitoring_components`.`description` IN ('" . implode("','",$params['servicesFilter']) . "') )";
-               }
-            } else {
-               if (! empty($params['servicesFilter']) != 0) {
-                  $where .= " AND (`glpi_plugin_monitoring_components`.`name` = '" . $params['servicesFilter'] . "' OR `glpi_plugin_monitoring_components`.`description` = '" . $params['servicesFilter'] . "')";
-               }
+      if (isset($params['servicesFilter'])) {
+         $row['servicesFilter']=$params['servicesFilter'];
+         if (is_array($params['servicesFilter'])) {
+            if (count($params['servicesFilter']) != 0) {
+               $where .= " AND (`glpi_plugin_monitoring_components`.`name` IN ('" . implode("','", $params['servicesFilter']) . "')" . " OR `glpi_plugin_monitoring_components`.`description` IN ('" . implode("','", $params['servicesFilter']) . "') )";
+            }
+         } else {
+            if (! empty($params['servicesFilter']) != 0) {
+               $where .= " AND (`glpi_plugin_monitoring_components`.`name` = '" . $params['servicesFilter'] . "' OR `glpi_plugin_monitoring_components`.`description` = '" . $params['servicesFilter'] . "')";
             }
          }
+      }
 
          // Locations filter
-         if (isset($params['locationsFilter'])) {
-            $row['locationsFilter']=$params['locationsFilter'];
-            if (is_array($params['locationsFilter'])) {
-               $where .= " AND `glpi_locations`.`id` IN ('" . implode("','",$params['locationsFilter']) . "')";
-            } else {
-               $where .= " AND `glpi_locations`.`id` = " . $params['locationsFilter'];
-            }
+      if (isset($params['locationsFilter'])) {
+         $row['locationsFilter']=$params['locationsFilter'];
+         if (is_array($params['locationsFilter'])) {
+            $where .= " AND `glpi_locations`.`id` IN ('" . implode("','", $params['locationsFilter']) . "')";
+         } else {
+            $where .= " AND `glpi_locations`.`id` = " . $params['locationsFilter'];
          }
+      }
 
          // States filter
-         if (isset($params['servicesStateFilter'])) {
-            $row['servicesStateFilter']=$params['servicesStateFilter'];
-            if (is_array($params['servicesStateFilter'])) {
-               $where .= " AND `glpi_plugin_monitoring_services`.`state` IN ('" . implode("','",$params['servicesStateFilter']) . "')";
-            } else {
-               $where .= " AND `glpi_plugin_monitoring_services`.`state` = '" . $params['servicesStateFilter'] . "'";
-            }
+      if (isset($params['servicesStateFilter'])) {
+         $row['servicesStateFilter']=$params['servicesStateFilter'];
+         if (is_array($params['servicesStateFilter'])) {
+            $where .= " AND `glpi_plugin_monitoring_services`.`state` IN ('" . implode("','", $params['servicesStateFilter']) . "')";
+         } else {
+            $where .= " AND `glpi_plugin_monitoring_services`.`state` = '" . $params['servicesStateFilter'] . "'";
          }
+      }
 
          // Order
          $order = "host_name ASC, name ASC, FIELD(`glpi_plugin_monitoring_services`.`state`,'CRITICAL','PENDING','UNKNOWN','WARNING','OK')";
-         if (isset($params['order'])) {
-            $order = $params['order'];
-         }
+      if (isset($params['order'])) {
+         $order = $params['order'];
+      }
          $row['order']=$order;
 
          $join .= "
@@ -1341,8 +1343,8 @@ class PluginAlignaksWebservice {
                   ON `glpi_plugin_monitoring_componentscatalogs_hosts`.`items_id` = `glpi_computers`.`id` AND `glpi_plugin_monitoring_componentscatalogs_hosts`.`itemtype`='Computer'
              ";
 
-         if (! $count) {
-            $query = "
+      if (! $count) {
+         $query = "
                  SELECT
                     `glpi_computers`.`name` AS host_name,
                     `glpi_plugin_monitoring_components`.`name`,
@@ -1360,8 +1362,8 @@ class PluginAlignaksWebservice {
                  ORDER BY $order
                  LIMIT $start,$limit;
             ";
-         } else {
-            $query = "
+      } else {
+         $query = "
                  SELECT
                      COUNT(`glpi_plugin_monitoring_components`.`name`) AS services_counter
                  FROM `glpi_plugin_monitoring_componentscatalogs_hosts`
@@ -1369,30 +1371,30 @@ class PluginAlignaksWebservice {
                  $where
                  ;
             ";
-         }
+      }
          $row['query'] = $query;
-         if ($debug) {
-            $rows[] = $row;
-         }
+      if ($debug) {
+         $rows[] = $row;
+      }
          // print_r($row);
 
          $result = $DB->query($query);
-         while ($data=$DB->fetch_array($result)) {
-            $row = array();
-            foreach ($data as $key=>$value) {
-               if (is_string($key)) {
-                  $row[$key] = trim($value);
-               }
+      while ($data=$DB->fetch_array($result)) {
+         $row = [];
+         foreach ($data as $key=>$value) {
+            if (is_string($key)) {
+               $row[$key] = trim($value);
             }
-            if ($count) {
-               $rows[] = $row;
-               continue;
-            }
-
-            $rows[] = $row;
          }
+         if ($count) {
+            $rows[] = $row;
+            continue;
+         }
+
+         $rows[] = $row;
+      }
          return $rows;
-    }
+   }
 
    /*
     * WS getLocations :
@@ -1433,11 +1435,11 @@ class PluginAlignaksWebservice {
       global $DB, $CFG_GLPI;
 
       if (!Session::getLoginUserID()) {
-         return (array( 'error' => "User is not authenticated!" ));
+         return ([ 'error' => "User is not authenticated!" ]);
       }
 
-      $rows = array();
-      $row = array();
+      $rows = [];
+      $row = [];
       $row['id']=-1;
 
       $debug = false;
@@ -1469,7 +1471,7 @@ class PluginAlignaksWebservice {
       if (isset($params['entitiesList'])) {
          $row['entitiesList']=$params['entitiesList'];
          if (!Session::haveAccessToAllOfEntities($params['entitiesList'])) {
-            return (array( 'error' => "Access to all required entities is not allowed!" ));
+            return ([ 'error' => "Access to all required entities is not allowed!" ]);
          }
          $where = getEntitiesRestrictRequest("WHERE", "glpi_locations", '', $params['entitiesList']) .
                            $where;
@@ -1524,7 +1526,7 @@ class PluginAlignaksWebservice {
 
       $result = $DB->query($query);
       while ($data=$DB->fetch_array($result)) {
-         $row = array();
+         $row = [];
          foreach ($data as $key=>$value) {
             if (is_string($key)) {
                $row[$key] = $value;
@@ -1577,11 +1579,11 @@ class PluginAlignaksWebservice {
       global $DB, $CFG_GLPI;
 
       if (!Session::getLoginUserID()) {
-         return (array( 'error' => "User is not authenticated!" ));
+         return ([ 'error' => "User is not authenticated!" ]);
       }
 
-      $rows = array();
-      $row = array();
+      $rows = [];
+      $row = [];
       $row['id']=-1;
 
       $debug = false;
@@ -1603,7 +1605,7 @@ class PluginAlignaksWebservice {
       if (isset($params['entitiesList'])) {
          $row['entitiesList']=$params['entitiesList'];
          if (!Session::haveAccessToAllOfEntities($params['entitiesList'])) {
-            return (array( 'error' => "Access to all required entities is not allowed!" ));
+            return ([ 'error' => "Access to all required entities is not allowed!" ]);
          }
          $where = getEntitiesRestrictRequest("WHERE", "glpi_plugin_kiosks_hostcounters_daily", '', $params['entitiesList']);
          $whereAll = getEntitiesRestrictRequest("WHERE", "glpi_plugin_kiosks_hostcounters_all", '', $params['entitiesList']);
@@ -1658,20 +1660,20 @@ class PluginAlignaksWebservice {
       if (isset($params['counters'])) {
          $row['counters']=$params['counters'];
          if (! is_array($params['counters'])) {
-            $params['counters'] = array ($params['counters']);
+            $params['counters'] =  [$params['counters']];
          }
          if (count($params['counters']) != 0) {
-            $where .= " AND `glpi_plugin_kiosks_counters`.`counter_name` IN ('" . implode("','",$params['counters']) . "')";
-            $whereAll .= " AND `glpi_plugin_kiosks_counters`.`counter_name` IN ('" . implode("','",$params['counters']) . "')";
+            $where .= " AND `glpi_plugin_kiosks_counters`.`counter_name` IN ('" . implode("','", $params['counters']) . "')";
+            $whereAll .= " AND `glpi_plugin_kiosks_counters`.`counter_name` IN ('" . implode("','", $params['counters']) . "')";
          } else {
-            return (array( 'error' => "Missing counters parameter!" ));
+            return ([ 'error' => "Missing counters parameter!" ]);
          }
          $where .= " AND `glpi_plugin_kiosks_counters`.`is_active` = '1'";
          $whereAll .= " AND `glpi_plugin_kiosks_counters`.`is_active` = '1'";
          $row['whereCounters']=$where;
          $row['whereAll']=$where;
       } else {
-         return (array( 'error' => "Missing counters parameter!" ));
+         return ([ 'error' => "Missing counters parameter!" ]);
       }
 
       // Hosts filter
@@ -1680,9 +1682,9 @@ class PluginAlignaksWebservice {
          $row['hostsFilter']=$params['hostsFilter'];
          if (is_array($params['hostsFilter'])) {
             if (count($params['hostsFilter']) != 0) {
-               $where .= " AND `glpi_plugin_kiosks_hostcounters_daily`.`hostname` IN ('" . implode("','",$params['hostsFilter']) . "')";
-               $whereAll .= " AND `glpi_plugin_kiosks_hostcounters_all`.`hostname` IN ('" . implode("','",$params['hostsFilter']) . "')";
-               $whereKiosk = " `kiosk_name` IN ('" . implode("','",$params['hostsFilter']) . "')";
+               $where .= " AND `glpi_plugin_kiosks_hostcounters_daily`.`hostname` IN ('" . implode("','", $params['hostsFilter']) . "')";
+               $whereAll .= " AND `glpi_plugin_kiosks_hostcounters_all`.`hostname` IN ('" . implode("','", $params['hostsFilter']) . "')";
+               $whereKiosk = " `kiosk_name` IN ('" . implode("','", $params['hostsFilter']) . "')";
             }
          } else {
             if (! empty($params['hostsFilter']) != 0) {
@@ -1697,17 +1699,17 @@ class PluginAlignaksWebservice {
       }
 
       // Prepare dates check array ...
-      $countersDate = array();
+      $countersDate = [];
       $end_date = new DateTime($end_date, new DateTimeZone('UTC'));
       // Add one day ...
       $end_date->add(new DateInterval('P1D'));
       $start_date = new DateTime($start_date, new DateTimeZone('UTC'));
       $interval = new DateInterval('P1D');
-      $daterange = new DatePeriod($start_date, $interval ,$end_date);
-      foreach ($daterange as $date){
+      $daterange = new DatePeriod($start_date, $interval, $end_date);
+      foreach ($daterange as $date) {
          $day = $date->format("Y-m-d");
          $ts = $date->format('U')."000";
-         $countersDate[$ts] = array();
+         $countersDate[$ts] = [];
          foreach ($params['counters'] as $counter) {
             $countersDate[$ts][$counter] = false;
          }
@@ -1718,7 +1720,7 @@ class PluginAlignaksWebservice {
          SELECT `mc`.`description` AS component,`kc`.`counter_name` AS counter,`kc`.`name` AS label,`kc`.`ratio` AS ratio
          FROM `glpi_plugin_kiosks_counters` AS kc
          JOIN `glpi_plugin_monitoring_components` AS mc ON `mc`.`id` = `kc`.`plugin_monitoring_components_id`
-         WHERE `kc`.`is_active` = 1 AND `kc`.`counter_name` IN ('" . implode("','",$params['counters']) . "')";
+         WHERE `kc`.`is_active` = 1 AND `kc`.`counter_name` IN ('" . implode("','", $params['counters']) . "')";
       $row['queryComponents'] = $query;
 
       $result = $DB->query($query);
@@ -1728,8 +1730,7 @@ class PluginAlignaksWebservice {
             SELECT
               '". $data['counter'] ."' AS counter_id,
               SUM(`". $data['counter'] ."`) AS value
-            FROM `glpi_plugin_kiosks_hdc_". $data['component'] ."`"
-         ;
+            FROM `glpi_plugin_kiosks_hdc_". $data['component'] ."`";
          $query .= " " . getEntitiesRestrictRequest("WHERE", "glpi_plugin_kiosks_hdc_". $data['component']);
          $query .= " AND " . $whereKiosk;
          // $query .= " AND " . $whereDay;
@@ -1752,8 +1753,7 @@ class PluginAlignaksWebservice {
                SELECT
                   '". $data['counter'] ."' AS counter_id,
                   SUM(`". $data['counter'] ."`) AS value
-               FROM `glpi_plugin_kiosks_hdc_". $data['component'] ."`"
-            ;
+               FROM `glpi_plugin_kiosks_hdc_". $data['component'] ."`";
             $query .= " " . getEntitiesRestrictRequest("WHERE", "glpi_plugin_kiosks_hdc_". $data['component']);
             $query .= " AND " . $whereDay;
             $query .= " AND " . $whereKiosk;
@@ -1765,8 +1765,7 @@ class PluginAlignaksWebservice {
                   '". $data['counter'] ."' AS counter_id,
                   1000*UNIX_TIMESTAMP(`day`) AS timestamp,
                   SUM(`". $data['counter'] ."`) AS value
-               FROM `glpi_plugin_kiosks_hdc_". $data['component'] ."`"
-            ;
+               FROM `glpi_plugin_kiosks_hdc_". $data['component'] ."`";
             $query .= " " . getEntitiesRestrictRequest("WHERE", "glpi_plugin_kiosks_hdc_". $data['component']);
             $query .= " AND " . $whereDay;
             $query .= " AND " . $whereKiosk;
@@ -1786,22 +1785,22 @@ class PluginAlignaksWebservice {
                if (isset($params['perEntities'])) {
                   // Group by entity,name ...
                   if (! array_key_exists('entities', $rows['countersSerie'][$data2['counter_id']])) {
-                     $rows['countersSerie'][$data2['counter_id']]['entities'] = array();
+                     $rows['countersSerie'][$data2['counter_id']]['entities'] = [];
                   }
                   if (! array_key_exists($data2['entities_id'], $rows['countersSerie'][$data2['counter_id']]['entities'])) {
-                     $rows['countersSerie'][$data2['counter_id']]['entities'][ $data2['entities_id'] ] = array(
+                     $rows['countersSerie'][$data2['counter_id']]['entities'][ $data2['entities_id'] ] = [
                         "id" => $data2['entities_id'],
                         "name" => $data2['entityName'],
-                        "data" => array ()
-                     );
+                        "data" =>  []
+                     ];
                   }
-                  $dp = array (intval($data2['timestamp']), floatval($data2['value'] * $data['ratio']));
+                  $dp =  [intval($data2['timestamp']), floatval($data2['value'] * $data['ratio'])];
                   $rows['countersSerie'][$data['counter_id']]['entities'][ $data2['entities_id'] ]['data'][] = $dp;
                } else {
                   // Group by day,name ...
-                  $dp = array (intval($data2['timestamp']), floatval($data2['value'] * $data['ratio']));
+                  $dp =  [intval($data2['timestamp']), floatval($data2['value'] * $data['ratio'])];
                   if (! array_key_exists('data', $rows['countersSerie'][$data2['counter_id']])) {
-                     $rows['countersSerie'][$data2['counter_id']]['data'] = array ($dp);
+                     $rows['countersSerie'][$data2['counter_id']]['data'] =  [$dp];
                   } else {
                      $rows['countersSerie'][$data2['counter_id']]['data'][] = $dp;
                   }
@@ -1814,22 +1813,22 @@ class PluginAlignaksWebservice {
       if ($debug) {
          $rows['debug'] = $row;
       }
-      $daterange = new DatePeriod($start_date, $interval ,$end_date);
-      foreach ($daterange as $date){
+      $daterange = new DatePeriod($start_date, $interval, $end_date);
+      foreach ($daterange as $date) {
          $day = $date->format("Y-m-d");
          $ts = $date->format('U')."000";
          foreach ($params['counters'] as $counter) {
             if (! $countersDate[ $ts ][ $counter ]) {
 
                if (! array_key_exists($counter, $rows['countersSerie'])) {
-                  $rows['countersSerie'][$counter] = array (
+                  $rows['countersSerie'][$counter] =  [
                      "name" => $counter,
                      "eternal" => isset($row[$counter."_all"]) ? $row[$counter."_all"] : 0
-                  );
+                  ];
                }
-               $dp = array (intval($ts), 0);
+               $dp =  [intval($ts), 0];
                if (! array_key_exists('data', $rows['countersSerie'][$counter])) {
-                  $rows['countersSerie'][$counter]['data'] = array ($dp);
+                  $rows['countersSerie'][$counter]['data'] =  [$dp];
                } else {
                   $rows['countersSerie'][$counter]['data'][] = $dp;
                }
@@ -1856,11 +1855,11 @@ class PluginAlignaksWebservice {
       global $DB, $CFG_GLPI;
 
       if (!Session::getLoginUserID()) {
-         return (array( 'error' => "User is not authenticated!" ));
+         return ([ 'error' => "User is not authenticated!" ]);
       }
 
-      $rows = array();
-      $row = array();
+      $rows = [];
+      $row = [];
       $row['id']=-1;
 
       $debug = false;
@@ -1882,7 +1881,7 @@ class PluginAlignaksWebservice {
       if (isset($params['entitiesList'])) {
          $row['entitiesList']=$params['entitiesList'];
          if (!Session::haveAccessToAllOfEntities($params['entitiesList'])) {
-            return (array( 'error' => "Access to all required entities is not allowed!" ));
+            return ([ 'error' => "Access to all required entities is not allowed!" ]);
          }
          $where = getEntitiesRestrictRequest("WHERE", "glpi_plugin_kiosks_hostcounters_daily", '', $params['entitiesList']) .
                            $where;
@@ -1936,17 +1935,17 @@ class PluginAlignaksWebservice {
       if (isset($params['counters'])) {
          $row['counters']=$params['counters'];
          if (! is_array($params['counters'])) {
-            $params['counters'] = array ($params['counters']);
+            $params['counters'] =  [$params['counters']];
          }
          if (count($params['counters']) != 0) {
-            $where .= " AND `glpi_plugin_kiosks_counters`.`counter_name` IN ('" . implode("','",$params['counters']) . "')";
-            $whereAll .= " AND `glpi_plugin_kiosks_counters`.`counter_name` IN ('" . implode("','",$params['counters']) . "')";
+            $where .= " AND `glpi_plugin_kiosks_counters`.`counter_name` IN ('" . implode("','", $params['counters']) . "')";
+            $whereAll .= " AND `glpi_plugin_kiosks_counters`.`counter_name` IN ('" . implode("','", $params['counters']) . "')";
          }
          $where .= " AND `glpi_plugin_kiosks_counters`.`is_active` = '1'";
          $whereAll .= " AND `glpi_plugin_kiosks_counters`.`is_active` = '1'";
          $row['whereCounters']=$where;
       } else {
-         $params['counters']=array();
+         $params['counters']=[];
       }
 
       // Hosts filter
@@ -1954,8 +1953,8 @@ class PluginAlignaksWebservice {
          $row['hostsFilter']=$params['hostsFilter'];
          if (is_array($params['hostsFilter'])) {
             if (count($params['hostsFilter']) != 0) {
-               $where .= " AND `glpi_plugin_kiosks_hostcounters_daily`.`hostname` IN ('" . implode("','",$params['hostsFilter']) . "')";
-               $whereAll .= " AND `glpi_plugin_kiosks_hostcounters_all`.`hostname` IN ('" . implode("','",$params['hostsFilter']) . "')";
+               $where .= " AND `glpi_plugin_kiosks_hostcounters_daily`.`hostname` IN ('" . implode("','", $params['hostsFilter']) . "')";
+               $whereAll .= " AND `glpi_plugin_kiosks_hostcounters_all`.`hostname` IN ('" . implode("','", $params['hostsFilter']) . "')";
             }
          } else {
             if (! empty($params['hostsFilter']) != 0) {
@@ -1975,17 +1974,17 @@ class PluginAlignaksWebservice {
          ";
 
       // Prepare dates check array ...
-      $countersDate = array();
+      $countersDate = [];
       $end_date = new DateTime($end_date, new DateTimeZone('UTC'));
       // Add one day ...
       $end_date->add(new DateInterval('P1D'));
       $start_date = new DateTime($start_date, new DateTimeZone('UTC'));
       $interval = new DateInterval('P1D');
-      $daterange = new DatePeriod($start_date, $interval ,$end_date);
-      foreach ($daterange as $date){
+      $daterange = new DatePeriod($start_date, $interval, $end_date);
+      foreach ($daterange as $date) {
          $day = $date->format("Y-m-d");
          $ts = $date->format('U')."000";
-         $countersDate[$ts] = array();
+         $countersDate[$ts] = [];
          foreach ($params['counters'] as $counter) {
             $countersDate[$ts][$counter] = false;
          }
@@ -2009,7 +2008,7 @@ class PluginAlignaksWebservice {
       ";
       $row['queryAll'] = $query;
 
-      $rows['countersSerie'] = array();
+      $rows['countersSerie'] = [];
       $result = $DB->query($query);
       while ($data=$DB->fetch_array($result)) {
          if (isset($data['counter_id'])) {
@@ -2087,12 +2086,12 @@ class PluginAlignaksWebservice {
             // print ("Per entity: ".$data['entityId']."\n");
             // Group by entity,name ...
             if (! array_key_exists('entities', $rows['countersSerie'][$data['counter_id']])) {
-               $rows['countersSerie'][$data['counter_id']]['entities'] = array();
+               $rows['countersSerie'][$data['counter_id']]['entities'] = [];
             }
             if (! array_key_exists($data['entityId'], $rows['countersSerie'][$data['counter_id']]['entities'])) {
-               $rows['countersSerie'][$data['counter_id']]['entities'][ $data['entityId'] ] = array( "id" => $data['entityId'], "name" => $data['entityName'], "data" => array ());
+               $rows['countersSerie'][$data['counter_id']]['entities'][ $data['entityId'] ] = [ "id" => $data['entityId'], "name" => $data['entityName'], "data" =>  []];
             }
-            $dp = array (intval($data['timestamp']), floatval($data['value']));
+            $dp =  [intval($data['timestamp']), floatval($data['value'])];
             $rows['countersSerie'][$data['counter_id']]['entities'][ $data['entityId'] ]['data'][] = $dp;
 
             // if (! array_key_exists('data', $rows['countersSerie'][$data['counter_id']]['entities'][ $data['entityId'] ])) {
@@ -2103,9 +2102,9 @@ class PluginAlignaksWebservice {
          } else {
             // print ("Per day ...\n");
             // Group by day,name ...
-            $dp = array (intval($data['timestamp']), floatval($data['value']));
+            $dp =  [intval($data['timestamp']), floatval($data['value'])];
             if (! array_key_exists('data', $rows['countersSerie'][$data['counter_id']])) {
-               $rows['countersSerie'][$data['counter_id']]['data'] = array ($dp);
+               $rows['countersSerie'][$data['counter_id']]['data'] =  [$dp];
             } else {
                $rows['countersSerie'][$data['counter_id']]['data'][] = $dp;
             }
@@ -2113,8 +2112,8 @@ class PluginAlignaksWebservice {
          }
       }
 
-      $daterange = new DatePeriod($start_date, $interval ,$end_date);
-      foreach ($daterange as $date){
+      $daterange = new DatePeriod($start_date, $interval, $end_date);
+      foreach ($daterange as $date) {
          $day = $date->format("Y-m-d");
          $ts = $date->format('U')."000";
          foreach ($params['counters'] as $counter) {
@@ -2123,12 +2122,12 @@ class PluginAlignaksWebservice {
                // if ($debug) echo "does not exist\n";
 
                if (! array_key_exists($counter, $rows['countersSerie'])) {
-                  $rows['countersSerie'][$counter] = array ( "name" => $counter, "ratio" => 1, "unit" => "", "color" => null, "decimals" => 0, "eternal" => isset($row[$counter."_all"]) ? $row[$counter."_all"] : 0 );
+                  $rows['countersSerie'][$counter] =  [ "name" => $counter, "ratio" => 1, "unit" => "", "color" => null, "decimals" => 0, "eternal" => isset($row[$counter."_all"]) ? $row[$counter."_all"] : 0 ];
                }
-               $dp = array (intval($ts), 0);
+               $dp =  [intval($ts), 0];
                if (! array_key_exists('data', $rows['countersSerie'][$counter])) {
                   // if ($debug) echo "$day -> $ts: $counter first\n";
-                  $rows['countersSerie'][$counter]['data'] = array ($dp);
+                  $rows['countersSerie'][$counter]['data'] =  [$dp];
                   // $rows['countersSerie'][$counter]['data'][] = $dp;
                } else {
                   // if ($debug) echo "$day -> $ts: $counter next\n";
@@ -2181,12 +2180,11 @@ class PluginAlignaksWebservice {
       global $DB, $CFG_GLPI;
 
       if (!Session::getLoginUserID()) {
-         return (array( 'error' => "User is not authenticated!" ));
+         return ([ 'error' => "User is not authenticated!" ]);
       }
 
-
-      $rows = array();
-      $row = array();
+      $rows = [];
+      $row = [];
       $row['id']=-1;
 
       $debug = false;
@@ -2201,7 +2199,7 @@ class PluginAlignaksWebservice {
       if (isset($params['entitiesList'])) {
          $row['entitiesList']=$params['entitiesList'];
          if (!Session::haveAccessToAllOfEntities($params['entitiesList'])) {
-            return (array( 'error' => "Access to all required entities is not allowed!" ));
+            return ([ 'error' => "Access to all required entities is not allowed!" ]);
          }
          $where = getEntitiesRestrictRequest("WHERE", "glpi_itilcategories", '', $params['entitiesList'], true) .
                            $where;
@@ -2248,7 +2246,7 @@ class PluginAlignaksWebservice {
 
       $result = $DB->query($query);
       while ($data=$DB->fetch_array($result)) {
-         $row = array();
+         $row = [];
          foreach ($data as $key=>$value) {
             if (is_string($key)) {
                $row[$key] = $value;
@@ -2256,12 +2254,14 @@ class PluginAlignaksWebservice {
             if ($key =='id_template_request' and $value!='0') {
                $exists=false;
                foreach ($rows['templates'] as $index => $template) {
-                  if ($template['id'] == $value) $exists=true;
+                  if ($template['id'] == $value) {
+                     $exists=true;
+                  }
                }
 
                if (! $exists) {
                   // Find ticket template if available ...
-                  $rowTemplate = array();
+                  $rowTemplate = [];
                   $track = new Ticket();
                   // $tt = $track->getTicketTemplateToUse(0, Ticket::DEMAND_TYPE, $value, 0);
                   $tt = $track->getTicketTemplateToUse($value);
@@ -2279,12 +2279,14 @@ class PluginAlignaksWebservice {
             if ($key =='id_template_incident' and $value!='0') {
                $exists=false;
                foreach ($rows['templates'] as $index => $template) {
-                  if ($template['id'] == $value) $exists=true;
+                  if ($template['id'] == $value) {
+                     $exists=true;
+                  }
                }
 
                if (! $exists) {
                   // Find ticket template if available ...
-                  $rowTemplate = array();
+                  $rowTemplate = [];
                   $track = new Ticket();
                   // $tt = $track->getTicketTemplateToUse(0, Ticket::INCIDENT_TYPE, $value, 0);
                   $tt = $track->getTicketTemplateToUse($value);
@@ -2333,7 +2335,7 @@ class PluginAlignaksWebservice {
       global $DB, $CFG_GLPI;
 
       if (isset($params['help'])) {
-         return array('count'     => 'bool,optional',
+         return ['count'     => 'bool,optional',
                              'start'     => 'integer,optional',
                              'limit'     => 'integer,optional',
                              'user'      => 'integer,optional',
@@ -2355,14 +2357,14 @@ class PluginAlignaksWebservice {
                              'id2name'   => 'bool,optional',
                              'order'     => 'array,optional',
                              'counters'  => 'bool,optional',
-                             'help'      => 'bool,optional');
+                             'help'      => 'bool,optional'];
       }
 
       if (!Session::getLoginUserID()) {
          return self::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
       }
 
-      $resp  = array();
+      $resp  = [];
       $start = 0;
       if (isset($params['start']) && is_numeric($params['start'])) {
          $start = $params['start'];
@@ -2522,23 +2524,23 @@ class PluginAlignaksWebservice {
             case 'notclosed' :
                $status = Ticket::getAllStatusArray();
                unset($status[CLOSED]);
-               $where .= " AND `glpi_tickets`.`status` IN ('".implode("','",$status)."') ";
+               $where .= " AND `glpi_tickets`.`status` IN ('".implode("','", $status)."') ";
                break;
 
             case 'notold' :
                $status = Ticket::getAllStatusArray();
                unset($status[SOLVED], $status[CLOSED]);
-               $where .= " AND `glpi_tickets`.`status` IN ('".implode("','",$status)."') ";
+               $where .= " AND `glpi_tickets`.`status` IN ('".implode("','", $status)."') ";
                break;
 
             case 'old' :
                $status = array_merge(Ticket::getSolvedStatusArray(), Ticket::getClosedStatusArray());
-               $where .= " AND `glpi_tickets`.`status` IN ('".implode("','",$status)."') ";
+               $where .= " AND `glpi_tickets`.`status` IN ('".implode("','", $status)."') ";
                break;
 
             case 'process' :
                $status = Ticket::getProcessStatusArray();
-               $where .= " AND `glpi_tickets`.`status` IN ('".implode("','",$status)."') ";
+               $where .= " AND `glpi_tickets`.`status` IN ('".implode("','", $status)."') ";
                break;
 
             default :
@@ -2576,7 +2578,7 @@ class PluginAlignaksWebservice {
 
       if (isset($params['item'])) {
          if (!isset($params['itemtype'])) {
-            return self::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER, '','itemtype');
+            return self::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER, '', 'itemtype');
          }
          if (!is_numeric($params['item']) || $params['item'] <= 0) {
             return self::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '', 'item');
@@ -2584,39 +2586,39 @@ class PluginAlignaksWebservice {
          $where .= " AND `glpi_tickets`.`items_id`='" . $params['item'] . "'";
       }
 
-      $orders = array();
+      $orders = [];
       if (isset($params['order'])) {
          if (is_array($params['order'])) {
             $tab = $params['order'];
          } else {
-            $tab = array($params['order']=>'DESC');
+            $tab = [$params['order']=>'DESC'];
          }
          foreach ($tab as $key => $val) {
             if ($val != 'ASC') {
                $val = 'DESC';
             }
-            $sqlkey = array('id'           => '`glpi_tickets`.`id`',
+            $sqlkey = ['id'           => '`glpi_tickets`.`id`',
                                     'date'         => '`glpi_tickets`.`date`',
                                     'closedate'    => '`glpi_tickets`.`closedate`',
                                     'date_mod'     => '`glpi_tickets`.`date_mod`',
                                     'status'       => '`glpi_tickets`.`status`',
                                     'entities_id'  => '`glpi_tickets`.`entities_id`',
-                                    'priority'     => '`glpi_tickets`.`priority`');
+                                    'priority'     => '`glpi_tickets`.`priority`'];
             if (isset($sqlkey[$key])) {
                $orders[] = $sqlkey[$key]." $val";
             } else {
-               return self::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '','order=$key');
+               return self::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '', 'order=$key');
             }
          }
       }
 
       if (count($orders)) {
-         $order = implode(',',$orders);
+         $order = implode(',', $orders);
       } else {
          $order = "`glpi_tickets`.`date_mod` DESC";
       }
 
-      $resp = array ();
+      $resp =  [];
       if (isset($params['count'])) {
          $query = "SELECT COUNT(DISTINCT `glpi_tickets`.`id`) AS count
                         FROM `glpi_tickets`
@@ -2671,7 +2673,7 @@ class PluginAlignaksWebservice {
 
          // echo $query;
          if (isset($params['counters'])) {
-            $counters = array();
+            $counters = [];
             foreach ($DB->request($query) as $data) {
                // General counters
                $counter_type = 'general';
@@ -2723,7 +2725,6 @@ class PluginAlignaksWebservice {
                      $counters[$counter_type]['unsolved']['counter'] = 'Unsolved';
                   }
                }
-
 
                // Status counters
                $counter_type = 'status';
@@ -2810,38 +2811,38 @@ class PluginAlignaksWebservice {
          } else {
             foreach ($DB->request($query) as $data) {
                $tmp                        = explode(',', $data['users_id_request']);
-               $data['users']['requester'] = array();
-               foreach($tmp as $id) {
+               $data['users']['requester'] = [];
+               foreach ($tmp as $id) {
                   $data['users']['requester'][]['id'] = $id;
                }
 
                $tmp                       = explode(',', $data['users_id_observer']);
-               $data['users']['observer'] = array();
-               foreach($tmp as $id) {
+               $data['users']['observer'] = [];
+               foreach ($tmp as $id) {
                   $data['users']['observer'][]['id'] = $id;
                }
 
                $tmp                     = explode(',', $data['users_id_assign']);
-               $data['users']['assign'] = array();
-               foreach($tmp as $id) {
+               $data['users']['assign'] = [];
+               foreach ($tmp as $id) {
                   $data['users']['assign'][]['id'] = $id;
                }
 
                $tmp                         = explode(',', $data['groups_id_request']);
-               $data['groups']['requester'] = array();
-               foreach($tmp as $id) {
+               $data['groups']['requester'] = [];
+               foreach ($tmp as $id) {
                   $data['groups']['requester'][]['id'] = $id;
                }
 
                $tmp                        = explode(',', $data['groups_id_observer']);
-               $data['groups']['observer'] = array();
-               foreach($tmp as $id) {
+               $data['groups']['observer'] = [];
+               foreach ($tmp as $id) {
                   $data['groups']['observer'][]['id'] = $id;
                }
 
                $tmp                      = explode(',', $data['groups_id_assign']);
-               $data['groups']['assign'] = array();
-               foreach($tmp as $id) {
+               $data['groups']['assign'] = [];
+               foreach ($tmp as $id) {
                   $data['groups']['assign'][]['id'] = $id;
                }
 
@@ -2984,7 +2985,7 @@ class PluginAlignaksWebservice {
       global $DB, $CFG_GLPI;
 
       if (!Session::getLoginUserID()) {
-         return (array( 'error' => "User is not authenticated!" ));
+         return ([ 'error' => "User is not authenticated!" ]);
       }
 
       $debug = false;
@@ -3007,10 +3008,9 @@ class PluginAlignaksWebservice {
          $source = Dropdown::importExternal('RequestType', 'Dashboard');
       }
 
-
       // ===== Build the Ticket =====
       // author is always the logged user
-      $data = array(
+      $data = [
          '_users_id_requester' => Session::getLoginUserID(), // Requester / Victime
          'users_id_recipient' => Session::getLoginUserID(), // Recorder
          'requesttypes_id' => $source,
@@ -3018,7 +3018,7 @@ class PluginAlignaksWebservice {
          'content'    => addslashes(Toolbox::clean_cross_side_scripting_deep($params["content"])),
          'itemtype'   => '',
          'type'       => Ticket::INCIDENT_TYPE,
-         'items_id'   => 0);
+         'items_id'   => 0];
 
       if ($debug) {
          $data['params'] = $params;
@@ -3029,10 +3029,10 @@ class PluginAlignaksWebservice {
          $data['entities_id'] = $_SESSION['glpiactive_entity'];
       } else {
          if (!is_numeric($params['entity'])) {
-            return (array( 'error' => "Entity Id is not numeric!" ));
+            return ([ 'error' => "Entity Id is not numeric!" ]);
          }
          if (!in_array($params['entity'], $_SESSION['glpiactiveentities'])) {
-            return (array( 'error' => "Entity Id is not in active entities: " . implode(', ', $_SESSION['glpiactiveentities']) ));
+            return ([ 'error' => "Entity Id is not in active entities: " . implode(', ', $_SESSION['glpiactiveentities']) ]);
          }
          $data['entities_id'] = $params['entity'];
       }
@@ -3043,18 +3043,18 @@ class PluginAlignaksWebservice {
          if (isset($params['type'])) {
             $types = Ticket::getTypes();
             if (!is_numeric($params['type']) || !isset($types[$params['type']])) {
-               return (array( 'error' => "Type is not valid!" ));
+               return ([ 'error' => "Type is not valid!" ]);
             }
          } else {
-            return (array( 'error' => "Type for template is not defined!" ));
+            return ([ 'error' => "Type for template is not defined!" ]);
          }
          // Category must be defined ...
          if (isset($params['category'])) {
             if (!is_numeric($params['category']) || ($params['category'] < 1)) {
-               return (array( 'error' => "Category is not valid!" ));
+               return ([ 'error' => "Category is not valid!" ]);
             }
          } else {
-            return (array( 'error' => "Category for template is not defined!" ));
+            return ([ 'error' => "Category for template is not defined!" ]);
          }
 
          // Find ticket template if available ...
@@ -3077,7 +3077,7 @@ class PluginAlignaksWebservice {
       // user (author) : optionnal,  default = current one
       if (isset($params['user'])) {
          if (!is_numeric($params['user'])) {
-            return (array( 'error' => "User Id is not numeric!" ));
+            return ([ 'error' => "User Id is not numeric!" ]);
          }
          $data['_users_id_requester'] = $params['user'];
       }
@@ -3085,7 +3085,7 @@ class PluginAlignaksWebservice {
       // Email notification
       if (isset($params['user_email'])) {
          if (!NotificationMail::isUserAddressValid($params['user_email'])) {
-            return (array( 'error' => "User email is not well formed!" ));
+            return ([ 'error' => "User email is not well formed!" ]);
          }
          $data['_users_id_requester_notif']['alternative_email'] = $params['user_email'];
          $data['_users_id_requester_notif']['use_notification']  = 1;
@@ -3099,19 +3099,19 @@ class PluginAlignaksWebservice {
          if (is_array($params['requester'])) {
             foreach ($params['requester'] as $id) {
                if (is_numeric($id) && $id > 0) {
-                  $data['_additional_requesters'][] = array(
+                  $data['_additional_requesters'][] = [
                      'users_id'         => $id,
-                     'use_notification' => true);
+                     'use_notification' => true];
                } else {
-                  return (array( 'error' => "Requester Id is not numeric!" ));
+                  return ([ 'error' => "Requester Id is not numeric!" ]);
                }
             }
          } else if (is_numeric($params['requester']) && ($params['requester'] > 0)) {
-            $data['_additional_requesters'][] = array(
+            $data['_additional_requesters'][] = [
                'users_id'         => $params['requester'],
-               'use_notification' => true);
+               'use_notification' => true];
          } else {
-            return (array( 'error' => "Requester is unknown!" ));
+            return ([ 'error' => "Requester is unknown!" ]);
          }
       }
 
@@ -3119,17 +3119,17 @@ class PluginAlignaksWebservice {
          if (is_array($params['victim'])) {
             foreach ($params['victim'] as $id) {
                if (is_numeric($id) && ($id > 0)) {
-                  $data['_additional_requesters'][] = array('users_id'         => $id,
-                                                                                 'use_notification' => false);
+                  $data['_additional_requesters'][] = ['users_id'         => $id,
+                                                                                 'use_notification' => false];
                } else {
-                  return (array( 'error' => "Victim Id is not numeric!" ));
+                  return ([ 'error' => "Victim Id is not numeric!" ]);
                }
             }
          } else if (is_numeric($params['victim']) && ($params['victim'] > 0)) {
-            $data['_additional_requesters'][] = array('users_id'         => $params['victim'],
-                                                                           'use_notification' => false);
+            $data['_additional_requesters'][] = ['users_id'         => $params['victim'],
+                                                                           'use_notification' => false];
          } else {
-            return (array( 'error' => "Victim is unknown!" ));
+            return ([ 'error' => "Victim is unknown!" ]);
          }
       }
 
@@ -3137,19 +3137,19 @@ class PluginAlignaksWebservice {
          if (is_array($params['observer'])) {
             foreach ($params['observer'] as $id) {
                if (is_numeric($id) && ($id > 0)) {
-                  $data['_additional_observers'][] = array(
+                  $data['_additional_observers'][] = [
                      'users_id'         => $id,
-                     'use_notification' => true);
+                     'use_notification' => true];
                } else {
-                  return (array( 'error' => "Observer Id is not numeric!" ));
+                  return ([ 'error' => "Observer Id is not numeric!" ]);
                }
             }
          } else if (is_numeric($params['observer']) && ($params['observer'] > 0)) {
-            $data['_additional_observers'][] = array(
+            $data['_additional_observers'][] = [
                'users_id'         => $params['observer'],
-               'use_notification' => true);
+               'use_notification' => true];
          } else {
-            return (array( 'error' => "Observer is unknown!" ));
+            return ([ 'error' => "Observer is unknown!" ]);
          }
       }
 
@@ -3158,7 +3158,7 @@ class PluginAlignaksWebservice {
          $data['_groups_id_requester'] = 0;
       } else {
          if (!is_numeric($params['group'])) {
-            return (array( 'error' => "Group Id is not numeric!" ));
+            return ([ 'error' => "Group Id is not numeric!" ]);
          }
          $data['_groups_id_requester'] = $params['group'];
       }
@@ -3166,7 +3166,7 @@ class PluginAlignaksWebservice {
       // groupassign (technicians group) : optionnal,  default = none
       if (isset($params['_groups_id_assign'])) {
          if (!is_numeric($params['_groups_id_assign'])) {
-            return (array( 'error' => "Group assign Id is not numeric!" ));
+            return ([ 'error' => "Group assign Id is not numeric!" ]);
          }
          $data['_groups_id_assign'] = $params['_groups_id_assign'];
       }
@@ -3174,7 +3174,7 @@ class PluginAlignaksWebservice {
       // userassign (technician) : optionnal,  default = none
       if (isset($params['_users_id_assign'])) {
          if (!is_numeric($params['_users_id_assign'])) {
-            return (array( 'error' => "User assign Id is not numeric!" ));
+            return ([ 'error' => "User assign Id is not numeric!" ]);
          }
          $data['_users_id_assign'] = $params['_users_id_assign'];
       }
@@ -3184,7 +3184,7 @@ class PluginAlignaksWebservice {
          if (preg_match(WEBSERVICES_REGEX_DATETIME, $params['date'])) {
             $data['date'] = $params['date'];
          } else {
-            return (array( 'error' => "Date is not valid!" ));
+            return ([ 'error' => "Date is not valid!" ]);
          }
       }
 
@@ -3197,7 +3197,7 @@ class PluginAlignaksWebservice {
       // Item type + id
       if (isset($params['itemtype'])) {
          if (!class_exists($params['itemtype'])) {
-            return (array( 'error' => "Itemtype is not valid!" ));
+            return ([ 'error' => "Itemtype is not valid!" ]);
          }
          if (!isset($params['item'])) {
             unset($params['itemtype']);
@@ -3206,10 +3206,10 @@ class PluginAlignaksWebservice {
 
       if (isset($params['item'])) {
          if (!isset($params['itemtype'])) {
-            return (array( 'error' => "Itemtype is not defined!" ));
+            return ([ 'error' => "Itemtype is not defined!" ]);
          }
          if (!is_numeric($params['item']) || $params['item'] <= 0) {
-            return (array( 'error' => "Item id is not valid!" ));
+            return ([ 'error' => "Item id is not valid!" ]);
          }
 
          // Both ok
@@ -3230,7 +3230,7 @@ class PluginAlignaksWebservice {
                         || ($params['urgency'] > 5))
                       || (isset($params['urgency'])
                             && !($CFG_GLPI['urgency_mask']&(1<<$params["urgency"])))) {
-         return (array( 'error' => "Urgency is not valid!" ));
+         return ([ 'error' => "Urgency is not valid!" ]);
       } else {
          $data['urgency'] = $params['urgency'];
       }
@@ -3241,7 +3241,7 @@ class PluginAlignaksWebservice {
                || ($params['impact'] > 5))
              || (isset($params['impact'])
                    && !($CFG_GLPI['impact_mask']&(1<<$params["impact"])))) {
-            return (array( 'error' => "Impact is not valid!" ));
+            return ([ 'error' => "Impact is not valid!" ]);
          } else {
             $data['impact'] = $params['impact'];
          }
@@ -3250,7 +3250,7 @@ class PluginAlignaksWebservice {
       // category : optionnal
       if (isset($params['category'])) {
          if (!is_numeric($params['category']) || ($params['category'] < 1)) {
-            return (array( 'error' => "Category is not valid!" ));
+            return ([ 'error' => "Category is not valid!" ]);
          }
          $data['itilcategories_id'] = $params['category'];
       }
@@ -3259,7 +3259,7 @@ class PluginAlignaksWebservice {
       if (isset($params['type'])) {
          $types = Ticket::getTypes();
          if (!is_numeric($params['type']) || !isset($types[$params['type']])) {
-            return (array( 'error' => "Type is not valid!" ));
+            return ([ 'error' => "Type is not valid!" ]);
          }
          $data['type'] = $params['type'];
       }
@@ -3273,13 +3273,13 @@ class PluginAlignaksWebservice {
       } else {
          $ticket = new Ticket();
          if ($newID = $ticket->add($data)) {
-            return self::methodGetTicket(array('ticket' => $newID), $protocol);
+            return self::methodGetTicket(['ticket' => $newID], $protocol);
          } else {
-            return (array( 'error' => "Ticket creation failed: " . implode(', ', $data) ));
+            return ([ 'error' => "Ticket creation failed: " . implode(', ', $data) ]);
          }
       }
 
-      return (array( 'error' => "Ticket creation failed: " . implode(', ', $data) ));
+      return ([ 'error' => "Ticket creation failed: " . implode(', ', $data) ]);
    }
 
    /**
@@ -3291,36 +3291,36 @@ class PluginAlignaksWebservice {
     *
     * @return array of hashtable
     **/
-    static function methodGetTicket($params, $protocol) {
+   static function methodGetTicket($params, $protocol) {
       global $DB, $CFG_GLPI;
 
       if (isset($params['help'])) {
-         return array('ticket'  => 'integer,mandatory',
+         return ['ticket'  => 'integer,mandatory',
                              'id2name' => 'bool,optional',
-                             'help'    => 'bool,optional');
+                             'help'    => 'bool,optional'];
       }
 
       if (!Session::getLoginUserID()) {
-         return (array( 'error' => "User is not authenticated!" ));
+         return ([ 'error' => "User is not authenticated!" ]);
       }
 
       $ticket = new Ticket();
 
       if (!isset($params['ticket'])) {
-         return (array( 'error' => "Missing parameter: ticket!" ));
+         return ([ 'error' => "Missing parameter: ticket!" ]);
       }
 
       if (!is_numeric($params['ticket'])) {
-         return (array( 'error' => "Bad parameter: ticket!" ));
+         return ([ 'error' => "Bad parameter: ticket!" ]);
       }
 
-      if (version_compare(GLPI_VERSION,'0.85','lt')) {
+      if (version_compare(GLPI_VERSION, '0.85', 'lt')) {
          if (!$ticket->can($params['ticket'], 'r')) {
-            return (array( 'error' => "Required ticket (" . $params['ticket'] . ") not found! Ticket does not exist or current user is not allowed to see the required ticket." ));
+            return ([ 'error' => "Required ticket (" . $params['ticket'] . ") not found! Ticket does not exist or current user is not allowed to see the required ticket." ]);
          }
       } else {
          if (!$ticket->can($params['ticket'], READ)) {
-            return (array( 'error' => "Required ticket (" . $params['ticket'] . ") not found! Ticket does not exist or current user is not allowed to see the required ticket." ));
+            return ([ 'error' => "Required ticket (" . $params['ticket'] . ") not found! Ticket does not exist or current user is not allowed to see the required ticket." ]);
          }
       }
 
@@ -3388,14 +3388,14 @@ class PluginAlignaksWebservice {
          }
       }
 
-      $resp['users']          = array();
-      $resp['groups']         = array();
-      $resp['followups']      = array ();
-      $resp['tasks']          = array ();
-      $resp['documents']      = array ();
-      $resp['events']         = array ();
-      $resp['validations']    = array ();
-      $resp['satisfaction']   = array ();
+      $resp['users']          = [];
+      $resp['groups']         = [];
+      $resp['followups']      =  [];
+      $resp['tasks']          =  [];
+      $resp['documents']      =  [];
+      $resp['events']         =  [];
+      $resp['validations']    =  [];
+      $resp['satisfaction']   =  [];
 
       if (Session::haveRight('observe_ticket', '1')) {
          // Followups
@@ -3456,29 +3456,29 @@ class PluginAlignaksWebservice {
       }
 
       if (Session::haveRight('create_request_validation', 1)
-                  || Session::haveRight('create_incident_validation', 1)
-                  || Session::haveRight('validate_request', 1)
-                  || Session::haveRight('validate_incident', 1)) {
+                 || Session::haveRight('create_incident_validation', 1)
+                 || Session::haveRight('validate_request', 1)
+                 || Session::haveRight('validate_incident', 1)) {
 
           $query = "SELECT *
                          FROM `glpi_ticketvalidations`
                          WHERE `tickets_id` = '".$params['ticket']."' ";
-          foreach ($DB->request($query) as $data) {
+         foreach ($DB->request($query) as $data) {
             if (isset($params['id2name'])) {
                $data['users_name']          = Html::clean(getUserName($data['users_id']));
                $data['users_name_validate'] = Html::clean(getUserName($data['users_id_validate']));
                $data['status_name']         = TicketValidation::getStatus($data['status']);
             }
             $resp['validations'][] = $data;
-          }
+         }
       }
 
       // Users & Groups
-      $tabtmp = array(CommonITILActor::REQUESTER => 'requester',
-                              CommonITILActor::OBSERVER  => 'observer',
-                              CommonITILActor::ASSIGN    => 'assign');
+      $tabtmp = [CommonITILActor::REQUESTER => 'requester',
+                             CommonITILActor::OBSERVER  => 'observer',
+                             CommonITILActor::ASSIGN    => 'assign'];
       foreach ($tabtmp as $num => $name) {
-         $resp['users'][$name] = array();
+         $resp['users'][$name] = [];
          foreach ($ticket->getUsers($num) as $user) {
             if (isset($params['id2name'])) {
                if ($user['users_id']) {
@@ -3491,7 +3491,7 @@ class PluginAlignaksWebservice {
             unset($user['type']);
             $resp['users'][$name][] = $user;
          }
-         $resp['groups'][$name] = array();
+         $resp['groups'][$name] = [];
          foreach ($ticket->getGroups($num) as $group) {
             if (isset($params['id2name'])) {
                $group['groups_name'] = Html::clean(Dropdown::getDropdownName(
@@ -3504,7 +3504,7 @@ class PluginAlignaksWebservice {
          }
       }
       // Suppliers
-      $resp['suppliers']['assign'] = array();
+      $resp['suppliers']['assign'] = [];
       foreach ($ticket->getSuppliers(CommonITILActor::ASSIGN) as $supplier) {
          if (isset($params['id2name'])) {
             $supplier['suppliers_name']
@@ -3516,7 +3516,6 @@ class PluginAlignaksWebservice {
          unset($supplier['type']);
          $resp['suppliers'][$name][] = $supplier;
       }
-
 
       // Satisfaction
       $satisfaction = new TicketSatisfaction();
@@ -3538,14 +3537,14 @@ class PluginAlignaksWebservice {
    static function methodAddTicketFollowup($params, $protocol) {
 
       if (isset($params['help'])) {
-         return array('ticket'  => 'integer,mandatory',
+         return ['ticket'  => 'integer,mandatory',
                              'content' => 'string,mandatory',
                              'users_login' => 'string,optional',
                              'close'   => 'bool,optional',
                              'reopen'  => 'bool,optional',
                              'source'  => 'string,optional',
                              'private' => 'bool,optional',
-                             'help'    => 'bool,optional');
+                             'help'    => 'bool,optional'];
       }
       if (!Session::getLoginUserID()) {
          return self::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
@@ -3553,52 +3552,52 @@ class PluginAlignaksWebservice {
       $ticket = new Ticket();
 
       if (isset($params['users_login']) && is_numeric($params['users_login'])) {
-         return (array("error" => "users_login should be a string" ));
+         return (["error" => "users_login should be a string" ]);
       }
 
       if (isset($params['users_login']) && is_string($params['users_login'])) {
          $user = new User();
-         if(!$users_id = $user->getIdByName($params['users_login'])) {
-            return (array("error" => "unknown user!" ));
+         if (!$users_id = $user->getIdByName($params['users_login'])) {
+            return (["error" => "unknown user!" ]);
          }
       }
 
       if (!isset($params['ticket'])) {
-         return (array("error" => "missing parameter 'ticket'" ));
+         return (["error" => "missing parameter 'ticket'" ]);
       }
 
       if (!is_numeric($params['ticket'])) {
-         return (array("error" => "ticket parameter should be numeric" ));
+         return (["error" => "ticket parameter should be numeric" ]);
       }
 
-      if (!$ticket->can($params['ticket'],'r')) {
-         return (array("error" => "ticket does not exist" ));
+      if (!$ticket->can($params['ticket'], 'r')) {
+         return (["error" => "ticket does not exist" ]);
       }
 
       if (!$ticket->canAddFollowups()) {
-         return (array("error" => "ticket add followup not allowed" ));
+         return (["error" => "ticket add followup not allowed" ]);
       }
 
       if (in_array($ticket->fields["status"], $ticket->getSolvedStatusArray())
                && !$ticket->canApprove()) {// Logged user not allowed
-         if(isset($users_id)) {// If we get the users id
+         if (isset($users_id)) {// If we get the users id
             $approbationSolution = self::checkApprobationSolution($users_id, $ticket);
-            if(!$approbationSolution) {
-               return (array("error" => "'ticket' approbation action not permitted"));
+            if (!$approbationSolution) {
+               return (["error" => "'ticket' approbation action not permitted"]);
             }
          } else {
-            return (array("error" => "'ticket' approbation action not permitted"));
+            return (["error" => "'ticket' approbation action not permitted"]);
          }
       }
 
       if (!isset($params['content'])) {
-         return (array( "error" => "missing parameter 'content'"));
+         return ([ "error" => "missing parameter 'content'"]);
       }
 
       // Source of the ticket, dynamically created
       if (isset($params['source'])) {
          if (empty($params['source'])) {
-            return (array( "error" => "empty parameter 'source'"));
+            return ([ "error" => "empty parameter 'source'"]);
          }
          $source = Dropdown::importExternal('RequestType', $params['source']);
       } else {
@@ -3612,16 +3611,16 @@ class PluginAlignaksWebservice {
       if (isset($users_id)) {
          $user = $users_id;
       }
-      $data = array(
+      $data = [
          'tickets_id' => $params['ticket'],
          'requesttypes_id' => $source,
          'is_private' => $private,
          'users_id'   => $user,
-         'content'    => addslashes(Toolbox::clean_cross_side_scripting_deep($params["content"])));
+         'content'    => addslashes(Toolbox::clean_cross_side_scripting_deep($params["content"]))];
 
       if (isset($params['close'])) {
          if (isset($params['reopen'])) {
-            return (array( "error" => "cannot use both 'close' and 'reopen' parameters"));
+            return ([ "error" => "cannot use both 'close' and 'reopen' parameters"]);
          }
 
          if (in_array($ticket->fields["status"], $ticket->getSolvedStatusArray())) {
@@ -3630,35 +3629,35 @@ class PluginAlignaksWebservice {
                $data['users_id'] = $users_id;
             }
          } else {
-            return (array( "error" => "cannot use 'close' for not solved ticket"));
+            return ([ "error" => "cannot use 'close' for not solved ticket"]);
          }
       }
 
       if (isset($params['reopen'])) {
-         if (in_array($ticket->fields['status'], array(Ticket::SOLVED, Ticket::WAITING))) {
+         if (in_array($ticket->fields['status'], [Ticket::SOLVED, Ticket::WAITING])) {
             $data['add_reopen'] = 1;
             if (isset($users_id)) {
                $data['users_id'] = $users_id;
             }
          } else {
-            return (array( "error" => "cannot use 'reopen' for not solved or waiting ticket"));
+            return ([ "error" => "cannot use 'reopen' for not solved or waiting ticket"]);
          }
       }
 
       if (in_array($ticket->fields["status"], $ticket->getSolvedStatusArray())
             && !isset($params['close'])
             && !isset($params['reopen'])) {
-         return (array( "error" => "missing 'reopen' or 'close' for solved ticket"));
+         return ([ "error" => "missing 'reopen' or 'close' for solved ticket"]);
       }
 
       if (in_array($ticket->fields["status"], $ticket->getClosedStatusArray())) {
-         return (array( "error" => "cannot add a followup to a closed ticket"));
+         return ([ "error" => "cannot add a followup to a closed ticket"]);
       }
 
       if ($followup->add($data)) {
-         return self::methodGetTicket(array('ticket' => $params['ticket']), $protocol);
+         return self::methodGetTicket(['ticket' => $params['ticket']], $protocol);
       }
-      return (array("error" => "ticket add followup error" ));
+      return (["error" => "ticket add followup error" ]);
    }
 
    /**
@@ -3669,7 +3668,7 @@ class PluginAlignaksWebservice {
     *
     * @return array of hashtable
     **/
-   static function methodAddUserMessage($params, $protocol=null) {
+   static function methodAddUserMessage($params, $protocol = null) {
 
       if (!Session::getLoginUserID()) {
          return self::Error("Not authenticated");
@@ -3685,7 +3684,7 @@ class PluginAlignaksWebservice {
       $user->getFromDB($users_id);
       if (isset($params['users_login']) && is_string($params['users_login'])) {
          $user = new User();
-         if(!$users_id = $user->getIdByName($params['users_login'])) {
+         if (!$users_id = $user->getIdByName($params['users_login'])) {
             return self::Error("Unknown user" );
          }
       }
@@ -3711,18 +3710,18 @@ class PluginAlignaksWebservice {
          return self::Error("Missing parameter 'type'");
       }
 
-      $data = array(
+      $data = [
          'source' => $params['source'],
          'type'         => $params['type'],
          'users_id'     => $users_id,
          'entities_id'  => $entities_id,
          'message'      => addslashes(Toolbox::clean_cross_side_scripting_deep($params['message']))
-         );
+         ];
 
       PluginAlignaksConfig::debugLog("WS methodAddUserMessage: ", $data);
 
       if ($message->add($data)) {
-         return (array("ok" => "" ));
+         return (["ok" => "" ]);
       }
       return self::Error("WS AddUserMessage error");
    }
@@ -3764,7 +3763,7 @@ class PluginAlignaksWebservice {
       global $DB, $CFG_GLPI;
 
       if (!Session::getLoginUserID()) {
-         return (array( 'error' => "User is not authenticated!" ));
+         return ([ 'error' => "User is not authenticated!" ]);
       }
 
       $debug = false;
@@ -3797,7 +3796,7 @@ class PluginAlignaksWebservice {
       } else {
          if (!is_numeric($params['entity'])
                || !in_array($params['entity'], $_SESSION['glpiactiveentities'])) {
-            return (array( 'error' => "Entity Id is not numeric!" ));
+            return ([ 'error' => "Entity Id is not numeric!" ]);
          }
          $entity = $params['entity'];
       }
@@ -3814,7 +3813,7 @@ class PluginAlignaksWebservice {
       $user = new User();
       $user->getFromDB(Session::getLoginUserID());
 
-      $a_fields = array(
+      $a_fields = [
             'action'              => empty($params['operation']) ? 'add' : $params['operation'],
             'host_name'           => $params['hostname'],
             'author'              => $user->getName(1),
@@ -3822,7 +3821,7 @@ class PluginAlignaksWebservice {
             'sticky'              => isset($params['sticky']) ? $params['sticky'] : '1',
             'notify'              => isset($params['notify']) ? $params['notify'] : '1',
             'persistent'          => isset($params['persistent']) ? $params['persistent'] : '1'
-      );
+      ];
 
       if ($ackHost) {
          if ($debug) {
@@ -3844,7 +3843,7 @@ class PluginAlignaksWebservice {
                   // Update Plugin Monitoring services table
                   $pmService = new PluginMonitoringService();
                   $pmService->getFromDB($service_id);
-                  $a_fields['service_description'] = $pmService->getName(array('shinken'=>'1'));
+                  $a_fields['service_description'] = $pmService->getName(['shinken'=>'1']);
 
                   if (self::sendCommand($url, 'acknowledge', $a_fields, '', $pmTag->getAuth($tag), $debug)) {
                      // Update Plugin Monitoring services table
@@ -3853,7 +3852,7 @@ class PluginAlignaksWebservice {
                      if ($debug) {
                         echo "Error";
                      }
-                     return (array( 'error' => "Acknowledgement not received for service: $service_id!" ));
+                     return ([ 'error' => "Acknowledgement not received for service: $service_id!" ]);
                   }
                }
             }
@@ -3861,9 +3860,9 @@ class PluginAlignaksWebservice {
             if ($debug) {
                echo "Error";
             }
-            return (array( 'error' => "Acknowledgement not received for host!" ));
+            return ([ 'error' => "Acknowledgement not received for host!" ]);
          }
-         return (array( 'ok' => "Acknowledgement sent." ));
+         return ([ 'ok' => "Acknowledgement sent." ]);
       } else {
          if ($debug) {
             echo "Service_id: {$params['service_id']}\n";
@@ -3873,7 +3872,7 @@ class PluginAlignaksWebservice {
          $pmService = new PluginMonitoringService();
          $pmService->getFromDB($params['service_id']);
          // if ($debug) print_r($pmService->fields);
-         $a_fields['service_description'] = $pmService->getName(array('shinken'=>'1'));
+         $a_fields['service_description'] = $pmService->getName(['shinken'=>'1']);
          if ($debug) {
             print_r($a_fields);
          }
@@ -3888,12 +3887,12 @@ class PluginAlignaksWebservice {
             // $pmService->getFromDB($params['service_id']);
             // if ($debug) print_r($pmService->fields);
 
-            return (array( 'ok' => "Acknowledgement sent." ));
+            return ([ 'ok' => "Acknowledgement sent." ]);
          } else {
             if ($debug) {
                echo "Error";
             }
-            return (array( 'error' => "Acknowledgement not received!" ));
+            return ([ 'error' => "Acknowledgement not received!" ]);
          }
       }
    }
@@ -3927,9 +3926,8 @@ class PluginAlignaksWebservice {
       global $DB, $CFG_GLPI;
 
       if (!Session::getLoginUserID()) {
-         return (array( 'error' => "User is not authenticated!" ));
+         return ([ 'error' => "User is not authenticated!" ]);
       }
-
 
       $debug = false;
       if (isset($params['debug'])) {
@@ -3952,7 +3950,7 @@ class PluginAlignaksWebservice {
       } else {
          if (!is_numeric($params['entity'])
                || !in_array($params['entity'], $_SESSION['glpiactiveentities'])) {
-            return (array( 'error' => "Entity Id is not numeric!" ));
+            return ([ 'error' => "Entity Id is not numeric!" ]);
          }
          $entity = $params['entity'];
       }
@@ -3979,7 +3977,7 @@ class PluginAlignaksWebservice {
       // End time : now + duration ...
       $end_time = $start_time+$params['duration'];
 
-      $a_fields = array(
+      $a_fields = [
             'action'              => empty($params['operation']) ? 'add' : $params['operation'],
             'host_name'           => $params['hostname'],
             'author'              => $user->getName(1),
@@ -3990,7 +3988,7 @@ class PluginAlignaksWebservice {
             'end_time'            => date('Y-m-d H:i:s', $end_time),
             'trigger_id'          => isset($params['trigger_id']) ? $params['trigger_id'] : '0',
             'duration'            => isset($params['duration']) ? $params['duration'] : '1'
-      );
+      ];
       if ($debug) {
          print_r($a_fields);
       }
@@ -4021,36 +4019,33 @@ class PluginAlignaksWebservice {
                   // Update Plugin Monitoring services table
                   $pmService = new PluginMonitoringService();
                   $pmService->getFromDB($service_id);
-                  $a_fields['service_description'] = $pmService->getName(array('shinken'=>'1'));
+                  $a_fields['service_description'] = $pmService->getName(['shinken'=>'1']);
 
-                  if (self::sendCommand($url, 'downtime', $a_fields, '', $pmTag->getAuth($tag), $debug)) {
-                     // Update Plugin Monitoring services table
-                     // $pmService->setAcknowledged(mb_convert_encoding($params['comment'], "iso-8859-1"), false);
-                  } else {
+                  if (! self::sendCommand($url, 'downtime', $a_fields, '', $pmTag->getAuth($tag), $debug)) {
                      if ($debug) {
                         echo "Error";
                      }
-                     return (array( 'error' => "Acknowledgement not received for service: $service_id!" ));
+                     return ([ 'error' => "Acknowledgement not received for service: $service_id!" ]);
                   }
                }
             }
          }
-         return (array( 'ok' => "Host and services downtime sent." ));
+         return ([ 'ok' => "Host and services downtime sent." ]);
       } else {
          if ($debug) {
             echo "Error";
          }
-         return (array( 'error' => "Host downtime not received!" ));
+         return ([ 'error' => "Host downtime not received!" ]);
       }
    }
 
    /*
     * Send a Shinken command
     */
-   static function sendCommand($url, $action, $a_fields, $fields_string='', $auth='', $debug=false) {
+   static function sendCommand($url, $action, $a_fields, $fields_string = '', $auth = '', $debug = false) {
 
       if ($fields_string == '') {
-         foreach($a_fields as $key=>$value) {
+         foreach ($a_fields as $key=>$value) {
             $fields_string .= $key.'='.$value.'&';
          }
          rtrim($fields_string, '&');
@@ -4061,12 +4056,12 @@ class PluginAlignaksWebservice {
 
       $ch = curl_init();
 
-      curl_setopt($ch,CURLOPT_URL, $url.$action);
-      curl_setopt($ch,CURLOPT_POST, count($a_fields));
-      curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
-      curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_URL, $url.$action);
+      curl_setopt($ch, CURLOPT_POST, count($a_fields));
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
       if ($auth != '') {
-         curl_setopt($ch,CURLOPT_USERPWD, $auth);
+         curl_setopt($ch, CURLOPT_USERPWD, $auth);
       }
 
       $ret = curl_exec($ch);
@@ -4103,18 +4098,18 @@ class PluginAlignaksWebservice {
       global $DB, $CFG_GLPI;
 
       if (isset($params['help'])) {
-         return array('hostname'  => 'string,mandatory',
-                           'help'      => 'bool,optional');
+         return ['hostname'  => 'string,mandatory',
+                           'help'      => 'bool,optional'];
       }
 
       if (!Session::getLoginUserID()) {
-         return (array( 'error' => "User is not authenticated!" ));
+         return ([ 'error' => "User is not authenticated!" ]);
       }
 
       $kc = new PluginAlignaksKioskConfiguration();
 
       if (!isset($params['hostname'])) {
-         return (array( 'error' => "Missing parameter: hostname!" ));
+         return ([ 'error' => "Missing parameter: hostname!" ]);
       }
 
       $a_confs = $kc->find("`serial`='".$params['hostname']."'", "", 1);
@@ -4138,8 +4133,6 @@ class PluginAlignaksWebservice {
             $kc->fields['kiosks_id'] = $kiosks_id;
             $kc->fields['comment'] = "-----\nConfiguration non renseignée !\n-----\n".$kc->fields['comment'];
             $items_id = $kc->add($kc->fields);
-         } else {
-            // Kiosk not found in DB ...
          }
          $items_id = $a_conf['id'];
 
@@ -4149,7 +4142,7 @@ class PluginAlignaksWebservice {
 
       $resp = $kc->fields;
       foreach ($kc->fields as $field=>$value) {
-         if (in_array ($field, array('id', 'name', 'organizations_id', 'project_leaders_id'))) {
+         if (in_array ($field, ['id', 'name', 'organizations_id', 'project_leaders_id'])) {
             unset($resp[$field]);
          }
       }
@@ -4165,7 +4158,7 @@ class PluginAlignaksWebservice {
    *
    */
    static function underscoreToCamelCase($string, $first_char_caps = false) {
-      if( $first_char_caps == true ) {
+      if ($first_char_caps == true) {
          $string[0] = strtoupper($string[0]);
       }
       $func = create_function('$c', 'return strtoupper($c[1]);');
@@ -4309,23 +4302,22 @@ class PluginAlignaksWebservice {
       global $DB, $CFG_GLPI;
 
       if (isset($params['help'])) {
-         return array(  'app_name'        => 'string,mandatory',
+         return [  'app_name'        => 'string,mandatory',
                         'kiosk_name'      => 'string,mandatory',
-                        'help'            => 'bool,optional');
+                        'help'            => 'bool,optional'];
       }
 
       if (!Session::getLoginUserID()) {
-         return (array( 'error' => "User is not authenticated!" ));
+         return ([ 'error' => "User is not authenticated!" ]);
       }
 
       if (!isset($params['app_name'])) {
-         return (array( 'error' => "Missing parameter: app_name!" ));
+         return ([ 'error' => "Missing parameter: app_name!" ]);
       }
 
       if (!isset($params['kiosk_name'])) {
-         return (array( 'error' => "Missing parameter: kiosk_name!" ));
+         return ([ 'error' => "Missing parameter: kiosk_name!" ]);
       }
-
 
       $debug = false;
       $row['id']=-1;
@@ -4371,7 +4363,7 @@ class PluginAlignaksWebservice {
             $items_id = $a_conf['id'];
          } else {
             // Default configuration not found in DB ...
-            return (array( 'error' => "Configuration does not exist in database: '$where'!" ));
+            return ([ 'error' => "Configuration does not exist in database: '$where'!" ]);
          }
       }
       $ka->getFromDB($items_id);
@@ -4531,28 +4523,27 @@ class PluginAlignaksWebservice {
       global $DB, $CFG_GLPI;
 
       if (isset($params['help'])) {
-         return array(  'app_name'        => 'string,mandatory',
+         return [  'app_name'        => 'string,mandatory',
                         'kiosk_name'      => 'string,mandatory',
-                        'help'            => 'bool,optional');
+                        'help'            => 'bool,optional'];
       }
 
       if (!Session::getLoginUserID()) {
-         return (array( 'error' => "User is not authenticated!" ));
+         return ([ 'error' => "User is not authenticated!" ]);
       }
 
       if (!isset($params['app_name'])) {
-         return (array( 'error' => "Missing parameter: app_name!" ));
+         return ([ 'error' => "Missing parameter: app_name!" ]);
       }
 
       if (!isset($params['kiosk_name'])) {
-         return (array( 'error' => "Missing parameter: kiosk_name!" ));
+         return ([ 'error' => "Missing parameter: kiosk_name!" ]);
       }
 
       if (!isset($params['json'])) {
-         return (array( 'error' => "Missing parameter: json!" ));
+         return ([ 'error' => "Missing parameter: json!" ]);
       }
       // $row_debug['json'] = $params['json'];
-
 
       $debug = false;
       $row_debug['id']=-1;
@@ -4593,15 +4584,15 @@ class PluginAlignaksWebservice {
             $items_id = $a_conf['id'];
          } else {
             // Default configuration not found in DB ...
-            return (array( 'error' => "Configuration does not exist in database: '$where'!" ));
+            return ([ 'error' => "Configuration does not exist in database: '$where'!" ]);
          }
       }
       $ka->getFromDB($items_id);
       $row_debug['found'] = $ka->fields['id']. ": " .$ka->fields['mnf_app_name']. " - " .$ka->fields['kiosk_name'];
 
-      $data = array(
+      $data = [
          'id' => $items_id
-      );
+      ];
 
       foreach ($params['json'] as $field=>$value) {
          if (strcmp($field, "manifest") === 0) {
@@ -4624,9 +4615,15 @@ class PluginAlignaksWebservice {
                if (strcmp($field, "images") === 0 && is_array($value)) {
                   for ($i = 1; $i <= 4; $i++) {
                      $row_debug['fields']['screensaver'][]="Found screensaver image $i";
-                     if (isset($value[$i]['image'])) $data["screensaver_img{$i}_image"] = $value[$i]['image'];
-                     if (isset($value[$i]['text1'])) $data["screensaver_img{$i}_text1"] = $value[$i]['text1'];
-                     if (isset($value[$i]['text2'])) $data["screensaver_img{$i}_text2"] = $value[$i]['text2'];
+                     if (isset($value[$i]['image'])) {
+                        $data["screensaver_img{$i}_image"] = $value[$i]['image'];
+                     }
+                     if (isset($value[$i]['text1'])) {
+                        $data["screensaver_img{$i}_text1"] = $value[$i]['text1'];
+                     }
+                     if (isset($value[$i]['text2'])) {
+                        $data["screensaver_img{$i}_text2"] = $value[$i]['text2'];
+                     }
                   }
                } else {
                   $data["screensaver_$field"] = $value;
@@ -4640,9 +4637,15 @@ class PluginAlignaksWebservice {
                if (strcmp($field, "choices") === 0 && is_array($value)) {
                   for ($i = 1; $i <= 4; $i++) {
                      $row_debug['fields']['menu'][]="Found menu image $i";
-                     if (isset($value[$i]['image'])) $data["menu_btn{$i}_image"] = $value[$i]['image'];
-                     if (isset($value[$i]['text'])) $data["menu_btn{$i}_text"] = $value[$i]['text'];
-                     if (isset($value[$i]['url'])) $data["menu_btn{$i}_url"] = $value[$i]['url'];
+                     if (isset($value[$i]['image'])) {
+                        $data["menu_btn{$i}_image"] = $value[$i]['image'];
+                     }
+                     if (isset($value[$i]['text'])) {
+                        $data["menu_btn{$i}_text"] = $value[$i]['text'];
+                     }
+                     if (isset($value[$i]['url'])) {
+                        $data["menu_btn{$i}_url"] = $value[$i]['url'];
+                     }
                   }
                } else {
                   if (strcmp($field, "background") === 0) {
@@ -4652,8 +4655,6 @@ class PluginAlignaksWebservice {
                   }
                }
             }
-
-         } else {
          }
       }
 
@@ -4701,7 +4702,7 @@ class PluginAlignaksWebservice {
          while ($data = $DB->fetch_array($result)) {
             $counter_name = $data['Field'];
             $columns[] = $counter_name;
-            if (in_array($counter_name, array('id', 'entities_id', 'kiosk_name', 'entity_name', 'day'))) {
+            if (in_array($counter_name, ['id', 'entities_id', 'kiosk_name', 'entity_name', 'day'])) {
                $column_names[$counter_name] =  $counter_name;
                continue;
             }
@@ -4719,7 +4720,7 @@ class PluginAlignaksWebservice {
          $message .= "$hdc_table does not exists";
       }
 
-      $return = array('message'=>$message, 'table_name'=> $hdc_table, 'name' => $component_name, 'columns' => $columns, 'column_names' => $column_names);
+      $return = ['message'=>$message, 'table_name'=> $hdc_table, 'name' => $component_name, 'columns' => $columns, 'column_names' => $column_names];
 
       return($return);
    }
@@ -4732,20 +4733,20 @@ class PluginAlignaksWebservice {
 
       // DataTables params
       $db = new DB();
-      $sql_details = array(
+      $sql_details = [
            'user' => $db->dbuser,
            'pass' => $db->dbpassword,
            'db'   => $db->dbdefault,
            'host' => $db->dbhost
-           );
+           ];
       $primaryKey = "id";
       $table = $params['table_name'];
       $data_columns = $params['fields'];
 
-      $columns = array();
+      $columns = [];
       $i = 0;
-      foreach($data_columns as $column) {
-         $columns[] = array('db' => $column, 'dt' => $i++);
+      foreach ($data_columns as $column) {
+         $columns[] = ['db' => $column, 'dt' => $i++];
       }
       $join = "";
       $extraWhere = "";

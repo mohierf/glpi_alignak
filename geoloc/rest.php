@@ -1,7 +1,9 @@
 <?php
 
 define('DO_NOT_CHECK_HTTP_REFERER', 1);
-if (!defined('GLPI_USE_CSRF_CHECK')) define('GLPI_USE_CSRF_CHECK', 0);
+if (!defined('GLPI_USE_CSRF_CHECK')) {
+   define('GLPI_USE_CSRF_CHECK', 0);
+}
 define('GLPI_ROOT', '../../..');
 
 /* // define session_id before any other think */
@@ -41,13 +43,13 @@ if (isset($_GET['filter'])) {
 
 // Manage POST/GET interface
 if (isset($_POST['method'])) {
-  $session = new PluginWebservicesMethodSession();
-  $resp    = $session->execute($_POST['method'], $_POST, WEBSERVICE_PROTOCOL_REST);
+   $session = new PluginWebservicesMethodSession();
+   $resp    = $session->execute($_POST['method'], $_POST, WEBSERVICE_PROTOCOL_REST);
 } else if (isset($_GET['method'])) {
-  $session = new PluginWebservicesMethodSession();
-  $resp    = $session->execute($_GET['method'], $_GET, WEBSERVICE_PROTOCOL_REST);
+   $session = new PluginWebservicesMethodSession();
+   $resp    = $session->execute($_GET['method'], $_GET, WEBSERVICE_PROTOCOL_REST);
 } else {
-  header("HTTP/1.0 500 Missing 'method' parameter !");
+   header("HTTP/1.0 500 Missing 'method' parameter !");
 }
 
 // XML return for CNAM geoloc

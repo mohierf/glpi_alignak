@@ -1,4 +1,4 @@
--- configuration of Formcreator in a GLPI instance
+-- configuration of the Alignak plugin in a GLPI instance
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;

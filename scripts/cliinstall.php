@@ -25,12 +25,13 @@ if (isset($args)) {
    if (isset($args['--tests']) &&  $args['--tests'] !== false) {
       // Use test GLPi's database
       // Requires use of cliinstall of GLPI with --tests argument
-      define('GLPI_ROOT', dirname(dirname(dirname(__DIR__))));
+      define('GLPI_ROOT', realpath(__DIR__ . '/../../../'));
       define("GLPI_CONFIG_DIR", GLPI_ROOT . "/tests");
    }
 }
 
 include (__DIR__ . "/../../../inc/includes.php");
+echo("Glpi root dir: " . GLPI_ROOT . "\n");
 
 // Init debug variable
 $_SESSION['glpi_use_mode'] = Session::DEBUG_MODE;
@@ -85,7 +86,7 @@ if (!$plugin->activate($plugin->fields['id'])) {
    print("Activation failed\n");
    exit(1);
 }
-print("Activation Done\n");
+print("Activation done\n");
 
 //Load the plugin
 print("Loading Plugin...\n");

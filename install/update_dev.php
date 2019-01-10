@@ -76,7 +76,6 @@ function plugin_alignak_update_dev(Migration $migration) {
       $DB->query($query);
    }
 
-
    // 2018-09-20 - Update the counters table
    $newTable = "glpi_plugin_alignak_counters";
    $migration->displayMessage("Upgrade $newTable");
@@ -86,7 +85,7 @@ function plugin_alignak_update_dev(Migration $migration) {
       'graphite_name',
       "varchar(255) DEFAULT NULL");
    // Update field type from previous version (Need answer to be text since text can be WYSIWING).
-//   $query = "ALTER TABLE  `glpi_plugin_alignak_counters` ADD  `graphite_name` VARCHAR(255);";
+   // $query = "ALTER TABLE  `glpi_plugin_alignak_counters` ADD  `graphite_name` VARCHAR(255);";
    $migration->migrationOneTable($newTable);
 
    // 2018-09-22 - Computers table
@@ -142,5 +141,4 @@ function plugin_alignak_update_dev(Migration $migration) {
       "varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL");
 
    $migration->migrationOneTable($newTable);
-//   $DB->query($query) or plugin_alignak_upgrade_error($migration);
 }

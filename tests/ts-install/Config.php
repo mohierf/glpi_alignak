@@ -43,7 +43,7 @@ use GlpiPlugin\Alignak\Tests\CommonTestCase;
  * @engine inline
  */
 class Config extends CommonTestCase {
-   private $olddb;
+   private $old_db;
 
    public function beforeTestMethod($method) {
       parent::beforeTestMethod($method);
@@ -53,11 +53,11 @@ class Config extends CommonTestCase {
             break;
 
          case 'testUpgradePlugin':
-            $this->olddb = new \DB();
+            $this->old_db = new \DB();
             $this->string(getenv('OLDDBNAME'));
-            $this->olddb->dbdefault = getenv('OLDDBNAME');
-            $this->olddb->connect();
-            $this->boolean($this->olddb->connected)->isTrue();
+            $this->old_db->dbdefault = getenv('OLDDBNAME');
+            $this->old_db->connect();
+            $this->boolean($this->old_db->connected)->isTrue();
             break;
       }
    }
@@ -66,7 +66,7 @@ class Config extends CommonTestCase {
       parent::afterTestMethod($method);
       switch ($method) {
          case 'testUpgradePlugin':
-            $this->olddb->close();
+            $this->old_db->close();
             break;
       }
    }
@@ -131,14 +131,14 @@ class Config extends CommonTestCase {
       $fresh_tables = $DB->listTables("glpi_plugin_${pluginName}_%");
       while ($fresh_table = $fresh_tables->next()) {
          $table = $fresh_table['TABLE_NAME'];
-         $this->boolean($this->olddb->tableExists($table, false))
+         $this->boolean($this->old_db->tableExists($table, false))
             ->isTrue("Table $table does not exists from migration!");
 
          $create = $DB->getTableSchema($DB, $table);
          $fresh = $create['schema'];
          $fresh_idx = $create['index'];
 
-         $update = $DB->getTableSchema($this->olddb, $table);
+         $update = $DB->getTableSchema($this->old_db, $table);
          $updated = $update['schema'];
          $updated_idx = $update['index'];
 

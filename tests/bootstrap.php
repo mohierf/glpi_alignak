@@ -16,19 +16,16 @@ define('TU_USER', '_test_user');
 
 // Travis run or local run?
 if (getenv("TRAVIS") !== false) {
-   echo("Running Travis tests...\n");
-   //   define('GLPI_ROOT', dirname(dirname(__DIR__)));
-   define('GLPI_ROOT', realpath(__DIR__ . '/../../../'));
-
-} else {
-   echo("Running local tests...\n");
-   define('GLPI_ROOT', '/home/glpi/glpi-dev-plugins');
+   putenv('OLDDBNAME=glpiupgradetest');
+   putenv('DBNAME=glpitest');
 }
-echo("Glpi root dir: " . GLPI_ROOT . "\n");
+define('GLPI_ROOT', realpath(__DIR__ . '/../../../'));
+// Do not echo, else it may break the tests execution!
+//echo("Glpi root dir: " . GLPI_ROOT . "\n");
 
 define("GLPI_CONFIG_DIR", GLPI_ROOT . "/tests");
-if (!file_exists(GLPI_CONFIG_DIR . '/config_db.php')) {
-   echo "config_db.php missing. Did GLPI successfully initialized ?\n";
+if (! file_exists(GLPI_CONFIG_DIR . '/config_db.php')) {
+   echo GLPI_CONFIG_DIR . "/config_db.php missing. Did GLPI successfully initialized ?\n";
    exit(1);
 }
 
@@ -38,7 +35,6 @@ define('GLPI_LOG_DIR', __DIR__ . '/logs');
 if (!defined('STDERR')) {
    define('STDERR', fopen(GLPI_LOG_DIR . 'stderr.log', 'w'));
 }
-echo("Glpi log dir: " . GLPI_LOG_DIR . "\n");
 
 define('ALIGNAK_ROOT', GLPI_ROOT . DIRECTORY_SEPARATOR . '/plugins/alignak');
 set_include_path(
@@ -48,12 +44,10 @@ set_include_path(
 );
 
 // Giving --debug argument to atoum will be detected by GLPI too
-// the error handler in Toolbox may output to stdout a message and break process communication
-// in atoum
+// the error handler in Toolbox may output to stdout a message and break process communication in atoum
 $key = array_search('--debug', $_SERVER['argv']);
 if ($key) {
    unset($_SERVER['argv'][$key]);
 }
 
 include (GLPI_ROOT . "/inc/includes.php");
-echo("Included: " . GLPI_ROOT . "/inc/includes.php" . "\n");

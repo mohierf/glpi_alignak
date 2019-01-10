@@ -54,7 +54,7 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
       $array_ret = [];
       if ($item->getType() == 'Computer' and $item->getID() > -1) {
          if (Session::haveRight('plugin_alignak_counters', READ)) {
-//            $array_ret[0] = self::createTabEntry(__('Monitoring counters', 'alignak'));
+            $array_ret[0] = self::createTabEntry(__('Monitoring counters', 'alignak'));
          }
       }
       return $array_ret;
@@ -231,7 +231,7 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
       return true;
    }
 
-      /**
+   /**
      * Give localized information about 1 task
      *
      * @param $name of the task
@@ -239,13 +239,14 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
      * @return array of strings
      */
    static function cronInfo($name) {
-
       switch ($name) {
-         case 'AlignakComputerTemplate' :
-            return ['description' => __('Cron Email des compteurs alignak', 'alignak'),
-                  'parameter'   => __('Cron parameter Email des compteurs alignak', 'alignak')];
+         case 'AlignakComputerTemplate':
+            return [
+               'description' => __('Cron Email des compteurs alignak', 'alignak'),
+               'parameter'   => __('Cron parameter Email des compteurs alignak', 'alignak')
+            ];
       }
-         return [];
+      return [];
    }
 
    /**
@@ -253,7 +254,7 @@ class PluginAlignakComputerCountersTemplate extends CommonDBTM {
      *
      * @param $task Object of CronTask class for log / stat
      *
-     * @return interger
+     * @return integer
      *    >0 : done
      *    <0 : to be run again (not finished)
      *     0 : nothing to do

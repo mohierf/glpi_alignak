@@ -1,4 +1,4 @@
-<?php 
+<?php
 $file = "rechercherListe_in.xml";
 $xml = simplexml_load_file($file);
 
